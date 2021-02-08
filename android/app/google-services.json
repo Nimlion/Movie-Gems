@@ -1,0 +1,32 @@
+{
+  "project_info": {
+    "project_number": "416758756254",
+    "firebase_url": "https://movie-list-1b0d1.firebaseio.com",
+    "project_id": "movie-list-1b0d1",
+    "storage_bucket": "movie-list-1b0d1.appspot.com"
+  },
+  "client": [{
+    "client_info": {
+      "mobilesdk_app_id": "1:416758756254:android:6a8b059b92a4f2244c1c8f",
+      "android_client_info": {
+        "package_name": "com.company.moviegems"
+      }
+    },
+    "oauth_client": [{
+      "client_id": "416758756254-a8e43hq6fma8lsdafitp3effmq513htv.apps.googleusercontent.com",
+      "client_type": 3
+    }],
+    "api_key": [{
+      "current_key": "AIzaSyC_P11mWdSUrcBBqk2KmAS8A9Rihhos-qo"
+    }],
+    "services": {
+      "appinvite_service": {
+        "other_platform_oauth_client": [{
+          "client_id": "416758756254-a8e43hq6fma8lsdafitp3effmq513htv.apps.googleusercontent.com",
+          "client_type": 3
+        }]
+      }
+    }
+  }],
+  "configuration_version": "1"
+}
