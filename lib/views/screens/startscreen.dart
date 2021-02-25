@@ -13,11 +13,11 @@ class StartScreen extends StatefulWidget {
 }
 
 class StartScreenState extends State<StartScreen> {
-  int _selectedTabIndex = 0;
+  int _selectedTabIndex = 1;
 
   List _pages = [
     HomePage(),
-    MoviePage(),
+    MoviesPage(),
     Text(""),
     Text(
       "Series . . .",
@@ -34,13 +34,13 @@ class StartScreenState extends State<StartScreen> {
   void _pushLoginPage() {
     Navigator.of(context).pop();
     Navigator.of(context).push(
-      new MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   }
 
   Widget _appBar() {
     return AppBar(
-      leading: new IconButton(
+      leading: IconButton(
         icon: Icon(
           Icons.person,
           size: 30,
@@ -48,7 +48,7 @@ class StartScreenState extends State<StartScreen> {
         onPressed: () => _pushLoginPage(),
       ),
       toolbarHeight: 60.0,
-      title: new Text(
+      title: Text(
         'Movie Gems',
         style: TextStyle(
           fontFamily: 'MotionPicture',
@@ -56,12 +56,14 @@ class StartScreenState extends State<StartScreen> {
         ),
       ),
       actions: [
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Icon(
-              Icons.settings,
-              size: 30,
-            ))
+        IconButton(
+          padding: EdgeInsets.only(right: 15),
+          icon: Icon(
+            Icons.settings,
+            size: 30,
+          ),
+          onPressed: () {},
+        )
       ],
       centerTitle: true,
     );
@@ -81,10 +83,7 @@ class StartScreenState extends State<StartScreen> {
       items: [
         BottomNavigationBarItem(label: "Home", icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: "Movies", icon: Icon(Icons.movie)),
-        BottomNavigationBarItem(
-          label: "",
-          icon: SizedBox(height: 30),
-        ),
+        BottomNavigationBarItem(label: "", icon: SizedBox(height: 30)),
         BottomNavigationBarItem(label: "Series", icon: Icon(Icons.tv)),
         BottomNavigationBarItem(
             label: "Watch later", icon: Icon(Icons.watch_later)),

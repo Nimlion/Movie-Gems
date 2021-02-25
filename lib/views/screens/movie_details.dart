@@ -5,7 +5,7 @@ import 'package:movie_gems/controller/TMDBController.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
-import 'package:movie_gems/views/screens/page_filler.dart';
+import 'package:movie_gems/views/widgets/page_filler.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
@@ -18,7 +18,7 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final Movie movie;
 
-  final cur = new NumberFormat("#,##0", "nl_NL");
+  final cur = NumberFormat("#,##0", "nl_NL");
   Future<TMDBResponse> futureResponse;
 
   _MovieDetailScreenState(this.movie);
@@ -33,16 +33,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     Widget _icon;
     switch (number) {
       case 0:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
         break;
       case 1:
-        _icon = new Icon(Icons.favorite);
+        _icon = Icon(Icons.favorite);
         break;
       case 2:
-        _icon = new Icon(Icons.local_activity);
+        _icon = Icon(Icons.local_activity);
         break;
       default:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
     }
     return _icon;
   }
@@ -357,7 +357,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                     .toString())
                             : SizedBox(),
                         _subtitle("Statistics"),
-                        _pillBar("rated", "PG-13", "runtime",
+                        _pillBar("rated", movie.rated, "runtime",
                             response.runtime.toString() + " MIN"),
                         _pillBar(
                             "released",

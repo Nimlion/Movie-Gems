@@ -71,9 +71,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _resetButton() {
-    return new Container(
+    return Container(
       width: 500.0,
-      child: new RawMaterialButton(
+      child: RawMaterialButton(
           elevation: 5,
           padding: EdgeInsets.all(12.0),
           fillColor: Colours.primaryColor,
@@ -82,8 +82,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               fontSize: 20,
               fontWeight: FontWeight.w500,
               fontFamily: 'Sansita'),
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           child: Text('LOGIN'),
           onPressed: () => {
                 FirebaseAuthentication().resetPassword(this._emailValue),
@@ -94,8 +94,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: new SafeArea(
-            child: new Stack(children: <Widget>[
+        body: SafeArea(
+            child: Stack(children: <Widget>[
       Positioned(
         top: 10,
         right: 10,

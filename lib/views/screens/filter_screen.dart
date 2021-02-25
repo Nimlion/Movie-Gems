@@ -398,9 +398,9 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
         centerTitle: true,
-        title: new Text('Filters'),
+        title: Text('Filters'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

@@ -31,7 +31,7 @@ class TMDBController {
   }
 
   List<TMDBCondensed> retrieveListOfCondensedMovies(Map<String, dynamic> obj) {
-    List<TMDBCondensed> list = new List();
+    List<TMDBCondensed> list = List();
     obj.forEach((String key, entry) {
       if (key == "results") {
         entry.forEach((entry) {

@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appTheme.dart';
 import 'package:movie_gems/model/repository.dart';
-import 'package:movie_gems/views/screens/page_filler.dart';
+import 'package:movie_gems/views/widgets/page_filler.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

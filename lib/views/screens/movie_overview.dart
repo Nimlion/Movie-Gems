@@ -9,16 +9,53 @@ import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
+import 'package:movie_gems/views/screens/filter_screen.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
-import 'package:movie_gems/views/screens/page_filler.dart';
+import 'package:movie_gems/views/screens/search_screen.dart';
 
-class MoviePage extends StatefulWidget {
-  MovieOverview createState() => MovieOverview();
+class MoviesPage extends StatefulWidget {
+  _MovieOverview createState() => _MovieOverview();
 }
 
-class MovieOverview extends State<MoviePage> {
-  CollectionReference movies = FirebaseFirestore.instance.collection('movies');
-  List<Movie> movieList = new List();
+class _MovieOverview extends State<MoviesPage> {
+  DocumentReference movies = FirebaseFirestore.instance
+      .collection('movies')
+      .doc(FirebaseAuthentication().auth.currentUser.uid);
+
+  @override
+  void initState() {
+    super.initState();
+    getMovies();
+  }
+
+  Future<void> getMovies() async {
+    await movies.snapshots().forEach((element) {
+      Repo.movieListenable.value = List();
+      for (var movieMap in element.data().entries) {
+        Repo.movieListenable.value.add(Movie.fromOMDB(
+          movieMap.value['title'],
+          movieMap.value['rating'],
+          movieMap.value['date'].toDate(),
+          movieMap.value['category'],
+          movieMap.value['rated'],
+          movieMap.value['runtime'],
+          movieMap.value['genre'],
+          movieMap.value['director'],
+          movieMap.value['actors'],
+          movieMap.value['poster'],
+          movieMap.value['awards'],
+          movieMap.value['imdbRating'],
+          movieMap.value['imdbID'],
+          movieMap.value['production'],
+        ));
+      }
+
+      setState(() {
+        Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
+        Repo.movieList = List.of(Repo.movieListenable.value);
+      });
+    });
+  }
 
   void _pushDetailScreen(Movie clickedMovie) {
     Navigator.push(context,
@@ -39,11 +76,19 @@ class MovieOverview extends State<MoviePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            amount.toString() + ' movies found',
-            style: TextStyle(
-                fontSize: Repo.currFontsize - 3, fontWeight: FontWeight.w100),
-          ),
+          amount == 1
+              ? Text(
+                  amount.toString() + ' movie',
+                  style: TextStyle(
+                      fontSize: Repo.currFontsize - 3,
+                      fontWeight: FontWeight.w100),
+                )
+              : Text(
+                  amount.toString() + ' movies',
+                  style: TextStyle(
+                      fontSize: Repo.currFontsize - 3,
+                      fontWeight: FontWeight.w100),
+                ),
           InkWell(
               onTap: () => {
                     this._pushFilterScreen(),
@@ -81,119 +126,75 @@ class MovieOverview extends State<MoviePage> {
     Widget _icon;
     switch (number) {
       case 0:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
         break;
       case 1:
-        _icon = new Icon(Icons.favorite, color: Colors.red);
+        _icon = Icon(Icons.favorite, color: Colors.red);
         break;
       case 2:
-        _icon = new Icon(Icons.local_activity,
-            color: Color.fromRGBO(255, 215, 0, 1));
+        _icon =
+            Icon(Icons.local_activity, color: Color.fromRGBO(255, 215, 0, 1));
         break;
       default:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
     }
     return _icon;
   }
 
+  Widget _movieTile(int index) {
+    return ListTile(
+      leading: Padding(
+        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+        child: Icon(Icons.movie),
+      ),
+      title: Text(
+        Repo.movieListenable.value[index].title,
+        style: TextStyle(color: Colours.primaryColor),
+      ),
+      subtitle: Text(DateFormat("dd MMM. yyyy")
+              .format(Repo.movieListenable.value[index].date)
+              .toString() +
+          " - " +
+          Repo.movieListenable.value[index].rating.toString()),
+      trailing: IconButton(
+        icon: _movieIcon(Repo.movieListenable.value[index].category),
+        onPressed: () => {},
+      ),
+      onTap: () => _pushDetailScreen(Repo.movieListenable.value[index]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: movies.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return PageFiller("Error");
-          }
+    if (Repo.movieListenable.value.length == 0) {
+      return SafeArea(
+        child: Center(
+          child: Text(
+            "Please add a movie below",
+            style: TextStyle(fontSize: Repo.currFontsize + 5),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return PageFiller("Loading . . .");
-          }
-
-          QueryDocumentSnapshot querydoc;
-          for (var element in snapshot.data.docs) {
-            if (element.id == FirebaseAuthentication().auth.currentUser.uid) {
-              querydoc = element;
-              break;
-            }
-          }
-
-          if (querydoc == null || querydoc.data().entries.isEmpty) {
-            return new SafeArea(
-              child: new Center(
-                child: Text(
-                  "Please add a movie below",
-                  style: TextStyle(fontSize: Repo.currFontsize + 5),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          } else {
-            movieList = new List();
-            for (var movieMap in querydoc.data().entries) {
-              movieList.add(Movie.fromOMDB(
-                movieMap.value['title'],
-                movieMap.value['rating'],
-                movieMap.value['date'].toDate(),
-                movieMap.value['category'],
-                movieMap.value['rated'],
-                movieMap.value['runtime'],
-                movieMap.value['genre'],
-                movieMap.value['director'],
-                movieMap.value['actors'],
-                movieMap.value['poster'],
-                movieMap.value['awards'],
-                movieMap.value['imdbRating'],
-                movieMap.value['imdbID'],
-                movieMap.value['production'],
-              ));
-            }
-
-            movieList.sort((a, b) => b.date.compareTo(a.date));
-
-            return Column(children: [
-              Container(
-                color: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    .color
-                    .withOpacity(0.1),
-                child: Column(children: [
-                  _filterInfoBar(movieList.length),
-                ]),
-              ),
-              Expanded(
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: movieList.length,
-                      itemBuilder: (BuildContext ctxt, int index) {
-                        return ListTile(
-                          leading: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                            child: Icon(Icons.movie),
-                          ),
-                          title: Text(
-                            movieList[index].title,
-                            style: TextStyle(color: Colours.primaryColor),
-                          ),
-                          subtitle: new Text(DateFormat("dd MMM. yyyy")
-                                  .format(movieList[index].date)
-                                  .toString() +
-                              " - " +
-                              movieList[index].rating.toString()),
-                          trailing: IconButton(
-                            icon: _movieIcon(movieList[index].category),
-                            onPressed: () => {},
-                          ),
-                          onTap: () => _pushDetailScreen(movieList[index]),
-                          onLongPress: () => {
-                            movieList.sort((a, b) => b.title.compareTo(a.title))
-                          },
-                          dense: false,
-                        );
-                      }))
-            ]);
-          }
-        });
+    return ValueListenableBuilder(
+      valueListenable: Repo.movieListenable,
+      builder: (BuildContext context, List<Movie> value, Widget child) {
+        return Column(children: [
+          Container(
+            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.1),
+            child: _filterInfoBar(Repo.movieListenable.value.length),
+          ),
+          Expanded(
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: Repo.movieListenable.value.length,
+                  itemBuilder: (context, index) {
+                    return _movieTile(index);
+                  }))
+        ]);
+      },
+    );
   }
 }

@@ -123,9 +123,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _registerButton() {
-    return new Container(
+    return Container(
       width: 500.0,
-      child: new RawMaterialButton(
+      child: RawMaterialButton(
           elevation: 5,
           padding: EdgeInsets.all(12.0),
           fillColor: Colours.primaryColor,
@@ -134,8 +134,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               fontSize: 20,
               fontWeight: FontWeight.w500,
               fontFamily: 'Sansita'),
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           child: Text('Register'),
           onPressed: () => {
                 registerUser(),

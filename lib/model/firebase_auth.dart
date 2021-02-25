@@ -72,6 +72,7 @@ class FirebaseAuthentication {
   }
 
   Future<bool> checkForUser() async {
+    // ignore: await_only_futures
     if (await FirebaseAuth.instance.currentUser != null) {
       return true;
     } else {

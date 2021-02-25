@@ -98,10 +98,10 @@ class _AddScreenState extends State<AddScreen> {
                 contentPadding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 border: InputBorder.none,
                 fillColor: Colours.shadow,
-                enabledBorder: new UnderlineInputBorder(
-                    borderSide: new BorderSide(color: Colours.primaryColor)),
-                focusedBorder: new UnderlineInputBorder(
-                    borderSide: new BorderSide(color: Colours.primaryColor)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colours.primaryColor)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colours.primaryColor)),
               ))
         ]);
   }
@@ -220,9 +220,9 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   Widget _addButton() {
-    return new Container(
+    return Container(
       width: 150.0,
-      child: new RawMaterialButton(
+      child: RawMaterialButton(
           elevation: 5,
           padding: EdgeInsets.all(12.0),
           fillColor: Colours.primaryColor,
@@ -231,8 +231,8 @@ class _AddScreenState extends State<AddScreen> {
               fontSize: 20,
               fontWeight: FontWeight.w500,
               fontFamily: 'Sansita'),
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(5.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           child: Text('Add'),
           onPressed: () => {
                 addMovie(),
@@ -243,9 +243,9 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        appBar: new AppBar(title: new Text('Add a movie')),
-        body: new SafeArea(
-          child: new Stack(children: <Widget>[
+        appBar: AppBar(title: Text('Add a movie')),
+        body: SafeArea(
+          child: Stack(children: <Widget>[
             Container(
               padding: EdgeInsets.symmetric(horizontal: 25),
               child: SingleChildScrollView(

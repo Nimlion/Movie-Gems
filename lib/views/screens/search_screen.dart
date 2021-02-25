@@ -41,17 +41,17 @@ class _SearchScreenState extends State<SearchScreen> {
     Widget _icon;
     switch (number) {
       case 0:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
         break;
       case 1:
-        _icon = new Icon(Icons.favorite, color: Colors.red);
+        _icon = Icon(Icons.favorite, color: Colors.red);
         break;
       case 2:
-        _icon = new Icon(Icons.local_activity,
-            color: Color.fromRGBO(255, 215, 0, 1));
+        _icon =
+            Icon(Icons.local_activity, color: Color.fromRGBO(255, 215, 0, 1));
         break;
       default:
-        _icon = new Icon(Icons.favorite_border);
+        _icon = Icon(Icons.favorite_border);
     }
     return _icon;
   }
@@ -63,7 +63,7 @@ class _SearchScreenState extends State<SearchScreen> {
         this._searchedList[index].title,
         style: TextStyle(color: Colours.primaryColor),
       ),
-      subtitle: new Text(DateFormat("dd MMM. yyyy")
+      subtitle: Text(DateFormat("dd MMM. yyyy")
               .format(this._searchedList[index].date)
               .toString() +
           " - " +

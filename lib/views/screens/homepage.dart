@@ -6,8 +6,8 @@ import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
-import 'package:movie_gems/views/screens/movie_overlay.dart';
-import 'package:movie_gems/views/screens/page_filler.dart';
+import 'package:movie_gems/views/widgets/movie_overlay.dart';
+import 'package:movie_gems/views/widgets/page_filler.dart';
 
 class HomePage extends StatefulWidget {
   HomeScreen createState() => HomeScreen();
@@ -20,7 +20,7 @@ class HomeScreen extends State<HomePage> {
   Future<List<TMDBCondensed>> fututurePopular;
   Future<List<TMDBCondensed>> futurePlaying;
   Future<List<TMDBCondensed>> futureSimilair;
-  List<Movie> movieList = new List();
+  List<Movie> movieList = List();
   String latestMovie;
 
   @override
@@ -46,7 +46,7 @@ class HomeScreen extends State<HomePage> {
 
   Future<void> getFirstMovie() async {
     await movies.snapshots().forEach((element) {
-      movieList = new List();
+      movieList = List();
       for (var movieMap in element.data().entries) {
         movieList.add(Movie.fromOMDB(
           movieMap.value['title'],
@@ -329,7 +329,7 @@ class HomeScreen extends State<HomePage> {
                   ),
                 ]);
               }),
-      SizedBox(height: 20),
+      SizedBox(height: 35),
     ]));
   }
 }
