@@ -25,6 +25,14 @@ class MovieOverview extends State<MoviePage> {
         PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
   }
 
+  void _pushFilterScreen() {
+    Navigator.push(context, PageRoutes.fromBottom(() => FilterScreen()));
+  }
+
+  void _pushSearchScreen() {
+    Navigator.push(context, PageRoutes.fromBottom(() => SearchScreen()));
+  }
+
   Widget _filterInfoBar(int amount) {
     return Container(
       padding: EdgeInsets.fromLTRB(25, 10, 25, 10),
@@ -37,7 +45,9 @@ class MovieOverview extends State<MoviePage> {
                 fontSize: Repo.currFontsize - 3, fontWeight: FontWeight.w100),
           ),
           InkWell(
-              onTap: () => log("Filter"),
+              onTap: () => {
+                    this._pushFilterScreen(),
+                  },
               child: Row(
                 children: [
                   Text(
@@ -49,7 +59,9 @@ class MovieOverview extends State<MoviePage> {
                 ],
               )),
           InkWell(
-              onTap: () => log("Search"),
+              onTap: () => {
+                    this._pushSearchScreen(),
+                  },
               child: Row(
                 children: [
                   Text(
