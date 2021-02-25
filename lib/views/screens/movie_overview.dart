@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +10,7 @@ import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/filter_screen.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/screens/search_screen.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class MoviesPage extends StatefulWidget {
   _MovieOverview createState() => _MovieOverview();
@@ -55,6 +54,61 @@ class _MovieOverview extends State<MoviesPage> {
         Repo.movieList = List.of(Repo.movieListenable.value);
       });
     });
+  }
+
+  showDeleteDialog(BuildContext context, Movie movie) {
+    Widget cancelBtn = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget deleteBtn = FlatButton(
+      child: Text("Delete"),
+      onPressed: () {
+        _deleteMovie(movie);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text("Delete " + movie.title + " ?"),
+      content: Text(
+          "You're about to delete a movie, which can't be undone. Are your sure?"),
+      actions: [
+        cancelBtn,
+        deleteBtn,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> _toggleCategory(Movie movie) {
+    if (movie.category == 2) {
+      movie.category = 0;
+    } else {
+      movie.category++;
+    }
+
+    return movies
+        .update({movie.title.toLowerCase(): movie.toMap()})
+        .then((value) => {})
+        .catchError((error) => print("Failed to delete movie: $error"));
+  }
+
+  Future<void> _deleteMovie(Movie movie) {
+    return movies
+        .update({movie.title.toLowerCase(): FieldValue.delete()})
+        .then((value) => {
+              showSimpleNotification(Text("movie succesfully deleted"),
+                  background: Colours.primaryColor),
+              Navigator.of(context).pop()
+            })
+        .catchError((error) => print("Failed to delete movie: $error"));
   }
 
   void _pushDetailScreen(Movie clickedMovie) {
@@ -158,9 +212,11 @@ class _MovieOverview extends State<MoviesPage> {
           Repo.movieListenable.value[index].rating.toString()),
       trailing: IconButton(
         icon: _movieIcon(Repo.movieListenable.value[index].category),
-        onPressed: () => {},
+        onPressed: () => {_toggleCategory(Repo.movieListenable.value[index])},
       ),
       onTap: () => _pushDetailScreen(Repo.movieListenable.value[index]),
+      onLongPress: () =>
+          showDeleteDialog(context, Repo.movieListenable.value[index]),
     );
   }
 
