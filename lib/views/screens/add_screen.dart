@@ -190,7 +190,7 @@ class _AddScreenState extends State<AddScreen> {
           ),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              trackHeight: 4.0,
+              trackHeight: 6.0,
               thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
               thumbColor: Colours.primaryColor,
               overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),

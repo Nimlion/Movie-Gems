@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+
+import 'movie.dart';
+
 /*
 * This is a local memory of the app and all its settings
 * Programmer: Hosam Darwish
@@ -15,4 +19,9 @@ class Repo {
   static double regularFont = 20;
   static double largeFont = 22;
   static double giantFont = 26;
+
+  // Passing of variables
+  static List<Movie> movieList = List();
+  static ValueNotifier<List<Movie>> movieListenable =
+      ValueNotifier<List<Movie>>(List());
 }
