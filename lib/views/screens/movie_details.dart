@@ -19,7 +19,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final Movie movie;
 
   final cur = NumberFormat("#,##0", "nl_NL");
-  Future<TMDBResponse> futureResponse;
+  Future<TMDBMovie> futureResponse;
 
   _MovieDetailScreenState(this.movie);
 
@@ -274,7 +274,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<TMDBResponse>(
+    return FutureBuilder<TMDBMovie>(
       future: futureResponse,
       builder: (context, snapshot) {
         if (snapshot.data != null) {

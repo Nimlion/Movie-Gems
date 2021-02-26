@@ -73,9 +73,9 @@ Widget movieOverlay(
 }
 
 class MovieOverlay extends ModalRoute<void> {
-  TMDBResponse movie;
+  TMDBMovie movie;
 
-  MovieOverlay(TMDBResponse movie) {
+  MovieOverlay(TMDBMovie movie) {
     this.movie = movie;
   }
 
@@ -132,9 +132,9 @@ class MovieOverlay extends ModalRoute<void> {
 }
 
 class FilmOverlay extends ModalRoute<void> {
-  TMDBCondensed film;
+  TMDBCondensedMovie film;
 
-  FilmOverlay(TMDBCondensed movie) {
+  FilmOverlay(TMDBCondensedMovie movie) {
     this.film = movie;
   }
 

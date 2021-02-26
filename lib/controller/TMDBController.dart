@@ -8,35 +8,52 @@ import 'package:movie_gems/env.dart';
 class TMDBController {
   String apiKey = ENV().tmdb;
 
-  Future<TMDBResponse> fetchTMDBData(String imdbId) async {
-    final response = await http
+  Future<TMDBMovie> fetchTMDBData(String imdbId) async {
+    final endpoint = await http
         .get('https://api.themoviedb.org/3/movie/$imdbId?api_key=$apiKey');
 
-    if (response.statusCode == 200) {
-      return TMDBResponse.fromJson(json.decode(response.body));
+    if (endpoint.statusCode == 200) {
+      return TMDBMovie.fromJson(json.decode(endpoint.body));
     } else {
       throw Exception('Failed to load movie');
     }
   }
 
-  Future<List<TMDBCondensed>> fetchSimilarMovies(String imdbId) async {
-    final response = await http.get(
+  Future<TMDBCondensedSerie> fetchSerieTMDBData(String query) async {
+    final endpoint = await http.get(
+        'https://api.themoviedb.org/3/search/tv?api_key=$apiKey&language=en-US&page=1&query=$query&include_adult=true');
+
+    if (endpoint.statusCode == 200) {
+      if ((json.decode(endpoint.body)["results"] as List).toList().isNotEmpty) {
+        return TMDBCondensedSerie.fromJson(
+            json.decode(json.encode(json.decode(endpoint.body)["results"][0])));
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception('Failed to load movie');
+    }
+  }
+
+  Future<List<TMDBCondensedMovie>> fetchSimilarMovies(String imdbId) async {
+    final endpoint = await http.get(
         'https://api.themoviedb.org/3/movie/$imdbId/similar?api_key=$apiKey&language=en-US&page=1');
 
-    if (response.statusCode == 200) {
-      return retrieveListOfCondensedMovies(json.decode(response.body));
+    if (endpoint.statusCode == 200) {
+      return retrieveListOfCondensedMovies(json.decode(endpoint.body));
     } else {
       throw Exception('Failed to similar movies');
     }
   }
 
-  List<TMDBCondensed> retrieveListOfCondensedMovies(Map<String, dynamic> obj) {
-    List<TMDBCondensed> list = List();
+  List<TMDBCondensedMovie> retrieveListOfCondensedMovies(
+      Map<String, dynamic> obj) {
+    List<TMDBCondensedMovie> list = List();
     obj.forEach((String key, entry) {
       if (key == "results") {
         entry.forEach((entry) {
           if (entry != null) {
-            var movie = TMDBCondensed.fromJson(entry);
+            var movie = TMDBCondensedMovie.fromJson(entry);
             list.add(movie);
           }
         });
@@ -45,30 +62,30 @@ class TMDBController {
     return list;
   }
 
-  Future<List<TMDBCondensed>> fetchPopular() async {
-    final response = await http.get(
+  Future<List<TMDBCondensedMovie>> fetchPopular() async {
+    final endpoint = await http.get(
         'https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=en-US&page=1');
 
-    if (response.statusCode == 200) {
-      return retrieveListOfCondensedMovies(json.decode(response.body));
+    if (endpoint.statusCode == 200) {
+      return retrieveListOfCondensedMovies(json.decode(endpoint.body));
     } else {
       throw Exception('Failed to load popular movies');
     }
   }
 
-  Future<List<TMDBCondensed>> fetchPlaying() async {
-    final response = await http.get(
+  Future<List<TMDBCondensedMovie>> fetchPlaying() async {
+    final endpoint = await http.get(
         'https://api.themoviedb.org/3/movie/now_playing?api_key=$apiKey&language=en-US&page=1');
 
-    if (response.statusCode == 200) {
-      return retrieveListOfCondensedMovies(json.decode(response.body));
+    if (endpoint.statusCode == 200) {
+      return retrieveListOfCondensedMovies(json.decode(endpoint.body));
     } else {
       throw Exception('Failed to load playing movies');
     }
   }
 }
 
-class TMDBResponse {
+class TMDBMovie {
   bool adult;
   String backdrop;
   Object collection;
@@ -95,7 +112,7 @@ class TMDBResponse {
   double voteAvg;
   int votecount;
 
-  TMDBResponse(
+  TMDBMovie(
       {this.adult,
       this.backdrop,
       this.collection,
@@ -122,8 +139,8 @@ class TMDBResponse {
       this.voteAvg,
       this.votecount});
 
-  factory TMDBResponse.fromJson(Map<String, dynamic> json) {
-    return TMDBResponse(
+  factory TMDBMovie.fromJson(Map<String, dynamic> json) {
+    return TMDBMovie(
       adult: json['adult'],
       backdrop: json['backdrop_path'],
       collection: json['belongs_to_collection'],
@@ -153,7 +170,7 @@ class TMDBResponse {
   }
 }
 
-class TMDBCondensed {
+class TMDBCondensedMovie {
   bool adult;
   String backdrop;
   Object genres;
@@ -169,7 +186,7 @@ class TMDBCondensed {
   double voteAvg;
   int votecount;
 
-  TMDBCondensed(
+  TMDBCondensedMovie(
       {this.adult,
       this.backdrop,
       this.genres,
@@ -185,9 +202,9 @@ class TMDBCondensed {
       this.voteAvg,
       this.votecount});
 
-  factory TMDBCondensed.fromJson(Map<String, dynamic> json) {
+  factory TMDBCondensedMovie.fromJson(Map<String, dynamic> json) {
     if (json == null) return null;
-    return TMDBCondensed(
+    return TMDBCondensedMovie(
       adult: json['adult'],
       backdrop: json['backdrop_path'],
       genres: json['genres'],
@@ -200,6 +217,56 @@ class TMDBCondensed {
       releaseDate: json['release_date'],
       title: json['title'],
       video: json['video'],
+      voteAvg: (json['vote_average']).toDouble(),
+      votecount: json['vote_count'],
+    );
+  }
+}
+
+class TMDBCondensedSerie {
+  String backdrop;
+  String firstAirDate;
+  Object genreIds;
+  int id;
+  String name;
+  Object originCountry;
+  String originalLanguage;
+  String originalName;
+  String overview;
+  double popularity;
+  String posterPath;
+  double voteAvg;
+  int votecount;
+
+  TMDBCondensedSerie(
+      {this.backdrop,
+      this.firstAirDate,
+      this.genreIds,
+      this.id,
+      this.name,
+      this.originCountry,
+      this.originalLanguage,
+      this.originalName,
+      this.overview,
+      this.popularity,
+      this.posterPath,
+      this.voteAvg,
+      this.votecount});
+
+  factory TMDBCondensedSerie.fromJson(Map<String, dynamic> json) {
+    if (json == null) return null;
+    return TMDBCondensedSerie(
+      backdrop: json['backdrop_path'],
+      firstAirDate: json['first_air_date'],
+      genreIds: json['genre_ids'],
+      id: json['id'],
+      name: json['name'],
+      originCountry: json['origin_country'],
+      originalLanguage: json['original_language'],
+      originalName: json['original_name'],
+      overview: json['overview'],
+      popularity: json['popularity'],
+      posterPath: json['poster_path'],
       voteAvg: (json['vote_average']).toDouble(),
       votecount: json['vote_count'],
     );

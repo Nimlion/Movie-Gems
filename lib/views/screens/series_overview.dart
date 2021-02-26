@@ -1,0 +1,98 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/model/repository.dart';
+import 'package:movie_gems/model/serie.dart';
+
+class SeriesPage extends StatefulWidget {
+  _SeriesOverview createState() => _SeriesOverview();
+}
+
+class _SeriesOverview extends State<SeriesPage> {
+  DocumentReference series = FirebaseFirestore.instance
+      .collection('series')
+      .doc(FirebaseAuthentication().auth.currentUser.uid);
+  List<Serie> seriesList = List();
+
+  @override
+  void initState() {
+    super.initState();
+    getSeries();
+  }
+
+  Future<void> getSeries() async {
+    await series.snapshots().forEach((element) {
+      this.seriesList = List();
+      for (var seriesMap in element.data().entries) {
+        seriesList.add(Serie.fromOMDB(
+          seriesMap.value['title'],
+          seriesMap.value['startdate'].toDate(),
+          seriesMap.value['category'],
+          seriesMap.value['status'],
+          seriesMap.value['tvMazeURL'],
+          seriesMap.value['premiered'],
+          seriesMap.value['type'],
+          seriesMap.value['genres'],
+          seriesMap.value['tvMazeID'],
+          seriesMap.value['tmdbID'],
+        ));
+      }
+      if (mounted) {
+        setState(() {
+          seriesList.sort((a, b) => b.status.compareTo(a.status));
+        });
+      }
+    });
+  }
+
+  Widget _serieTile(int index) {
+    return ListTile(
+      leading: Padding(
+        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+        child: Icon(Icons.live_tv_outlined),
+      ),
+      title: Text(
+        seriesList[index].title,
+        style: TextStyle(color: Colours.primaryColor),
+      ),
+      subtitle: Text(
+        seriesList[index].status +
+            " - " +
+            DateFormat("dd MMM. yyyy")
+                .format(seriesList[index].startdate)
+                .toString(),
+        style: TextStyle(fontFamily: "Raleway"),
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.playlist_play),
+        onPressed: () => {},
+      ),
+      onTap: () => {},
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (seriesList.length == 0) {
+      return SafeArea(
+        child: Center(
+          child: Text(
+            "Please add a serie below",
+            style: TextStyle(fontSize: Repo.currFontsize + 5),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: seriesList.length,
+        itemBuilder: (context, index) {
+          return _serieTile(index);
+        });
+  }
+}

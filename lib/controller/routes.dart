@@ -4,19 +4,6 @@ import 'package:flutter/material.dart';
 typedef Widget PageBuilder();
 
 class PageRoutes {
-  // HOW TO USE
-  //   //Show SharedAxis Page - Provides 3 axis, vt, hz and scale
-  // // Navigator.push(context, PageRoutes.sharedAxis(()=>MyPage(), SharedAxisTransitionType.scaled));
-
-  // //Show FadeThrough Page
-  // // Navigator.push(context, PageRoutes.fadeThrough(()=>MyPage()));
-
-  // //Show FadeScale dialog
-  // // showModal(
-  // //     context: context,
-  // //     configuration: FadeScaleTransitionConfiguration(),
-  // //     builder: (BuildContext context) => MyDialog());
-
   static Route<T> fadeThrough<T>(PageBuilder page, [double duration = 0.5]) {
     return PageRouteBuilder<T>(
       transitionDuration: Duration(milliseconds: (duration * 1000).round()),

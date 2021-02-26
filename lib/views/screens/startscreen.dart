@@ -4,10 +4,11 @@ import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colors.dart';
-import 'package:movie_gems/views/screens/add_screen.dart';
+import 'package:movie_gems/views/screens/add_movie_screen.dart';
+import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
-import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
+import 'package:movie_gems/views/screens/series_overview.dart';
 import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
@@ -22,17 +23,30 @@ class StartScreenState extends State<StartScreen> {
     HomePage(),
     MoviesPage(),
     Text(""),
-    Text(
-      "Series . . .",
-      style: TextStyle(fontSize: 34),
-      textAlign: TextAlign.center,
-    ),
+    SeriesPage(),
     Text(
       "Watch later . . .",
       style: TextStyle(fontSize: 34),
       textAlign: TextAlign.center,
     ),
   ];
+
+  void _pushAddPage() {
+    switch (_selectedTabIndex) {
+      case 0:
+        Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
+        break;
+      case 1:
+        Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
+        break;
+      case 3:
+        Navigator.push(context, PageRoutes.fadeScale(() => AddSerieScreen()));
+        break;
+      default:
+        // TODO: make this a popup and choose which they want
+        Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
+    }
+  }
 
   Widget _appBar() {
     return AppBar(
@@ -97,8 +111,7 @@ class StartScreenState extends State<StartScreen> {
 
   Widget _customFAB() {
     return FloatingActionButton(
-      onPressed: () =>
-          {Navigator.push(context, PageRoutes.fadeScale(() => AddScreen()))},
+      onPressed: () => _pushAddPage(),
       child: Icon(
         Icons.add,
         size: 30,

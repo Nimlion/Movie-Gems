@@ -2,75 +2,80 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_gems/controller/OMDBController.dart';
+import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/TVMazeController.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-class AddScreen extends StatefulWidget {
-  AddScreen({Key key}) : super(key: key);
-
+class AddSerieScreen extends StatefulWidget {
   @override
-  _AddScreenState createState() => _AddScreenState();
+  _AddSerieScreenState createState() => _AddSerieScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> {
+class _AddSerieScreenState extends State<AddSerieScreen> {
   String _titleValue = '';
   DateTime _dateValue = DateTime.now();
-  double _rating = 5;
   int _category = 0;
-  DocumentReference moviesdoc = FirebaseFirestore.instance
-      .collection("movies")
+  DocumentReference seriesDoc = FirebaseFirestore.instance
+      .collection("series")
       .doc(FirebaseAuthentication().auth.currentUser.uid);
 
   Future<void> _addDocument() async {
-    await moviesdoc.snapshots().forEach((DocumentSnapshot element) {
+    await seriesDoc.snapshots().forEach((DocumentSnapshot element) {
       if (element.exists == false) {
-        FirebaseFirestore.instance
-            .collection("movies")
-            .doc(FirebaseAuthentication().auth.currentUser.uid)
-            .set({});
-        addMovie();
+        seriesDoc.set({});
+        addSerie();
       }
     });
   }
 
-  Future<void> addMovie() async {
-    OMDBController().fetchOMDBData(_titleValue).then((response) => moviesdoc
-        .update({
-          this._titleValue.toLowerCase(): {
-            "title": this._titleValue,
-            "rating": this._rating,
-            "date": this._dateValue,
-            "category": this._category,
-            "rated": response.rated,
-            "runtime": response.runtime,
-            "director": response.director,
-            "actors": response.actors,
-            "poster": response.poster,
-            "awards": response.awards,
-            "genre": response.genre,
-            "production": response.production,
-            "imdbRating": response.imdbRating,
-            "imdbID": response.imdbID,
-          }
-        })
-        .then((value) => {
-              showSimpleNotification(Text("movie succesfully added"),
-                  background: Colours.primaryColor),
-              Navigator.pop(context),
-            })
-        .catchError((error) => {
-              if (error.message == "Some requested document was not found.")
-                {
-                  _addDocument(),
-                }
-              else
-                {
-                  showSimpleNotification(Text("failed to add movie"),
-                      background: Colors.red)
-                }
-            }));
+  Future<void> addSerie() async {
+    TVMazeResponse tvMazeObject;
+    TMDBCondensedSerie tmdbObject;
+    await TVMazeController()
+        .fetchSerieData(_titleValue)
+        .then((response) => tvMazeObject = response);
+    await TMDBController()
+        .fetchSerieTMDBData(_titleValue)
+        .then((response) => tmdbObject = response);
+
+    if (tvMazeObject == null || tmdbObject == null) {
+      showSimpleNotification(Text("serie could not be found"),
+          background: Colors.red);
+    } else {
+      seriesDoc
+          .update({
+            this._titleValue.toLowerCase(): {
+              "title": this._titleValue,
+              "startdate": this._dateValue,
+              "category": this._category,
+              "status": tvMazeObject.show["status"],
+              "tvMazeURL": tvMazeObject.show["url"],
+              "premiered": tvMazeObject.show["premiered"],
+              "type": tvMazeObject.show["type"],
+              "genres": tvMazeObject.show["genres"].join(', '),
+              "tvMazeID": tvMazeObject.show["id"],
+              "tmdbID": tmdbObject.id,
+            }
+          })
+          .then((value) => {
+                showSimpleNotification(Text("serie succesfully added"),
+                    background: Colours.primaryColor),
+                Navigator.pop(context),
+              })
+          .catchError((error) => {
+                if (error.message == "Some requested document was not found.")
+                  {
+                    _addDocument(),
+                  }
+                else
+                  {
+                    showSimpleNotification(Text("failed to add serie"),
+                        background: Colors.red)
+                  }
+              });
+    }
   }
 
   Widget _titleField() {
@@ -80,7 +85,7 @@ class _AddScreenState extends State<AddScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            "Movie title:",
+            "Serie title:",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -134,7 +139,7 @@ class _AddScreenState extends State<AddScreen> {
   Future _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      helpText: 'When was the movie watched',
+      helpText: 'When did you start watching',
       initialDate: this._dateValue,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
@@ -163,59 +168,16 @@ class _AddScreenState extends State<AddScreen> {
                   value: 0,
                 ),
                 DropdownMenuItem(
-                  child: Text("Favorite"),
+                  child: Text("Great"),
                   value: 1,
                 ),
-                DropdownMenuItem(child: Text("Movie Gem"), value: 2),
+                DropdownMenuItem(child: Text("Fantastic!"), value: 2),
               ],
               onChanged: (value) {
                 setState(() {
                   _category = value;
                 });
               })
-        ]);
-  }
-
-  Widget _ratingSlider() {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            "Rating:",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              trackHeight: 6.0,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
-              thumbColor: Colours.primaryColor,
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
-              activeTickMarkColor: Colours.primaryColor,
-              inactiveTickMarkColor: Colours.primaryColor,
-              valueIndicatorColor: Colours.primaryColor,
-              valueIndicatorTextStyle: TextStyle(
-                color: Colours.white,
-              ),
-            ),
-            child: Slider(
-              value: _rating,
-              min: 0,
-              max: 10,
-              divisions: 100,
-              label: _rating.toStringAsFixed(1),
-              onChanged: (value) {
-                setState(
-                  () {
-                    this._rating = num.parse(value.toStringAsFixed(1));
-                  },
-                );
-              },
-            ),
-          )
         ]);
   }
 
@@ -235,7 +197,7 @@ class _AddScreenState extends State<AddScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           child: Text('Add'),
           onPressed: () => {
-                addMovie(),
+                addSerie(),
               }),
     );
   }
@@ -243,7 +205,7 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        appBar: AppBar(title: Text('Add a movie')),
+        appBar: AppBar(title: Text('Add a serie')),
         body: SafeArea(
           child: Stack(children: <Widget>[
             Container(
@@ -258,8 +220,6 @@ class _AddScreenState extends State<AddScreen> {
                     _dateColumn(),
                     SizedBox(height: 30),
                     _selectCategory(),
-                    SizedBox(height: 30),
-                    _ratingSlider(),
                     SizedBox(height: 50),
                     _addButton(),
                     SizedBox(height: 30),

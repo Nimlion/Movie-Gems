@@ -19,9 +19,9 @@ class HomeScreen extends State<HomePage> {
   DocumentReference movies = FirebaseFirestore.instance
       .collection('movies')
       .doc(FirebaseAuthentication().auth.currentUser.uid);
-  Future<List<TMDBCondensed>> fututurePopular;
-  Future<List<TMDBCondensed>> futurePlaying;
-  Future<List<TMDBCondensed>> futureSimilair;
+  Future<List<TMDBCondensedMovie>> fututurePopular;
+  Future<List<TMDBCondensedMovie>> futurePlaying;
+  Future<List<TMDBCondensedMovie>> futureSimilair;
   List<Movie> movieList = List();
   String latestMovie;
 
@@ -78,9 +78,9 @@ class HomeScreen extends State<HomePage> {
   }
 
   void _showOverlay(BuildContext context, dynamic movie) {
-    if (movie is TMDBResponse) {
+    if (movie is TMDBMovie) {
       Navigator.of(context).push(MovieOverlay(movie));
-    } else if (movie is TMDBCondensed) {
+    } else if (movie is TMDBCondensedMovie) {
       Navigator.of(context).push(FilmOverlay(movie));
     }
   }
@@ -104,7 +104,7 @@ class HomeScreen extends State<HomePage> {
     );
   }
 
-  Widget moviePoster(int index, TMDBCondensed movie) {
+  Widget moviePoster(int index, TMDBCondensedMovie movie) {
     return Container(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: Stack(children: <Widget>[
@@ -184,7 +184,7 @@ class HomeScreen extends State<HomePage> {
         ]));
   }
 
-  Widget _recommendation(TMDBCondensed movie) {
+  Widget _recommendation(TMDBCondensedMovie movie) {
     if (movie.backdrop != null && movie.title != null) {
       return Container(
         margin: EdgeInsets.only(bottom: 30, left: 20, right: 20),
@@ -248,7 +248,7 @@ class HomeScreen extends State<HomePage> {
                       return Center(child: CircularProgressIndicator());
                     }
 
-                    List<TMDBCondensed> list = snapshot.data;
+                    List<TMDBCondensedMovie> list = snapshot.data;
                     return Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -279,7 +279,7 @@ class HomeScreen extends State<HomePage> {
                       return Center(child: CircularProgressIndicator());
                     }
 
-                    List<TMDBCondensed> list = snapshot.data;
+                    List<TMDBCondensedMovie> list = snapshot.data;
                     return Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -335,10 +335,10 @@ class HomeScreen extends State<HomePage> {
                 Center(child: CircularProgressIndicator()),
               ],
             ))
-          : StreamBuilder<List<TMDBCondensed>>(
+          : StreamBuilder<List<TMDBCondensedMovie>>(
               stream: this.futureSimilair.asStream(),
               builder: (BuildContext context,
-                  AsyncSnapshot<List<TMDBCondensed>> snapshot) {
+                  AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
                 if (snapshot.hasError) {
                   return PageFiller("Error");
                 }
@@ -347,7 +347,7 @@ class HomeScreen extends State<HomePage> {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                List<TMDBCondensed> list = snapshot.data;
+                List<TMDBCondensedMovie> list = snapshot.data;
                 return Column(mainAxisSize: MainAxisSize.min, children: [
                   SizedBox(height: 30),
                   rowTitle("Recommendations"),
