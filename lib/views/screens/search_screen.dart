@@ -6,6 +6,8 @@ import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 
+import 'find_movie_screen.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
 
@@ -35,6 +37,12 @@ class _SearchScreenState extends State<SearchScreen> {
   void _pushDetailScreen(Movie clickedMovie) {
     Navigator.push(context,
         PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
+  }
+
+  void _pushFindScreen(String query) {
+    Navigator.pop(context);
+    Navigator.push(
+        context, PageRoutes.sharedAxis(() => FindMovieScreen(query: query)));
   }
 
   Widget _movieIcon(int number) {
@@ -105,11 +113,26 @@ class _SearchScreenState extends State<SearchScreen> {
       return Scaffold(
         appBar: _appbar(),
         body: Center(
-          child: Text(
-            "No results found . . .",
-            style: TextStyle(fontSize: Repo.currFontsize + 2),
-          ),
-        ),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              Text(
+                "No results found . . .",
+                style: TextStyle(fontSize: Repo.currFontsize + 2),
+              ),
+              SizedBox(height: 20),
+              RaisedButton(
+                color: Colours.primaryColor,
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                child: Text(
+                  "Find movie",
+                  style: TextStyle(
+                      fontSize: Repo.currFontsize + 2, color: Colours.white),
+                ),
+                onPressed: () => _pushFindScreen(_searchQuery),
+              )
+            ])),
       );
     } else {
       return Scaffold(

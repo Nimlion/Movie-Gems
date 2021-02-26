@@ -13,7 +13,12 @@ class OMDBController {
         await http.get('https://www.omdbapi.com/?apikey=$apiKey&t=$movieTitle');
 
     if (response.statusCode == 200) {
-      return OMDBResponse.fromJson(json.decode(response.body));
+      OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));
+      if (movie.type == "movie") {
+        return movie;
+      } else {
+        throw Exception('Object retrieved was not a movie');
+      }
     } else {
       throw Exception('Failed to load movie');
     }

@@ -91,7 +91,7 @@ class _AddScreenState extends State<AddScreen> {
               keyboardType: TextInputType.name,
               textCapitalization: TextCapitalization.words,
               onChanged: (value) => this._titleValue = value,
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               onEditingComplete: () => node.nextFocus(),
               decoration: InputDecoration(
                 hintText: 'title',
