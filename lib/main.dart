@@ -63,9 +63,7 @@ class _StartScreenState extends State<StartScreen> {
       future: _initialization,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          // TODO: remove this.
           print("An error occured while initializing FlutterFire");
-          print(snapshot);
           return Consumer<AppStateNotifier>(
               builder: (context, appState, child) {
             return MaterialApp(

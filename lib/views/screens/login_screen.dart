@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _pushHomepage() {
-    // Navigator.of(context).pop();
+    Navigator.of(context).pop();
     Navigator.push(
         context,
         PageRoutes.sharedAxis(

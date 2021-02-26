@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
+import 'package:movie_gems/controller/themeController.dart';
+import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/views/screens/add_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
+import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -31,13 +34,6 @@ class StartScreenState extends State<StartScreen> {
     ),
   ];
 
-  void _pushLoginPage() {
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-  }
-
   Widget _appBar() {
     return AppBar(
       leading: IconButton(
@@ -45,7 +41,14 @@ class StartScreenState extends State<StartScreen> {
           Icons.person,
           size: 30,
         ),
-        onPressed: () => _pushLoginPage(),
+        onPressed: () => {
+          setState(() {
+            ThemeController().updateTheme(
+                !Provider.of<AppStateNotifier>(context, listen: false)
+                    .darkModeOn,
+                context);
+          }),
+        },
       ),
       toolbarHeight: 60.0,
       title: Text(
@@ -84,7 +87,8 @@ class StartScreenState extends State<StartScreen> {
         BottomNavigationBarItem(label: "Home", icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: "Movies", icon: Icon(Icons.movie)),
         BottomNavigationBarItem(label: "", icon: SizedBox(height: 30)),
-        BottomNavigationBarItem(label: "Series", icon: Icon(Icons.tv)),
+        BottomNavigationBarItem(
+            label: "Series", icon: Icon(Icons.live_tv_outlined)),
         BottomNavigationBarItem(
             label: "Watch later", icon: Icon(Icons.watch_later)),
       ],
