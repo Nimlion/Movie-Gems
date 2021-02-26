@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
+import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/widgets/movie_overlay.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
 
@@ -104,7 +106,7 @@ class HomeScreen extends State<HomePage> {
 
   Widget moviePoster(int index, TMDBCondensed movie) {
     return Container(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 30),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: Stack(children: <Widget>[
           GestureDetector(
             child: Container(
@@ -126,33 +128,56 @@ class HomeScreen extends State<HomePage> {
             child: Text(
               (index + 1).toString() + ".",
               style: TextStyle(
+                color: Colours.white,
                 fontSize: 60,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(0.0, 0.0),
+                    blurRadius: 15,
+                    color: Colours.background,
+                  ),
+                ],
               ),
             ),
           ),
         ]));
   }
 
+  void _pushDetailScreen(Movie clickedMovie) {
+    Navigator.push(context,
+        PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
+  }
+
   Widget collectionPoster(int index, Movie movie) {
     return Container(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 30),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: Stack(children: <Widget>[
-          Container(
-              padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Image.network(
-                  movie.poster,
-                  fit: BoxFit.cover,
-                ),
-              )),
+          GestureDetector(
+              child: Container(
+                  padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Image.network(
+                      movie.poster,
+                      fit: BoxFit.cover,
+                    ),
+                  )),
+              onTap: () => _pushDetailScreen(movie)),
           Positioned(
             bottom: 0,
             left: 0,
             child: Text(
               (index + 1).toString() + ".",
               style: TextStyle(
+                color: Colours.white,
                 fontSize: 60,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(0.0, 0.0),
+                    blurRadius: 15,
+                    color: Colours.background,
+                  ),
+                ],
               ),
             ),
           ),
@@ -207,7 +232,7 @@ class HomeScreen extends State<HomePage> {
         child: Column(children: [
       Container(
           margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          height: 300.0,
+          height: 290.0,
           child: Column(
             children: [
               rowTitle("Top movies"),
@@ -237,9 +262,10 @@ class HomeScreen extends State<HomePage> {
           )),
       Container(
           margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          height: 300.0,
+          height: 320.0,
           child: Column(
             children: [
+              SizedBox(height: 30),
               rowTitle("Now playing"),
               StreamBuilder(
                   stream: this.futurePlaying.asStream(),
@@ -267,9 +293,10 @@ class HomeScreen extends State<HomePage> {
           )),
       Container(
           margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          height: 300.0,
+          height: 320.0,
           child: Column(
             children: [
+              SizedBox(height: 30),
               rowTitle("Recent movies"),
               StreamBuilder<DocumentSnapshot>(
                   stream: movies.snapshots(),
@@ -303,6 +330,7 @@ class HomeScreen extends State<HomePage> {
           ? Container(
               child: Column(
               children: [
+                SizedBox(height: 30),
                 rowTitle("Recommendations"),
                 Center(child: CircularProgressIndicator()),
               ],
@@ -321,6 +349,7 @@ class HomeScreen extends State<HomePage> {
 
                 List<TMDBCondensed> list = snapshot.data;
                 return Column(mainAxisSize: MainAxisSize.min, children: [
+                  SizedBox(height: 30),
                   rowTitle("Recommendations"),
                   Column(
                     children: list.take(10).map<Widget>((item) {

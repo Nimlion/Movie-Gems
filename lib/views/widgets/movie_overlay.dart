@@ -41,6 +41,18 @@ Widget movieOverlay(
                       fontSize: Repo.currFontsize),
                   textAlign: TextAlign.center,
                 ),
+                SizedBox(height: 15),
+                RaisedButton(
+                  color: Colours.accentColor,
+                  child: Text(
+                    "Add to watchlist",
+                    style: TextStyle(
+                      fontSize: Repo.currFontsize,
+                      color: Colours.white,
+                    ),
+                  ),
+                  onPressed: () => {},
+                ),
                 SizedBox(height: 30),
                 RaisedButton(
                   color: Colours.primaryColor,
@@ -48,9 +60,11 @@ Widget movieOverlay(
                   child: Text(
                     'Dismiss',
                     style: TextStyle(
-                        fontSize: Repo.currFontsize, color: Colours.white),
+                      fontSize: Repo.currFontsize,
+                      color: Colours.white,
+                    ),
                   ),
-                )
+                ),
               ],
             )),
       ),
