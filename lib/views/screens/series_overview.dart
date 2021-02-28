@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
+import 'package:movie_gems/views/screens/serie_details.dart';
 
 class SeriesPage extends StatefulWidget {
   _SeriesOverview createState() => _SeriesOverview();
@@ -21,6 +23,11 @@ class _SeriesOverview extends State<SeriesPage> {
   void initState() {
     super.initState();
     getSeries();
+  }
+
+  void _pushSerieDetailPage(Serie serie) {
+    Navigator.push(
+        context, PageRoutes.sharedAxis(() => SerieDetailScreen(serie: serie)));
   }
 
   Future<void> getSeries() async {
@@ -70,7 +77,7 @@ class _SeriesOverview extends State<SeriesPage> {
         icon: Icon(Icons.playlist_play),
         onPressed: () => {},
       ),
-      onTap: () => {},
+      onTap: () => {_pushSerieDetailPage(seriesList[index])},
     );
   }
 
