@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
@@ -29,8 +29,8 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
   void initState() {
     super.initState();
     futureDetails =
-        TMDBController().tmdbFetchSerieDetails(serie.tmdbID.toString());
-    futureCast = TMDBController().fetchSerieCast(serie.tmdbID.toString());
+        TMDBSeriesController().tmdbFetchSerieDetails(serie.tmdbID.toString());
+    futureCast = TMDBSeriesController().fetchSerieCast(serie.tmdbID.toString());
   }
 
   _launchURL(String url) async {

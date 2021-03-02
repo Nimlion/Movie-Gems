@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/TVMazeController.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -36,7 +36,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
     await TVMazeController()
         .fetchSerieData(_titleValue)
         .then((response) => tvMazeObject = response);
-    await TMDBController()
+    await TMDBSeriesController()
         .fetchSerieTMDBData(_titleValue)
         .then((response) => tmdbObject = response);
 

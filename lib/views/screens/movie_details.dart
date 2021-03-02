@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
@@ -26,7 +26,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
     super.initState();
-    futureResponse = TMDBController().fetchTMDBData(movie.imdbID);
+    futureResponse = TMDBMovieController().fetchTMDBData(movie.imdbID);
   }
 
   Widget _movieIcon(int number) {

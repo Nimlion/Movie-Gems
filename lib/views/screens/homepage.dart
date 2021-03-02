@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_gems/controller/TMDBController.dart';
+import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -28,7 +28,7 @@ class HomeScreen extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    TMDBController tmdb = TMDBController();
+    TMDBMovieController tmdb = TMDBMovieController();
     fututurePopular = tmdb.fetchPopular();
     futurePlaying = tmdb.fetchPlaying();
 
@@ -41,7 +41,7 @@ class HomeScreen extends State<HomePage> {
     if (mounted) {
       setState(() {
         this.futureSimilair =
-            TMDBController().fetchSimilarMovies(this.latestMovie);
+            TMDBMovieController().fetchSimilarMovies(this.latestMovie);
       });
     }
   }
