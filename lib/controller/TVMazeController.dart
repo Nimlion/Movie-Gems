@@ -20,6 +20,22 @@ class TVMazeController {
       throw Exception('Failed to load serie');
     }
   }
+
+  Future<TVMazeEpisodes> fetchSerieEpisodes(String id) async {
+    final endpoint = await http.get('http://api.tvmaze.com/shows/$id/episodes');
+
+    if (endpoint.statusCode == 200) {
+      if (json.decode(endpoint.body) is! Map &&
+          json.decode(endpoint.body).isNotEmpty) {
+        var body = TVMazeEpisodes.fromJson(json.decode(endpoint.body));
+        return body;
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception('Failed to load episodes');
+    }
+  }
 }
 
 class TVMazeResponse {
@@ -32,6 +48,18 @@ class TVMazeResponse {
     return TVMazeResponse(
       score: json['score'],
       show: json['show'],
+    );
+  }
+}
+
+class TVMazeEpisodes {
+  List<dynamic> episodes;
+
+  TVMazeEpisodes({this.episodes});
+
+  factory TVMazeEpisodes.fromJson(List<dynamic> json) {
+    return TVMazeEpisodes(
+      episodes: json,
     );
   }
 }

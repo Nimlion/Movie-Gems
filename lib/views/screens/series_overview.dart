@@ -31,6 +31,11 @@ class _SeriesOverview extends State<SeriesPage> {
         context, PageRoutes.sharedAxis(() => SerieDetailScreen(serie: serie)));
   }
 
+  void _pushEpisodesPage(Serie serie) {
+    Navigator.push(
+        context, PageRoutes.sharedAxis(() => EpisodesScreen(serie: serie)));
+  }
+
   Future<void> getSeries() async {
     await series.snapshots().forEach((element) {
       this.seriesList = List();
@@ -77,7 +82,7 @@ class _SeriesOverview extends State<SeriesPage> {
       ),
       trailing: IconButton(
         icon: Icon(Icons.playlist_play),
-        onPressed: () => {},
+        onPressed: () => {_pushEpisodesPage(seriesList[index])},
       ),
       onTap: () => {_pushSerieDetailPage(seriesList[index])},
     );
