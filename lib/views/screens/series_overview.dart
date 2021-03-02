@@ -7,6 +7,7 @@ import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
+import 'package:movie_gems/views/screens/episode_overview.dart';
 import 'package:movie_gems/views/screens/serie_details.dart';
 
 class SeriesPage extends StatefulWidget {
@@ -45,6 +46,7 @@ class _SeriesOverview extends State<SeriesPage> {
           seriesMap.value['genres'],
           seriesMap.value['tvMazeID'],
           seriesMap.value['tmdbID'],
+          seriesMap.value['imdbID'],
         ));
       }
       if (mounted) {

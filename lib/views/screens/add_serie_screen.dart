@@ -57,6 +57,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
               "genres": tvMazeObject.show["genres"].join(', '),
               "tvMazeID": tvMazeObject.show["id"],
               "tmdbID": tmdbObject.id,
+              "imdbID": tvMazeObject.show["externals"]["imdb"],
             }
           })
           .then((value) => {
@@ -117,7 +118,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          "Current date: " +
+          "Started watching: " +
               DateFormat("dd MMM. yyyy").format(this._dateValue).toString(),
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),

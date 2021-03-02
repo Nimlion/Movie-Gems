@@ -9,6 +9,7 @@ class Serie {
   String genres;
   int tvMazeID;
   int tmdbID;
+  String imdbID;
 
   Serie({
     this.title,
@@ -21,6 +22,7 @@ class Serie {
     this.genres,
     this.tvMazeID,
     this.tmdbID,
+    this.imdbID,
   });
 
   Serie.fromOMDB(
@@ -34,6 +36,7 @@ class Serie {
     String genres,
     int tvMazeID,
     int tmdbID,
+    String imdbID,
   ) {
     this.title = title;
     this.startdate = startdate;
@@ -45,6 +48,7 @@ class Serie {
     this.genres = genres;
     this.tvMazeID = tvMazeID;
     this.tmdbID = tmdbID;
+    this.imdbID = imdbID;
   }
 
   @override
@@ -78,6 +82,9 @@ class Serie {
         ", " +
         "tmdbID: " +
         tmdbID.toString() +
+        ", " +
+        "imdbID: " +
+        imdbID.toString() +
         "}";
   }
 
@@ -94,6 +101,7 @@ class Serie {
       parsedJson['genres'],
       parsedJson['tvMazeID'],
       parsedJson['tmdbID'],
+      parsedJson['imdbID'],
     );
   }
 
@@ -108,5 +116,6 @@ class Serie {
         "genres": this.genres,
         "tvMazeID": this.tvMazeID,
         "tmdbID": this.tmdbID,
+        "imdbID": this.imdbID,
       };
 }

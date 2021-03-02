@@ -8,6 +8,17 @@ import 'package:movie_gems/env.dart';
 class TMDBController {
   String apiKey = ENV().tmdb;
 
+  Future<TMDBCast> fetchSerieCast(String id) async {
+    final endpoint = await http.get(
+        'https://api.themoviedb.org/3/tv/$id/aggregate_credits?api_key=$apiKey&language=en-US');
+
+    if (endpoint.statusCode == 200) {
+      return TMDBCast.fromJson(json.decode(endpoint.body));
+    } else {
+      throw Exception('Failed to load cast of serie');
+    }
+  }
+
   Future<TMDBMovie> fetchTMDBData(String imdbId) async {
     final endpoint = await http
         .get('https://api.themoviedb.org/3/movie/$imdbId?api_key=$apiKey');
@@ -31,7 +42,7 @@ class TMDBController {
         return null;
       }
     } else {
-      throw Exception('Failed to load movie');
+      throw Exception('Failed to load serie');
     }
   }
 
@@ -93,6 +104,27 @@ class TMDBController {
     } else {
       throw Exception('Failed to load playing movies');
     }
+  }
+}
+
+class TMDBCast {
+  List cast;
+  List crew;
+  int id;
+
+  TMDBCast({
+    this.cast,
+    this.crew,
+    this.id,
+  });
+
+  factory TMDBCast.fromJson(Map<String, dynamic> json) {
+    if (json == null) return null;
+    return TMDBCast(
+      cast: json['cast'],
+      crew: json['crew'],
+      id: json['id'],
+    );
   }
 }
 
