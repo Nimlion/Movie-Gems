@@ -22,6 +22,8 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
 
   Future<TMDBSerie> futureDetails;
   Future<TMDBCast> futureCast;
+  int castmembers = 10;
+  int crewmembers = 10;
 
   _SerieDetailScreenState(this.serie);
 
@@ -279,6 +281,18 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     ]);
   }
 
+  Widget _increaseBtn(Function fun) {
+    return RaisedButton(
+      onPressed: fun,
+      padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
+      child: Text(
+        "Load more",
+        style:
+            TextStyle(fontWeight: FontWeight.bold, fontSize: Repo.currFontsize),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<TMDBSerie>(
@@ -472,20 +486,36 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                                           children: [
                                             _subTitle("Cast"),
                                             GridView.count(
-                                              childAspectRatio: 0.50,
+                                              childAspectRatio:
+                                                  MediaQuery.of(context)
+                                                              .orientation ==
+                                                          Orientation.portrait
+                                                      ? 0.45
+                                                      : 0.8,
                                               crossAxisSpacing: 25,
                                               mainAxisSpacing: 25,
-                                              crossAxisCount: 2,
+                                              crossAxisCount:
+                                                  MediaQuery.of(context)
+                                                              .orientation ==
+                                                          Orientation.portrait
+                                                      ? 2
+                                                      : 3,
                                               physics: BouncingScrollPhysics(),
                                               shrinkWrap: true,
                                               children: List.generate(
-                                                  cast.cast.take(40).length,
-                                                  (index) {
+                                                  cast.cast
+                                                      .take(castmembers)
+                                                      .length, (index) {
                                                 return _castBox(
                                                     cast.cast[index]);
                                               }),
                                             ),
-                                            SizedBox(height: 30),
+                                            _increaseBtn(() => {
+                                                  setState(() {
+                                                    castmembers += 4;
+                                                  }),
+                                                }),
+                                            SizedBox(height: 75),
                                           ],
                                         )
                                       : Container(),
@@ -494,19 +524,36 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                                           children: [
                                             _subTitle("Crew"),
                                             GridView.count(
-                                              childAspectRatio: 0.50,
+                                              childAspectRatio:
+                                                  MediaQuery.of(context)
+                                                              .orientation ==
+                                                          Orientation.portrait
+                                                      ? 0.45
+                                                      : 0.85,
                                               crossAxisSpacing: 25,
                                               mainAxisSpacing: 25,
-                                              crossAxisCount: 2,
+                                              crossAxisCount:
+                                                  MediaQuery.of(context)
+                                                              .orientation ==
+                                                          Orientation.portrait
+                                                      ? 2
+                                                      : 3,
                                               physics: BouncingScrollPhysics(),
                                               shrinkWrap: true,
                                               children: List.generate(
-                                                  cast.crew.take(40).length,
-                                                  (index) {
+                                                  cast.crew
+                                                      .take(crewmembers)
+                                                      .length, (index) {
                                                 return _crewBox(
                                                     cast.crew[index]);
                                               }),
                                             ),
+                                            _increaseBtn(() => {
+                                                  setState(() {
+                                                    crewmembers += 4;
+                                                  }),
+                                                }),
+                                            SizedBox(height: 20),
                                           ],
                                         )
                                       : Container(),

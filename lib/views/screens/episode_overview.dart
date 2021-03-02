@@ -86,10 +86,6 @@ class _EpisodesOverview extends State<EpisodesScreen> {
             ),
           ),
           SizedBox(height: 15),
-          Divider(
-            thickness: 1.5,
-            color: Theme.of(context).textTheme.bodyText1.color,
-          ),
         ],
       ),
     );
@@ -111,7 +107,16 @@ class _EpisodesOverview extends State<EpisodesScreen> {
               child: Column(
                 children: episodes.map<Widget>((episode) {
                   return episode["airdate"] != ""
-                      ? _episodeDetails(episode)
+                      ? episodes.last != episode
+                          ? Column(children: [
+                              _episodeDetails(episode),
+                              Divider(
+                                thickness: 1.5,
+                                color:
+                                    Theme.of(context).textTheme.bodyText1.color,
+                              ),
+                            ])
+                          : _episodeDetails(episode)
                       : Container();
                 }).toList(),
               ),
