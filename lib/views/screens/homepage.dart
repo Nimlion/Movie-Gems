@@ -226,6 +226,11 @@ class HomeScreen extends State<HomePage> {
     }
   }
 
+  Widget _loadingPoster() {
+    return Container(
+        height: 225, child: Center(child: CircularProgressIndicator()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -245,7 +250,7 @@ class HomeScreen extends State<HomePage> {
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return _loadingPoster();
                     }
 
                     List<TMDBCondensedMovie> list = snapshot.data;
@@ -276,7 +281,7 @@ class HomeScreen extends State<HomePage> {
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return _loadingPoster();
                     }
 
                     List<TMDBCondensedMovie> list = snapshot.data;
@@ -307,7 +312,7 @@ class HomeScreen extends State<HomePage> {
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return _loadingPoster();
                     }
 
                     DocumentSnapshot querydoc = snapshot.data;
@@ -344,7 +349,7 @@ class HomeScreen extends State<HomePage> {
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return _loadingPoster();
                 }
 
                 List<TMDBCondensedMovie> list = snapshot.data;

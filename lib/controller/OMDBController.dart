@@ -17,7 +17,7 @@ class OMDBController {
       if (movie.type == "movie") {
         return movie;
       } else {
-        throw Exception('Object retrieved was not a movie');
+        return null;
       }
     } else {
       throw Exception('Failed to load movie');

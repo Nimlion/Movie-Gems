@@ -33,42 +33,57 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
     });
   }
 
+  String firebaseProof(String mapTitle) {
+    mapTitle = mapTitle
+        .replaceAll(".", "-p-")
+        .replaceAll("\$", "-d-")
+        .replaceAll("[", "-l-")
+        .replaceAll("]", "-r-")
+        .replaceAll("#", "-h-")
+        .replaceAll("/", "-f-");
+    return mapTitle.toLowerCase();
+  }
+
   Future<void> addMovie() async {
-    OMDBController().fetchOMDBData(_titleValue).then((response) => moviesdoc
-        .update({
-          this._titleValue.toLowerCase(): {
-            "title": this._titleValue,
-            "rating": this._rating,
-            "date": this._dateValue,
-            "category": this._category,
-            "rated": response.rated,
-            "runtime": response.runtime,
-            "director": response.director,
-            "actors": response.actors,
-            "poster": response.poster,
-            "awards": response.awards,
-            "genre": response.genre,
-            "production": response.production,
-            "imdbRating": response.imdbRating,
-            "imdbID": response.imdbID,
-          }
-        })
-        .then((value) => {
-              showSimpleNotification(Text("movie succesfully added"),
-                  background: Colours.primaryColor),
-              Navigator.pop(context),
+    OMDBController().fetchOMDBData(_titleValue).then((response) => response ==
+            null
+        ? showSimpleNotification(Text("failed to add movie"),
+            background: Colors.red)
+        : moviesdoc
+            .update({
+              firebaseProof(this._titleValue): {
+                "title": this._titleValue,
+                "rating": this._rating,
+                "date": this._dateValue,
+                "category": this._category,
+                "rated": response.rated,
+                "runtime": response.runtime,
+                "director": response.director,
+                "actors": response.actors,
+                "poster": response.poster,
+                "awards": response.awards,
+                "genre": response.genre,
+                "production": response.production,
+                "imdbRating": response.imdbRating,
+                "imdbID": response.imdbID,
+              }
             })
-        .catchError((error) => {
-              if (error.message == "Some requested document was not found.")
-                {
-                  _addDocument(),
-                }
-              else
-                {
-                  showSimpleNotification(Text("failed to add movie"),
-                      background: Colors.red)
-                }
-            }));
+            .then((value) => {
+                  showSimpleNotification(Text("movie succesfully added"),
+                      background: Colours.primaryColor),
+                  Navigator.pop(context),
+                })
+            .catchError((error) => {
+                  if (error.message == "Some requested document was not found.")
+                    {
+                      _addDocument(),
+                    }
+                  else
+                    {
+                      showSimpleNotification(Text("failed to add movie"),
+                          background: Colors.red)
+                    }
+                }));
   }
 
   Widget _titleField() {
