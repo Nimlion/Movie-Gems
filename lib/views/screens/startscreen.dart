@@ -8,6 +8,7 @@ import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
+import 'package:movie_gems/views/screens/profile_screen.dart';
 import 'package:movie_gems/views/screens/series_overview.dart';
 import 'package:provider/provider.dart';
 
@@ -48,22 +49,18 @@ class StartScreenState extends State<StartScreen> {
     }
   }
 
+  void _pushProfileScreen() {
+    Navigator.push(context, PageRoutes.fadeThrough(() => ProfileScreen()));
+  }
+
   Widget _appBar() {
     return AppBar(
       leading: IconButton(
-        icon: Icon(
-          Icons.person,
-          size: 30,
-        ),
-        onPressed: () => {
-          setState(() {
-            ThemeController().updateTheme(
-                !Provider.of<AppStateNotifier>(context, listen: false)
-                    .darkModeOn,
-                context);
-          }),
-        },
-      ),
+          icon: Icon(
+            Icons.person,
+            size: 30,
+          ),
+          onPressed: () => _pushProfileScreen()),
       toolbarHeight: 60.0,
       title: Text(
         'Movie Gems',

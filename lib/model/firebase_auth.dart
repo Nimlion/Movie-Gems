@@ -30,6 +30,20 @@ class FirebaseAuthentication {
     }
   }
 
+  Future<bool> updateEmail(String newEmail) async {
+    if (newEmail == FirebaseAuth.instance.currentUser.email || newEmail == null)
+      return null;
+    var state;
+    User firebaseUser = FirebaseAuth.instance.currentUser;
+    await firebaseUser
+        .updateEmail(newEmail)
+        .then(
+          (value) => state = true,
+        )
+        .catchError((onError) => state = false);
+    return state;
+  }
+
   Future<void> anonymouslySignIn() async {
     this._userCredential = await FirebaseAuth.instance.signInAnonymously();
 
@@ -80,12 +94,20 @@ class FirebaseAuthentication {
     }
   }
 
-  Future<void> emailVerifiedCheck() async {
+  Future<bool> emailVerifiedCheck() async {
     User user = FirebaseAuth.instance.currentUser;
 
-    if (!user.emailVerified) {
-      await user.sendEmailVerification();
+    try {
+      if (!user.emailVerified) {
+        await user.sendEmailVerification();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
     }
+    return false;
   }
 
   Future<void> signOut() async {

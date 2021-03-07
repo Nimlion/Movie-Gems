@@ -1,5 +1,4 @@
 import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,9 +19,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String _emailValue = '';
-  String _passwordValue = '';
-  UserCredential userCredential;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -37,13 +35,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> siginIn() async {
-    if (await FirebaseAuthentication()
-            .emailSignIn(this._emailValue, this._passwordValue) ==
+    if (await FirebaseAuthentication().emailSignIn(
+            this._emailController.value.text,
+            this._passwordController.value.text) ==
         true) {
       _pushHomepage();
     } else {
-      this._emailValue = '';
-      this._passwordValue = '';
+      this._emailController.value = TextEditingValue.empty;
+      this._passwordController.value = TextEditingValue.empty;
       showSimpleNotification(Text("Invalid credentials."),
           background: Colours.error);
     }
@@ -70,8 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _emailField() {
     final node = FocusScope.of(context);
     return TextField(
+      controller: _emailController,
       keyboardType: TextInputType.emailAddress,
-      onChanged: (value) => this._emailValue = value,
       textInputAction: TextInputAction.next,
       onEditingComplete: () => node.nextFocus(),
       decoration: InputDecoration(
@@ -87,8 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _passwordField() {
     final node = FocusScope.of(context);
     return TextField(
+      controller: _passwordController,
       obscureText: true,
-      onChanged: (value) => this._passwordValue = value,
       textInputAction: TextInputAction.done,
       onSubmitted: (_) => {node.unfocus(), siginIn()},
       decoration: InputDecoration(

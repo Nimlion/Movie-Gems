@@ -11,6 +11,10 @@ class AppTheme {
       primaryColor: Colours.white,
       brightness: Brightness.light,
       fontFamily: 'Sansita',
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: Colours.shadow,
+        filled: true,
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: Colors.indigo[400],
       ));
@@ -22,6 +26,10 @@ class AppTheme {
       primaryColor: Colours.background,
       brightness: Brightness.dark,
       fontFamily: 'Sansita',
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: Colours.white,
+        filled: true,
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: Colors.indigo[400],
       ));
