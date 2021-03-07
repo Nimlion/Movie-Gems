@@ -50,7 +50,6 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
               "title": this._titleValue,
               "startdate": this._dateValue,
               "category": this._category,
-              "status": tvMazeObject.show["status"],
               "tvMazeURL": tvMazeObject.show["url"],
               "premiered": tvMazeObject.show["premiered"],
               "type": tvMazeObject.show["type"],

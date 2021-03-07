@@ -9,7 +9,7 @@ import 'movie.dart';
 
 class Repo {
   // Theme
-  static bool darkModeOn = false;
+  static bool darkModeOn = true;
   static final String darkKey = 'darktheme';
 
   // Font size
@@ -24,4 +24,7 @@ class Repo {
   static List<Movie> movieList = List();
   static ValueNotifier<List<Movie>> movieListenable =
       ValueNotifier<List<Movie>>(List());
+
+  // User settings
+  static bool latestEpisodesFirst = true;
 }

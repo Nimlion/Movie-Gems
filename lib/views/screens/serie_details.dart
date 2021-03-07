@@ -510,11 +510,13 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                                                     cast.cast[index]);
                                               }),
                                             ),
-                                            _increaseBtn(() => {
-                                                  setState(() {
-                                                    castmembers += 4;
-                                                  }),
-                                                }),
+                                            cast.crew.length > castmembers
+                                                ? _increaseBtn(() => {
+                                                      setState(() {
+                                                        castmembers += 4;
+                                                      }),
+                                                    })
+                                                : Container(),
                                             SizedBox(height: 75),
                                           ],
                                         )
@@ -548,11 +550,13 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                                                     cast.crew[index]);
                                               }),
                                             ),
-                                            _increaseBtn(() => {
-                                                  setState(() {
-                                                    crewmembers += 4;
-                                                  }),
-                                                }),
+                                            cast.crew.length > crewmembers
+                                                ? _increaseBtn(() => {
+                                                      setState(() {
+                                                        crewmembers += 4;
+                                                      }),
+                                                    })
+                                                : Container(),
                                             SizedBox(height: 20),
                                           ],
                                         )

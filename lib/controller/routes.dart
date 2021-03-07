@@ -44,7 +44,7 @@ class PageRoutes {
     );
   }
 
-  static Route<T> fromBottom<T>(PageBuilder page,
+  static Route<T> fromTop<T>(PageBuilder page,
       [SharedAxisTransitionType type = SharedAxisTransitionType.scaled,
       double duration = 0.5]) {
     return PageRouteBuilder<T>(

@@ -9,6 +9,7 @@ import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/screens/episode_overview.dart';
 import 'package:movie_gems/views/screens/serie_details.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class SeriesPage extends StatefulWidget {
   _SeriesOverview createState() => _SeriesOverview();
@@ -56,10 +57,52 @@ class _SeriesOverview extends State<SeriesPage> {
       }
       if (mounted) {
         setState(() {
-          seriesList.sort((a, b) => b.status.compareTo(a.status));
+          seriesList.sort((a, b) => a.title.compareTo(b.title));
         });
       }
     });
+  }
+
+  Future<void> _deleteSerie(Serie serie) {
+    return series
+        .update({serie.title.toLowerCase(): FieldValue.delete()})
+        .then((value) => {
+              showSimpleNotification(Text("serie succesfully deleted"),
+                  background: Colours.primaryColor),
+              Navigator.of(context).pop()
+            })
+        .catchError((error) => print("Failed to delete serie: $error"));
+  }
+
+  showDeleteDialog(BuildContext context, Serie serie) {
+    Widget cancelBtn = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget deleteBtn = FlatButton(
+      child: Text("Delete"),
+      onPressed: () {
+        _deleteSerie(serie);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text("Delete " + serie.title + " ?"),
+      content: Text(
+          "You're about to delete a serie, which can't be undone. Are your sure?"),
+      actions: [
+        cancelBtn,
+        deleteBtn,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   Widget _serieTile(int index) {
@@ -73,11 +116,11 @@ class _SeriesOverview extends State<SeriesPage> {
         style: TextStyle(color: Colours.primaryColor),
       ),
       subtitle: Text(
-        seriesList[index].status +
-            " - " +
-            DateFormat("dd MMM. yyyy")
+        DateFormat("dd MMM. yyyy")
                 .format(seriesList[index].startdate)
-                .toString(),
+                .toString() +
+            " - " +
+            seriesList[index].type,
         style: TextStyle(fontFamily: "Raleway"),
       ),
       trailing: IconButton(
@@ -85,6 +128,7 @@ class _SeriesOverview extends State<SeriesPage> {
         onPressed: () => {_pushEpisodesPage(seriesList[index])},
       ),
       onTap: () => {_pushSerieDetailPage(seriesList[index])},
+      onLongPress: () => showDeleteDialog(context, seriesList[index]),
     );
   }
 

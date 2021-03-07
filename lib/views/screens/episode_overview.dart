@@ -38,7 +38,8 @@ class _EpisodesOverview extends State<EpisodesScreen> {
     return Container(
       padding: EdgeInsets.only(left: 15, right: 15),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: 10),
           Text(
@@ -97,7 +98,9 @@ class _EpisodesOverview extends State<EpisodesScreen> {
       future: this.serieEpisodes,
       builder: (context, snapshot) {
         if (snapshot.data != null) {
-          var episodes = List.from(snapshot.data.episodes.reversed);
+          var episodes = Repo.latestEpisodesFirst
+              ? List.from(snapshot.data.episodes.reversed)
+              : List.from(snapshot.data.episodes);
 
           return Scaffold(
             appBar: AppBar(

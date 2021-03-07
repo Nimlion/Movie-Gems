@@ -62,9 +62,6 @@ class Serie {
         "category: " +
         category.toString() +
         ", " +
-        "status: " +
-        status.toString() +
-        ", " +
         "tvMazeURL: " +
         tvMazeURL.toString() +
         ", " +

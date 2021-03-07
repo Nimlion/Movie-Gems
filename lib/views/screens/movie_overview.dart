@@ -117,11 +117,11 @@ class _MovieOverview extends State<MoviesPage> {
   }
 
   void _pushFilterScreen() {
-    Navigator.push(context, PageRoutes.fromBottom(() => FilterScreen()));
+    Navigator.push(context, PageRoutes.fromTop(() => FilterScreen()));
   }
 
   void _pushSearchScreen() {
-    Navigator.push(context, PageRoutes.fromBottom(() => SearchScreen()));
+    Navigator.push(context, PageRoutes.fromTop(() => SearchScreen()));
   }
 
   Widget _filterInfoBar(int amount) {
