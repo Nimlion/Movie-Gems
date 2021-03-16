@@ -12,6 +12,17 @@ import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/screens/search_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
 
+String firebaseProof(String mapTitle) {
+  mapTitle = mapTitle
+      .replaceAll(".", "-p-")
+      .replaceAll("\$", "-d-")
+      .replaceAll("[", "-l-")
+      .replaceAll("]", "-r-")
+      .replaceAll("#", "-h-")
+      .replaceAll("/", "-f-");
+  return mapTitle.toLowerCase();
+}
+
 class MoviesPage extends StatefulWidget {
   _MovieOverview createState() => _MovieOverview();
 }
@@ -28,32 +39,36 @@ class _MovieOverview extends State<MoviesPage> {
   }
 
   Future<void> getMovies() async {
-    await movies.snapshots().forEach((element) {
-      Repo.movieListenable.value = List();
-      for (var movieMap in element.data().entries) {
-        Repo.movieListenable.value.add(Movie.fromOMDB(
-          movieMap.value['title'],
-          movieMap.value['rating'],
-          movieMap.value['date'].toDate(),
-          movieMap.value['category'],
-          movieMap.value['rated'],
-          movieMap.value['runtime'],
-          movieMap.value['genre'],
-          movieMap.value['director'],
-          movieMap.value['actors'],
-          movieMap.value['poster'],
-          movieMap.value['awards'],
-          movieMap.value['imdbRating'],
-          movieMap.value['imdbID'],
-          movieMap.value['production'],
-        ));
-      }
-
-      setState(() {
-        Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
-        Repo.movieList = List.of(Repo.movieListenable.value);
+    if (mounted) {
+      await movies.snapshots().forEach((element) {
+        if (element.data() == null) return;
+        Repo.movieListenable.value = List();
+        for (var movieMap in element.data().entries) {
+          Repo.movieListenable.value.add(Movie.fromOMDB(
+            movieMap.value['title'],
+            movieMap.value['rating'],
+            movieMap.value['date'].toDate(),
+            movieMap.value['category'],
+            movieMap.value['rated'],
+            movieMap.value['runtime'],
+            movieMap.value['genre'],
+            movieMap.value['director'],
+            movieMap.value['actors'],
+            movieMap.value['poster'],
+            movieMap.value['awards'],
+            movieMap.value['imdbRating'],
+            movieMap.value['imdbID'],
+            movieMap.value['production'],
+          ));
+        }
+        if (mounted) {
+          setState(() {
+            Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
+            Repo.movieList = List.of(Repo.movieListenable.value);
+          });
+        }
       });
-    });
+    }
   }
 
   showDeleteDialog(BuildContext context, Movie movie) {
@@ -95,14 +110,14 @@ class _MovieOverview extends State<MoviesPage> {
     }
 
     return movies
-        .update({movie.title.toLowerCase(): movie.toMap()})
+        .update({firebaseProof(movie.title): movie.toMap()})
         .then((value) => {})
         .catchError((error) => print("Failed to delete movie: $error"));
   }
 
   Future<void> _deleteMovie(Movie movie) {
     return movies
-        .update({movie.title.toLowerCase(): FieldValue.delete()})
+        .update({firebaseProof(movie.title): FieldValue.delete()})
         .then((value) => {
               showSimpleNotification(Text("movie succesfully deleted"),
                   background: Colours.primaryColor),

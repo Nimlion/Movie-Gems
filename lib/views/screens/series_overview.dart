@@ -8,6 +8,7 @@ import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/screens/episode_overview.dart';
+import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:movie_gems/views/screens/serie_details.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -39,6 +40,7 @@ class _SeriesOverview extends State<SeriesPage> {
 
   Future<void> getSeries() async {
     await series.snapshots().forEach((element) {
+      if (element.data() == null) return;
       this.seriesList = List();
       for (var seriesMap in element.data().entries) {
         seriesList.add(Serie.fromOMDB(
@@ -65,7 +67,7 @@ class _SeriesOverview extends State<SeriesPage> {
 
   Future<void> _deleteSerie(Serie serie) {
     return series
-        .update({serie.title.toLowerCase(): FieldValue.delete()})
+        .update({firebaseProof(serie.title): FieldValue.delete()})
         .then((value) => {
               showSimpleNotification(Text("serie succesfully deleted"),
                   background: Colours.primaryColor),

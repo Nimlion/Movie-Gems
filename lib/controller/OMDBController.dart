@@ -9,8 +9,8 @@ class OMDBController {
   String apiKey = ENV().omdb;
 
   Future<OMDBResponse> fetchOMDBData(String movieTitle) async {
-    final response =
-        await http.get('https://www.omdbapi.com/?apikey=$apiKey&t=$movieTitle');
+    final response = await http.get(
+        'https://www.omdbapi.com/?apikey=$apiKey&t=$movieTitle&type=movie');
 
     if (response.statusCode == 200) {
       OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));

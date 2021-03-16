@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AddMovieScreen extends StatefulWidget {
@@ -21,7 +22,13 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
       .collection("movies")
       .doc(FirebaseAuthentication().auth.currentUser.uid);
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _addDocument() async {
+    if (!mounted) return;
     await moviesdoc.snapshots().forEach((DocumentSnapshot element) {
       if (element.exists == false) {
         FirebaseFirestore.instance
@@ -31,17 +38,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
         addMovie();
       }
     });
-  }
-
-  String firebaseProof(String mapTitle) {
-    mapTitle = mapTitle
-        .replaceAll(".", "-p-")
-        .replaceAll("\$", "-d-")
-        .replaceAll("[", "-l-")
-        .replaceAll("]", "-r-")
-        .replaceAll("#", "-h-")
-        .replaceAll("/", "-f-");
-    return mapTitle.toLowerCase();
+    // super.dispose();
   }
 
   Future<void> addMovie() async {
@@ -84,6 +81,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
                           background: Colors.red)
                     }
                 }));
+    // super.dispose();
   }
 
   Widget _titleField() {
@@ -152,7 +150,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != this._dateValue)
+    if (picked != null && picked != this._dateValue && mounted)
       setState(() {
         this._dateValue = picked;
       });
@@ -182,9 +180,11 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
                 DropdownMenuItem(child: Text("Movie Gem"), value: 2),
               ],
               onChanged: (value) {
-                setState(() {
-                  _category = value;
-                });
+                if (mounted) {
+                  setState(() {
+                    _category = value;
+                  });
+                }
               })
         ]);
   }
@@ -221,11 +221,13 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
               divisions: 100,
               label: _rating.toStringAsFixed(1),
               onChanged: (value) {
-                setState(
-                  () {
-                    this._rating = num.parse(value.toStringAsFixed(1));
-                  },
-                );
+                if (mounted) {
+                  setState(
+                    () {
+                      this._rating = num.parse(value.toStringAsFixed(1));
+                    },
+                  );
+                }
               },
             ),
           )

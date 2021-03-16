@@ -6,6 +6,7 @@ import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/TVMazeController.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AddSerieScreen extends StatefulWidget {
@@ -17,17 +18,28 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
   String _titleValue = '';
   DateTime _dateValue = DateTime.now();
   int _category = 0;
+  bool _firstDocumentAdded = false;
+
   DocumentReference seriesDoc = FirebaseFirestore.instance
       .collection("series")
       .doc(FirebaseAuthentication().auth.currentUser.uid);
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _addDocument() async {
+    if (!mounted || _firstDocumentAdded) return;
+    print(ModalRoute.of(context).toString());
+    print(ModalRoute.of(context));
     await seriesDoc.snapshots().forEach((DocumentSnapshot element) {
       if (element.exists == false) {
         seriesDoc.set({});
         addSerie();
       }
     });
+    return;
   }
 
   Future<void> addSerie() async {
@@ -40,13 +52,15 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
         .fetchSerieTMDBData(_titleValue)
         .then((response) => tmdbObject = response);
 
-    if (tvMazeObject == null || tmdbObject == null) {
+    if (_firstDocumentAdded == true) {
+      return;
+    } else if (tvMazeObject == null || tmdbObject == null) {
       showSimpleNotification(Text("serie could not be found"),
           background: Colors.red);
     } else {
       seriesDoc
           .update({
-            this._titleValue.toLowerCase(): {
+            firebaseProof(this._titleValue): {
               "title": this._titleValue,
               "startdate": this._dateValue,
               "category": this._category,
@@ -62,6 +76,9 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
           .then((value) => {
                 showSimpleNotification(Text("serie succesfully added"),
                     background: Colours.primaryColor),
+                setState(() => {
+                      _firstDocumentAdded = true,
+                    }),
                 Navigator.pop(context),
               })
           .catchError((error) => {
@@ -144,10 +161,11 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != this._dateValue)
+    if (picked != null && picked != this._dateValue && mounted) {
       setState(() {
         this._dateValue = picked;
       });
+    }
   }
 
   Widget _selectCategory() {
@@ -174,9 +192,11 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
                 DropdownMenuItem(child: Text("Fantastic!"), value: 2),
               ],
               onChanged: (value) {
-                setState(() {
-                  _category = value;
-                });
+                if (mounted) {
+                  setState(() {
+                    _category = value;
+                  });
+                }
               })
         ]);
   }

@@ -38,7 +38,7 @@ class HomeScreen extends State<HomePage> {
 
   Future<void> getRecommendations() async {
     await Future.delayed(Duration(milliseconds: 150));
-    if (mounted) {
+    if (mounted && this.latestMovie != null) {
       setState(() {
         this.futureSimilair =
             TMDBMovieController().fetchSimilarMovies(this.latestMovie);
@@ -49,6 +49,10 @@ class HomeScreen extends State<HomePage> {
   Future<void> getFirstMovie() async {
     await movies.snapshots().forEach((element) {
       movieList = List();
+      if (element.data() == null) {
+        this.latestMovie = null;
+        return;
+      }
       for (var movieMap in element.data().entries) {
         movieList.add(Movie.fromOMDB(
           movieMap.value['title'],
@@ -70,10 +74,11 @@ class HomeScreen extends State<HomePage> {
 
       movieList.sort((a, b) => b.date.compareTo(a.date));
       this.latestMovie = movieList.first.imdbID;
-
-      setState(() {
-        this.latestMovie = movieList.first.imdbID;
-      });
+      if (mounted) {
+        setState(() {
+          this.latestMovie = movieList.first.imdbID;
+        });
+      }
     });
   }
 
@@ -316,8 +321,17 @@ class HomeScreen extends State<HomePage> {
                     }
 
                     DocumentSnapshot querydoc = snapshot.data;
-                    if (querydoc == null || querydoc.data().entries.isEmpty) {
-                      return Center(child: CircularProgressIndicator());
+                    if (querydoc == null ||
+                        querydoc.data() == null ||
+                        querydoc.data().entries.isEmpty) {
+                      return Container(
+                          height: 225,
+                          child: Center(
+                              child: Text(
+                            "No movies added yet.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: Repo.currFontsize + 15),
+                          )));
                     } else {
                       return Expanded(
                         child: ListView.builder(
@@ -332,14 +346,7 @@ class HomeScreen extends State<HomePage> {
             ],
           )),
       this.futureSimilair == null
-          ? Container(
-              child: Column(
-              children: [
-                SizedBox(height: 30),
-                rowTitle("Recommendations"),
-                Center(child: CircularProgressIndicator()),
-              ],
-            ))
+          ? Container()
           : StreamBuilder<List<TMDBCondensedMovie>>(
               stream: this.futureSimilair.asStream(),
               builder: (BuildContext context,
@@ -353,6 +360,10 @@ class HomeScreen extends State<HomePage> {
                 }
 
                 List<TMDBCondensedMovie> list = snapshot.data;
+
+                if (list.isEmpty) {
+                  return Container();
+                }
                 return Column(mainAxisSize: MainAxisSize.min, children: [
                   SizedBox(height: 30),
                   rowTitle("Recommendations"),

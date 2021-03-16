@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> checkForUser() async {
-    if (await FirebaseAuthentication().checkForUser() == true) {
+    if (await FirebaseAuthentication().checkForUser()) {
       _pushHomepage();
     }
   }
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: _passwordController,
       obscureText: true,
-      textInputAction: TextInputAction.done,
+      textInputAction: TextInputAction.send,
       onSubmitted: (_) => {node.unfocus(), siginIn()},
       decoration: InputDecoration(
           labelText: 'password',
