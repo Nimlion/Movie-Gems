@@ -8,6 +8,7 @@ import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -21,11 +22,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _resetPassword() async {
     if (await FirebaseAuthentication().resetPassword(this._emailValue) ==
         true) {
+      showSimpleNotification(Text("Reset email send."),
+          background: Colours.primaryColor);
       Navigator.pop(context);
       Navigator.push(
           context,
           PageRoutes.sharedAxis(
               () => LoginScreen(), SharedAxisTransitionType.horizontal));
+    } else {
+      showSimpleNotification(
+          Text("Sorry, something went wrong. Try again later."),
+          background: Colours.error);
     }
   }
 
@@ -84,10 +91,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               fontFamily: 'Sansita'),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Text('LOGIN'),
-          onPressed: () => {
-                FirebaseAuthentication().resetPassword(this._emailValue),
-              }),
+          child: Text('SEND EMAIL'),
+          onPressed: () async => _resetPassword()),
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -30,18 +31,30 @@ class FirebaseAuthentication {
     }
   }
 
-  Future<bool> updateEmail(String newEmail) async {
-    if (newEmail == FirebaseAuth.instance.currentUser.email || newEmail == null)
-      return null;
-    var state;
-    User firebaseUser = FirebaseAuth.instance.currentUser;
-    await firebaseUser
-        .updateEmail(newEmail)
-        .then(
-          (value) => state = true,
-        )
-        .catchError((onError) => state = false);
-    return state;
+  Future updateEmail(String newEmail) async {
+    try {
+      if (newEmail == FirebaseAuth.instance.currentUser.email ||
+          newEmail == null) {
+        showSimpleNotification(Text("Email is your current email."),
+            background: Colours.error);
+        return null;
+      }
+      var state;
+      User firebaseUser = FirebaseAuth.instance.currentUser;
+      await firebaseUser
+          .updateEmail(newEmail)
+          .then(
+            (value) => state = true,
+          )
+          .catchError((onError) => state = false);
+      print("state: " + state.toString());
+      showSimpleNotification(Text("Email has been updated."),
+          background: Colours.primaryColor);
+    } catch (e) {
+      showSimpleNotification(
+          Text("Something went wrong, please try again later"),
+          background: Colours.error);
+    }
   }
 
   Future<void> anonymouslySignIn() async {
@@ -56,8 +69,6 @@ class FirebaseAuthentication {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       return true;
     } catch (e) {
-      showSimpleNotification(Text("No account found for given email address."),
-          background: Colours.error);
       return false;
     }
   }
@@ -112,8 +123,30 @@ class FirebaseAuthentication {
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
 
-    User user = FirebaseAuth.instance.currentUser;
-    print(user);
+  Future<void> deleteAccount() async {
+    try {
+      // ignore: await_only_futures
+      User user = await FirebaseAuth.instance.currentUser;
+      // Delete all data from the user
+      await FirebaseFirestore.instance
+          .collection("movies")
+          .doc(user.uid)
+          .set({"status": "account deleted"})
+          .then((value) => print("movies deleted"))
+          .catchError((e) => print(e));
+      await FirebaseFirestore.instance
+          .collection("series")
+          .doc(user.uid)
+          .set({"status": "account deleted"})
+          .then((value) => print("series deleted"))
+          .catchError((e) => print(e));
+      await user.delete();
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
   }
 }
