@@ -78,21 +78,32 @@ class _SeriesOverview extends State<SeriesPage> {
 
   showDeleteDialog(BuildContext context, Serie serie) {
     Widget cancelBtn = FlatButton(
-      child: Text("Cancel"),
+      child: Text(
+        "Cancel",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
     Widget deleteBtn = FlatButton(
-      child: Text("Delete"),
+      child: Text(
+        "Delete",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       onPressed: () {
         _deleteSerie(serie);
       },
     );
     AlertDialog alert = AlertDialog(
-      title: Text("Delete " + serie.title + " ?"),
+      title: Text(
+        "Delete " + serie.title + " ?",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       content: Text(
-          "You're about to delete a serie, which can't be undone. Are your sure?"),
+        "You're about to delete a serie, which can't be undone. Are your sure?",
+        style: TextStyle(fontSize: Repo.currFontsize - 3),
+      ),
       actions: [
         cancelBtn,
         deleteBtn,
@@ -115,7 +126,8 @@ class _SeriesOverview extends State<SeriesPage> {
       ),
       title: Text(
         seriesList[index].title,
-        style: TextStyle(color: Colours.primaryColor),
+        style: TextStyle(
+            color: Colours.primaryColor, fontSize: Repo.currFontsize - 3),
       ),
       subtitle: Text(
         DateFormat("dd MMM. yyyy")
@@ -123,7 +135,8 @@ class _SeriesOverview extends State<SeriesPage> {
                 .toString() +
             " - " +
             seriesList[index].type,
-        style: TextStyle(fontFamily: "Raleway"),
+        style:
+            TextStyle(fontFamily: "Raleway", fontSize: Repo.currFontsize - 6),
       ),
       trailing: IconButton(
         icon: Icon(Icons.playlist_play),

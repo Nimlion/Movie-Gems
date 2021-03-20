@@ -156,14 +156,18 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
           crew["roles"].isNotEmpty &&
                   crew["roles"][0]["character"] != "" &&
                   crew["roles"][0]["character"] != null
-              ? Text(
-                  "aka " +
-                      crew["roles"].map((role) => role["character"]).join(', '),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: Repo.currFontsize - 5,
-                    fontWeight: FontWeight.w100,
-                    fontFamily: "Raleway",
+              ? Flexible(
+                  child: Text(
+                    "aka " +
+                        crew["roles"]
+                            .map((role) => role["character"])
+                            .join(', '),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: Repo.currFontsize - 5,
+                      fontWeight: FontWeight.w100,
+                      fontFamily: "Raleway",
+                    ),
                   ),
                 )
               : Container(),
@@ -217,7 +221,8 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
           ),
           SizedBox(height: 2),
           crew["department"] != "" && crew["department"] != null
-              ? Text(
+              ? Flexible(
+                  child: Text(
                   crew["department"],
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -225,7 +230,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                     fontWeight: FontWeight.w100,
                     fontFamily: "Raleway",
                   ),
-                )
+                ))
               : Container(),
           SizedBox(height: 5),
           crew["total_episode_count"] != "" &&
@@ -284,15 +289,20 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
   }
 
   Widget _increaseBtn(Function fun) {
-    return RaisedButton(
-      onPressed: fun,
-      padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
-      child: Text(
-        "Load more",
-        style:
-            TextStyle(fontWeight: FontWeight.bold, fontSize: Repo.currFontsize),
+    return Column(children: [
+      SizedBox(height: 10),
+      RaisedButton(
+        onPressed: fun,
+        padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
+        child: Text(
+          "Load more",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: Repo.currFontsize,
+          ),
+        ),
       ),
-    );
+    ]);
   }
 
   @override

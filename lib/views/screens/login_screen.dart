@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
               PageRoutes.sharedAxis(() => ForgotPasswordScreen(),
                   SharedAxisTransitionType.horizontal));
         },
-        child: Text('Forgot Password ?', style: TextStyle(fontSize: 14)),
+        child: Text('Forgot Password ?', style: TextStyle(fontSize: 6)),
       ),
     );
   }
@@ -125,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 () => RegisterScreen(), SharedAxisTransitionType.horizontal));
       },
       child: Text('Don\'t have an account? Register',
-          style: TextStyle(fontSize: 14)),
+          style: TextStyle(fontSize: 6)),
     );
   }
 

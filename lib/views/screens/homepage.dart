@@ -9,7 +9,6 @@ import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/widgets/movie_overlay.dart';
-import 'package:movie_gems/views/widgets/page_filler.dart';
 
 class HomePage extends StatefulWidget {
   HomeScreen createState() => HomeScreen();
@@ -99,7 +98,7 @@ class HomeScreen extends State<HomePage> {
             title,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: 35,
+              fontSize: Repo.currFontsize + 15,
               letterSpacing: 1,
               fontWeight: FontWeight.bold,
             ),
@@ -233,7 +232,11 @@ class HomeScreen extends State<HomePage> {
 
   Widget _loadingPoster() {
     return Container(
-        height: 225, child: Center(child: CircularProgressIndicator()));
+      height: 225,
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 
   @override
@@ -251,7 +254,14 @@ class HomeScreen extends State<HomePage> {
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasError) {
-                      return PageFiller("Error");
+                      return Container(
+                          height: 225,
+                          child: Center(
+                              child: Text(
+                            "Something went wrong.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: Repo.currFontsize + 15),
+                          )));
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -282,7 +292,14 @@ class HomeScreen extends State<HomePage> {
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasError) {
-                      return PageFiller("Error");
+                      return Container(
+                          height: 225,
+                          child: Center(
+                              child: Text(
+                            "Something went wrong.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: Repo.currFontsize + 15),
+                          )));
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -313,7 +330,14 @@ class HomeScreen extends State<HomePage> {
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasError) {
-                      return PageFiller("Error");
+                      return Container(
+                          height: 225,
+                          child: Center(
+                              child: Text(
+                            "Something went wrong.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: Repo.currFontsize + 15),
+                          )));
                     }
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -352,7 +376,14 @@ class HomeScreen extends State<HomePage> {
               builder: (BuildContext context,
                   AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
                 if (snapshot.hasError) {
-                  return PageFiller("Error");
+                  return Container(
+                      height: 225,
+                      child: Center(
+                          child: Text(
+                        "Something went wrong.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: Repo.currFontsize + 15),
+                      )));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {

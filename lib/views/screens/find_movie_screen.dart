@@ -166,7 +166,10 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Search result"),
+        title: Text(
+          "Search result",
+          style: TextStyle(fontSize: Repo.currFontsize),
+        ),
         centerTitle: true,
       ),
       body: StreamBuilder(

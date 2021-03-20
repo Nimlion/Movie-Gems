@@ -7,6 +7,7 @@ import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       "PASSWORD FORGOTTEN",
       textAlign: TextAlign.center,
       style: TextStyle(
-          fontSize: 40,
+          fontSize: Repo.currFontsize + 20,
           fontWeight: FontWeight.bold,
           color: Colours.primaryColor),
     );
@@ -73,7 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 () => LoginScreen(), SharedAxisTransitionType.horizontal));
       },
       child: Text('Remembered your password? Login',
-          style: TextStyle(fontSize: 14)),
+          style: TextStyle(fontSize: Repo.currFontsize - 5)),
     );
   }
 
@@ -86,7 +87,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           fillColor: Colours.primaryColor,
           textStyle: TextStyle(
               color: Colours.white,
-              fontSize: 20,
+              fontSize: Repo.currFontsize,
               fontWeight: FontWeight.w500,
               fontFamily: 'Sansita'),
           shape:

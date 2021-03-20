@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_gems/model/repository.dart';
 
 class PageFiller extends StatelessWidget {
   PageFiller(this.text);
@@ -13,7 +14,8 @@ class PageFiller extends StatelessWidget {
         child: Center(
           child: Text(
             this.text,
-            style: TextStyle(fontSize: 34),
+            style: TextStyle(
+                fontSize: Repo.currFontsize != null ? Repo.currFontsize : 35),
             textAlign: TextAlign.center,
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/TVMazeController.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -103,7 +104,8 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
         children: <Widget>[
           Text(
             "Serie title:",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: Repo.currFontsize, fontWeight: FontWeight.bold),
           ),
           SizedBox(
             height: 10.0,
@@ -136,7 +138,8 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
         Text(
           "Started watching: " +
               DateFormat("dd MMM. yyyy").format(this._dateValue).toString(),
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: Repo.currFontsize, fontWeight: FontWeight.bold),
         ),
         SizedBox(
           height: 10.0,
@@ -145,7 +148,8 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
           onPressed: () => _selectDate(context),
           child: Text(
             'Change date',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: Repo.currFontsize),
           ),
           color: Colours.primaryColor,
         ),
@@ -175,11 +179,17 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
         children: <Widget>[
           Text(
             "Category:",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: Repo.currFontsize, fontWeight: FontWeight.bold),
           ),
           DropdownButton(
               value: _category,
               dropdownColor: Colours.primaryColor,
+              style: TextStyle(
+                fontSize: Repo.currFontsize - 3,
+                fontFamily: "Raleway",
+                color: Theme.of(context).textTheme.bodyText1.color,
+              ),
               items: [
                 DropdownMenuItem(
                   child: Text("Normal"),
@@ -210,7 +220,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
           fillColor: Colours.primaryColor,
           textStyle: TextStyle(
               color: Colours.white,
-              fontSize: 20,
+              fontSize: Repo.currFontsize,
               fontWeight: FontWeight.w500,
               fontFamily: 'Sansita'),
           shape:
@@ -225,7 +235,11 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        appBar: AppBar(title: Text('Add a serie')),
+        appBar: AppBar(
+            title: Text(
+          'Add a serie',
+          style: TextStyle(fontSize: Repo.currFontsize),
+        )),
         body: SafeArea(
           child: Stack(children: <Widget>[
             Container(

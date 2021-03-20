@@ -69,13 +69,17 @@ class _SearchScreenState extends State<SearchScreen> {
       leading: _movieIcon(this._searchedList[index].category),
       title: Text(
         this._searchedList[index].title,
-        style: TextStyle(color: Colours.primaryColor),
+        style: TextStyle(
+            color: Colours.primaryColor, fontSize: Repo.currFontsize - 4),
       ),
-      subtitle: Text(DateFormat("dd MMM. yyyy")
-              .format(this._searchedList[index].date)
-              .toString() +
-          " - " +
-          this._searchedList[index].rating.toString()),
+      subtitle: Text(
+        DateFormat("dd MMM. yyyy")
+                .format(this._searchedList[index].date)
+                .toString() +
+            " - " +
+            this._searchedList[index].rating.toString(),
+        style: TextStyle(fontSize: Repo.currFontsize - 6),
+      ),
       onTap: () => _pushDetailScreen(this._searchedList[index]),
     );
   }
@@ -92,7 +96,10 @@ class _SearchScreenState extends State<SearchScreen> {
         onEditingComplete: () => {},
         keyboardType: TextInputType.name,
         decoration: InputDecoration(
-            border: InputBorder.none, hintText: 'Search for movies'),
+          filled: false,
+          border: InputBorder.none,
+          hintText: 'Search for movies',
+        ),
       ),
     );
   }

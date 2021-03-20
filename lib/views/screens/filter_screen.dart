@@ -115,6 +115,11 @@ class _FilterScreenState extends State<FilterScreen> {
               DropdownButton(
                 value: _order,
                 dropdownColor: Colours.primaryColor,
+                style: TextStyle(
+                  fontSize: Repo.currFontsize - 3,
+                  fontFamily: "Raleway",
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                ),
                 items: [
                   DropdownMenuItem(
                     child: Text("Descending"),
@@ -133,11 +138,16 @@ class _FilterScreenState extends State<FilterScreen> {
                 },
               ),
               SizedBox(width: 20),
-              Text("On"),
+              Text("On", style: TextStyle(fontSize: Repo.currFontsize)),
               SizedBox(width: 20),
               DropdownButton(
                 value: _orderOn,
                 dropdownColor: Colours.primaryColor,
+                style: TextStyle(
+                  fontSize: Repo.currFontsize - 3,
+                  fontFamily: "Raleway",
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                ),
                 items: [
                   DropdownMenuItem(
                     child: Text("Title"),
@@ -173,6 +183,11 @@ class _FilterScreenState extends State<FilterScreen> {
           DropdownButton(
               value: _category,
               dropdownColor: Colours.primaryColor,
+              style: TextStyle(
+                fontSize: Repo.currFontsize - 3,
+                fontFamily: "Raleway",
+                color: Theme.of(context).textTheme.bodyText1.color,
+              ),
               items: [
                 DropdownMenuItem(
                   child: Text("All"),
@@ -249,6 +264,11 @@ class _FilterScreenState extends State<FilterScreen> {
           DropdownButton(
               value: _mpaa,
               dropdownColor: Colours.primaryColor,
+              style: TextStyle(
+                fontSize: Repo.currFontsize - 3,
+                fontFamily: "Raleway",
+                color: Theme.of(context).textTheme.bodyText1.color,
+              ),
               items: [
                 DropdownMenuItem(
                   child: Text("All"),
@@ -301,7 +321,10 @@ class _FilterScreenState extends State<FilterScreen> {
           onPressed: () => _showDateRange(context),
           child: Text(
             'Change range',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: Repo.currFontsize,
+            ),
           ),
           color: Colours.primaryColor,
         ),
@@ -328,7 +351,10 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Widget _checkboxTile(String value) {
     return CheckboxListTile(
-      title: Text(value.toUpperCase()),
+      title: Text(
+        value.toUpperCase(),
+        style: TextStyle(fontSize: Repo.currFontsize - 2),
+      ),
       value: _genres.contains(value),
       contentPadding: EdgeInsets.zero,
       activeColor: Colours.accentColor,
@@ -400,7 +426,10 @@ class _FilterScreenState extends State<FilterScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Filters'),
+        title: Text(
+          'Filters',
+          style: TextStyle(fontSize: Repo.currFontsize),
+        ),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

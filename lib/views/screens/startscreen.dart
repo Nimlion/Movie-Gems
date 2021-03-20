@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
-import 'package:movie_gems/controller/themeController.dart';
-import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colours.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
@@ -11,7 +10,6 @@ import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:movie_gems/views/screens/profile_screen.dart';
 import 'package:movie_gems/views/screens/series_overview.dart';
 import 'package:movie_gems/views/screens/settings_screen.dart';
-import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -20,7 +18,6 @@ class StartScreen extends StatefulWidget {
 
 class StartScreenState extends State<StartScreen> {
   int _selectedTabIndex = 1;
-
   List _pages = [
     HomePage(),
     MoviesPage(),
@@ -54,8 +51,20 @@ class StartScreenState extends State<StartScreen> {
     Navigator.push(context, PageRoutes.fadeThrough(() => ProfileScreen()));
   }
 
+  void rebuildAllChildren(BuildContext context) {
+    void rebuild(Element el) {
+      el.markNeedsBuild();
+      el.visitChildren(rebuild);
+    }
+
+    (context as Element).visitChildren(rebuild);
+  }
+
   void _pushSettingsScreen() {
-    Navigator.push(context, PageRoutes.fadeThrough(() => SettingsScreen()));
+    Navigator.push(context, PageRoutes.fadeThrough(() => SettingsScreen()))
+        .then((value) => {
+              setState(() => {rebuildAllChildren(context)})
+            });
   }
 
   Widget _appBar() {

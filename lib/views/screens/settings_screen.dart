@@ -42,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: TextStyle(
             fontSize: Repo.currFontsize - 3,
             fontFamily: "Raleway",
+            color: Theme.of(context).textTheme.bodyText1.color,
           ),
           items: [
             DropdownMenuItem(
@@ -111,24 +112,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Settings",
-            style: TextStyle(fontSize: Repo.currFontsize),
+    return WillPopScope(
+      onWillPop: () async => true,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Settings",
+              style: TextStyle(fontSize: Repo.currFontsize),
+            ),
+            centerTitle: true,
           ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 40, right: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _fontSizeSelector(),
-                _themeSelector(),
-                SizedBox(height: 50),
-              ],
-            )));
+          body: SingleChildScrollView(
+              padding: const EdgeInsets.only(left: 40, right: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _fontSizeSelector(),
+                  _themeSelector(),
+                  SizedBox(height: 50),
+                ],
+              ))),
+    );
   }
 }

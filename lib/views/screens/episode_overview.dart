@@ -104,7 +104,10 @@ class _EpisodesOverview extends State<EpisodesScreen> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text("Episodes of " + serie.title),
+              title: Text(
+                "Episodes of " + serie.title,
+                style: TextStyle(fontSize: Repo.currFontsize),
+              ),
             ),
             body: SingleChildScrollView(
               child: Column(

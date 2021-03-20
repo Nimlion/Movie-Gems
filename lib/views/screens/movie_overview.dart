@@ -73,21 +73,32 @@ class _MovieOverview extends State<MoviesPage> {
 
   showDeleteDialog(BuildContext context, Movie movie) {
     Widget cancelBtn = FlatButton(
-      child: Text("Cancel"),
+      child: Text(
+        "Cancel",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
     Widget deleteBtn = FlatButton(
-      child: Text("Delete"),
+      child: Text(
+        "Delete",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       onPressed: () {
         _deleteMovie(movie);
       },
     );
     AlertDialog alert = AlertDialog(
-      title: Text("Delete " + movie.title + " ?"),
+      title: Text(
+        "Delete " + movie.title + " ?",
+        style: TextStyle(fontSize: Repo.currFontsize + 3),
+      ),
       content: Text(
-          "You're about to delete a movie, which can't be undone. Are your sure?"),
+        "You're about to delete a movie, which can't be undone. Are your sure?",
+        style: TextStyle(fontSize: Repo.currFontsize),
+      ),
       actions: [
         cancelBtn,
         deleteBtn,
@@ -218,13 +229,17 @@ class _MovieOverview extends State<MoviesPage> {
       ),
       title: Text(
         Repo.movieListenable.value[index].title,
-        style: TextStyle(color: Colours.primaryColor),
+        style: TextStyle(
+            color: Colours.primaryColor, fontSize: Repo.currFontsize - 3),
       ),
-      subtitle: Text(DateFormat("dd MMM. yyyy")
-              .format(Repo.movieListenable.value[index].date)
-              .toString() +
-          " - " +
-          Repo.movieListenable.value[index].rating.toString()),
+      subtitle: Text(
+        DateFormat("dd MMM. yyyy")
+                .format(Repo.movieListenable.value[index].date)
+                .toString() +
+            " - " +
+            Repo.movieListenable.value[index].rating.toString(),
+        style: TextStyle(fontSize: Repo.currFontsize - 6),
+      ),
       trailing: IconButton(
         icon: _movieIcon(Repo.movieListenable.value[index].category),
         onPressed: () => {_toggleCategory(Repo.movieListenable.value[index])},

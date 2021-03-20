@@ -154,6 +154,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           SizedBox(height: 20),
           Text(
             title,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: Repo.currFontsize - 2,
               color: Colours.primaryColor.withOpacity(0.7),
@@ -162,6 +163,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           SizedBox(height: 2),
           Text(
             subtitle,
+            textAlign: TextAlign.center,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: Repo.currFontsize + 2,
@@ -293,21 +295,22 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             cast["name"],
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: Repo.currFontsize,
+              fontSize: Repo.currFontsize - 6,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 2),
           cast["character"] != null && cast["character"] != ""
-              ? Text(
+              ? Flexible(
+                  child: Text(
                   "as " + cast["character"],
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: Repo.currFontsize - 5,
+                    fontSize: Repo.currFontsize - 8,
                     fontWeight: FontWeight.w100,
                     fontFamily: "Raleway",
                   ),
-                )
+                ))
               : Container(),
         ],
       ),
@@ -354,7 +357,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           ),
           SizedBox(height: 2),
           crew["job"] != "" && crew["job"] != null
-              ? Text(
+              ? Flexible(
+                  child: Text(
                   crew["job"],
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -362,7 +366,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                     fontWeight: FontWeight.w100,
                     fontFamily: "Raleway",
                   ),
-                )
+                ))
               : Container(),
           SizedBox(height: 5),
           crew["total_episode_count"] != "" &&
