@@ -9,8 +9,8 @@ import 'movie.dart';
 
 class Repo {
   // Theme
-  static bool darkModeOn = true;
   static final String darkKey = 'darktheme';
+  static bool darkModeOn = true;
 
   // Font size
   static final String fontKey = 'fontsize';
@@ -18,13 +18,14 @@ class Repo {
   static double smallFont = 16;
   static double regularFont = 20;
   static double largeFont = 22;
-  static double giantFont = 26;
+  static double giantFont = 28;
+
+  // User settings
+  static final String latEpiFirstKey = 'latestEpisFirst';
+  static bool latestEpisodesFirst = true;
 
   // Passing of variables
   static List<Movie> movieList = List();
   static ValueNotifier<List<Movie>> movieListenable =
       ValueNotifier<List<Movie>>(List());
-
-  // User settings
-  static bool latestEpisodesFirst = true;
 }

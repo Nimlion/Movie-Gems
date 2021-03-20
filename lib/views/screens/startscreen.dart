@@ -10,6 +10,7 @@ import 'package:movie_gems/views/screens/homepage.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:movie_gems/views/screens/profile_screen.dart';
 import 'package:movie_gems/views/screens/series_overview.dart';
+import 'package:movie_gems/views/screens/settings_screen.dart';
 import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
@@ -53,14 +54,19 @@ class StartScreenState extends State<StartScreen> {
     Navigator.push(context, PageRoutes.fadeThrough(() => ProfileScreen()));
   }
 
+  void _pushSettingsScreen() {
+    Navigator.push(context, PageRoutes.fadeThrough(() => SettingsScreen()));
+  }
+
   Widget _appBar() {
     return AppBar(
       leading: IconButton(
-          icon: Icon(
-            Icons.person,
-            size: 30,
-          ),
-          onPressed: () => _pushProfileScreen()),
+        icon: Icon(
+          Icons.person,
+          size: 30,
+        ),
+        onPressed: () => _pushProfileScreen(),
+      ),
       toolbarHeight: 60.0,
       title: Text(
         'Movie Gems',
@@ -71,12 +77,20 @@ class StartScreenState extends State<StartScreen> {
       ),
       actions: [
         IconButton(
-          padding: EdgeInsets.only(right: 15),
+          padding: EdgeInsets.only(right: 15, left: 15),
+          icon: Icon(
+            Icons.emoji_events,
+            size: 30,
+          ),
+          onPressed: () {},
+        ),
+        IconButton(
+          padding: EdgeInsets.only(right: 15, left: 15),
           icon: Icon(
             Icons.settings,
             size: 30,
           ),
-          onPressed: () {},
+          onPressed: () => _pushSettingsScreen(),
         )
       ],
       centerTitle: true,
@@ -86,9 +100,11 @@ class StartScreenState extends State<StartScreen> {
   Widget _bottomBar() {
     _changeIndex(int index) {
       if (index == 2) return;
-      setState(() {
-        _selectedTabIndex = index;
-      });
+      if (mounted) {
+        setState(() {
+          _selectedTabIndex = index;
+        });
+      }
     }
 
     return CupertinoTabBar(

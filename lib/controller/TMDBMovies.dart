@@ -174,7 +174,6 @@ class TMDBCondensedMovie {
   String originalLanguage;
   String originalTitle;
   String overview;
-  double popularity;
   String poster;
   String releaseDate;
   String title;
@@ -190,7 +189,6 @@ class TMDBCondensedMovie {
       this.originalLanguage,
       this.originalTitle,
       this.overview,
-      this.popularity,
       this.poster,
       this.releaseDate,
       this.title,
@@ -208,7 +206,6 @@ class TMDBCondensedMovie {
       originalLanguage: json['original_language'],
       originalTitle: json['original_title'],
       overview: json['overview'],
-      popularity: json['popularity'],
       poster: json['poster_path'],
       releaseDate: json['release_date'],
       title: json['title'],

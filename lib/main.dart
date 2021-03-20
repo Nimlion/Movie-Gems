@@ -49,7 +49,7 @@ class _StartScreenState extends State<StartScreen> {
 
     setState(() {
       // Get the current fontsize
-      if (prefs.getString(Repo.fontKey) != null) {
+      if (prefs.getDouble(Repo.fontKey) != null) {
         Repo.currFontsize = prefs.getDouble(Repo.fontKey);
       } else {
         Repo.currFontsize = Repo.regularFont;
