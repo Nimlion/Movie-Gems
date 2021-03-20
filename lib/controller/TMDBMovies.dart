@@ -3,10 +3,22 @@ import 'dart:convert';
 
 // Necessary imports
 import 'package:http/http.dart' as http;
+import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/env.dart';
 
 class TMDBMovieController {
   String apiKey = ENV().tmdb;
+
+  Future<TMDBCast> fetchMovieCast(String id) async {
+    final endpoint = await http.get(
+        'https://api.themoviedb.org/3/movie/$id/credits?api_key=$apiKey&language=en-US');
+
+    if (endpoint.statusCode == 200) {
+      return TMDBCast.fromJson(json.decode(endpoint.body));
+    } else {
+      throw Exception('Failed to load cast of movie');
+    }
+  }
 
   Future<TMDBMovie> fetchTMDBData(String imdbId) async {
     final endpoint = await http

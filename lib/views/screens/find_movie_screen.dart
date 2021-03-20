@@ -194,16 +194,6 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
                     SizedBox(height: 20),
                     _description(film.plot),
                     SizedBox(height: 20),
-                    film.actors != "" && film.actors != null
-                        ? Column(
-                            children: [
-                              _headline("Actors"),
-                              SizedBox(height: 5),
-                              _clause(film.actors),
-                            ],
-                          )
-                        : SizedBox(),
-                    SizedBox(height: 20),
                     film.awards != "" && film.awards != null
                         ? Column(children: [
                             _headline("Awards"),

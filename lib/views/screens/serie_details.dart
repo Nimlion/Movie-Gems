@@ -140,6 +140,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                 )
               : SizedBox(
                   height: 200,
+                  width: 120,
                   child: Placeholder(),
                 ),
           SizedBox(height: 15),
@@ -202,6 +203,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                 )
               : SizedBox(
                   height: 200,
+                  width: 120,
                   child: Placeholder(),
                 ),
           SizedBox(height: 15),
@@ -510,7 +512,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                                                     cast.cast[index]);
                                               }),
                                             ),
-                                            cast.crew.length > castmembers
+                                            cast.cast.length > castmembers
                                                 ? _increaseBtn(() => {
                                                       setState(() {
                                                         castmembers += 4;

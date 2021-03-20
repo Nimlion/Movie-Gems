@@ -60,8 +60,8 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
     } else {
       seriesDoc
           .update({
-            firebaseProof(this._titleValue): {
-              "title": this._titleValue,
+            firebaseProof(tvMazeObject.show["name"]): {
+              "title": tvMazeObject.show["name"],
               "startdate": this._dateValue,
               "category": this._category,
               "tvMazeURL": tvMazeObject.show["url"],

@@ -7,11 +7,11 @@ class Movie {
   String runtime;
   String genre;
   String director;
-  String actors;
   String poster;
   String awards;
   String imdbRating;
   String imdbID;
+  int tmdbID;
   String production;
 
   Movie(
@@ -23,11 +23,11 @@ class Movie {
       this.runtime,
       this.genre,
       this.director,
-      this.actors,
       this.poster,
       this.awards,
       this.imdbRating,
       this.imdbID,
+      this.tmdbID,
       this.production});
 
   Movie.fromOMDB(
@@ -39,11 +39,11 @@ class Movie {
       String runtime,
       String genre,
       String director,
-      String actors,
       String poster,
       String awards,
       String imdbRating,
       String imdbID,
+      int tmdbID,
       String production) {
     this.title = title;
     this.rating = rating;
@@ -53,11 +53,11 @@ class Movie {
     this.runtime = runtime;
     this.genre = genre;
     this.director = director;
-    this.actors = actors;
     this.poster = poster;
     this.awards = awards;
     this.imdbRating = imdbRating;
     this.imdbID = imdbID;
+    this.tmdbID = tmdbID;
     this.production = production;
   }
 
@@ -87,8 +87,6 @@ class Movie {
         "director: " +
         director.toString() +
         ", " +
-        "actors: " +
-        actors.toString() +
         "poster: " +
         poster.toString() +
         ", " +
@@ -100,6 +98,9 @@ class Movie {
         ", " +
         "imdbID: " +
         imdbID.toString() +
+        ", " +
+        "tmdbID: " +
+        tmdbID.toString() +
         ", " +
         "production: " +
         production.toString() +
@@ -117,11 +118,11 @@ class Movie {
       parsedJson['Runtime'],
       parsedJson['Genre'],
       parsedJson['Director'],
-      parsedJson['Actors'],
       parsedJson['Poster'],
       parsedJson['Awards'],
       parsedJson['imdbRating'],
       parsedJson['imdbID'],
+      parsedJson['tmdbID'],
       parsedJson['Production'],
     );
   }
@@ -135,11 +136,11 @@ class Movie {
         runtime = map['Runtime'],
         genre = map['Genre'],
         director = map['Director'],
-        actors = map['Actors'],
         poster = map['Poster'],
         awards = map['Awards'],
         imdbRating = map['imdbRating'],
         imdbID = map['imdbID'],
+        tmdbID = map['tmdbID'],
         production = map['Production'];
 
   Map<String, dynamic> toMap() => {
@@ -151,11 +152,11 @@ class Movie {
         "runtime": this.runtime,
         "genre": this.genre,
         "director": this.director,
-        "actors": this.actors,
         "poster": this.poster,
         "awards": this.awards,
         "imdbRating": this.imdbRating,
         "imdbID": this.imdbID,
+        "tmdbID": this.tmdbID,
         "production": this.production
       };
 }

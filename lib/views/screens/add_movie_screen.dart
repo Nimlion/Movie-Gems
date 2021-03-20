@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
+import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colors.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
@@ -42,46 +43,57 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
   }
 
   Future<void> addMovie() async {
-    OMDBController().fetchOMDBData(_titleValue).then((response) => response ==
-            null
-        ? showSimpleNotification(Text("failed to add movie"),
-            background: Colors.red)
-        : moviesdoc
-            .update({
-              firebaseProof(this._titleValue): {
-                "title": this._titleValue,
-                "rating": this._rating,
-                "date": this._dateValue,
-                "category": this._category,
-                "rated": response.rated,
-                "runtime": response.runtime,
-                "director": response.director,
-                "actors": response.actors,
-                "poster": response.poster,
-                "awards": response.awards,
-                "genre": response.genre,
-                "production": response.production,
-                "imdbRating": response.imdbRating,
-                "imdbID": response.imdbID,
-              }
-            })
-            .then((value) => {
-                  showSimpleNotification(Text("movie succesfully added"),
-                      background: Colours.primaryColor),
-                  Navigator.pop(context),
-                })
-            .catchError((error) => {
-                  if (error.message == "Some requested document was not found.")
-                    {
-                      _addDocument(),
-                    }
-                  else
-                    {
-                      showSimpleNotification(Text("failed to add movie"),
-                          background: Colors.red)
-                    }
-                }));
-    // super.dispose();
+    OMDBResponse omdbObject;
+    TMDBMovie tmdbObject;
+    await OMDBController()
+        .fetchOMDBData(_titleValue)
+        .then((omdbResponse) async => {
+              omdbObject = omdbResponse,
+              await TMDBMovieController()
+                  .fetchTMDBData(omdbResponse.imdbID)
+                  .then((tmdbResponse) => tmdbObject = tmdbResponse)
+            });
+
+    if (omdbObject == null || tmdbObject == null) {
+      showSimpleNotification(Text("Movie could not be found"),
+          background: Colors.red);
+    } else {
+      moviesdoc
+          .update({
+            firebaseProof(omdbObject.title): {
+              "title": omdbObject.title,
+              "rating": this._rating,
+              "date": this._dateValue,
+              "category": this._category,
+              "rated": omdbObject.rated,
+              "runtime": omdbObject.runtime,
+              "director": omdbObject.director,
+              "poster": omdbObject.poster,
+              "awards": omdbObject.awards,
+              "genre": omdbObject.genre,
+              "production": omdbObject.production,
+              "imdbRating": omdbObject.imdbRating,
+              "imdbID": omdbObject.imdbID,
+              "tmdbID": tmdbObject.id,
+            }
+          })
+          .then((value) => {
+                showSimpleNotification(Text("movie succesfully added"),
+                    background: Colours.primaryColor),
+                Navigator.pop(context),
+              })
+          .catchError((error) => {
+                if (error.message == "Some requested document was not found.")
+                  {
+                    _addDocument(),
+                  }
+                else
+                  {
+                    showSimpleNotification(Text("failed to add movie"),
+                        background: Colors.red)
+                  }
+              });
+    }
   }
 
   Widget _titleField() {

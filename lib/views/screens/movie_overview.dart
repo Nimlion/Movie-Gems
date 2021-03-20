@@ -53,11 +53,11 @@ class _MovieOverview extends State<MoviesPage> {
             movieMap.value['runtime'],
             movieMap.value['genre'],
             movieMap.value['director'],
-            movieMap.value['actors'],
             movieMap.value['poster'],
             movieMap.value['awards'],
             movieMap.value['imdbRating'],
             movieMap.value['imdbID'],
+            movieMap.value['tmdbID'],
             movieMap.value['production'],
           ));
         }
