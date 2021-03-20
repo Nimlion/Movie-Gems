@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appStateNotifier.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';

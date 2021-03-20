@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 
 Widget movieOverlay(

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-import 'colors.dart';
+import 'colours.dart';
 
 class FirebaseAuthentication {
   FirebaseAuth auth = FirebaseAuth.instance;

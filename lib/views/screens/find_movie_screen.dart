@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
 import 'package:overlay_support/overlay_support.dart';

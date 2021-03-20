@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';

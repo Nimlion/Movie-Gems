@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';

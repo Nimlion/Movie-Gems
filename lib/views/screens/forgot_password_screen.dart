@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appStateNotifier.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:overlay_support/overlay_support.dart';

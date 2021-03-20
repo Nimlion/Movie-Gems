@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/TVMazeController.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';

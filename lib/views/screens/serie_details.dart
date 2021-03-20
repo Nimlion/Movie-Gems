@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
-import 'package:movie_gems/model/colors.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
