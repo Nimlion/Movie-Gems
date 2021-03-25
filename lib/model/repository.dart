@@ -16,8 +16,6 @@ class Repo {
   static final String fontKey = 'fontsize';
   static double currFontsize;
   static double smallFont = 16;
-  static double regularFont = 20;
-  static double largeFont = 22;
   static double giantFont = 28;
 
   // User settings

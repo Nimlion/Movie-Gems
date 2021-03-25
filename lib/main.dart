@@ -53,7 +53,7 @@ class _StartScreenState extends State<StartScreen> {
       if (prefs.getDouble(Repo.fontKey) != null) {
         Repo.currFontsize = prefs.getDouble(Repo.fontKey);
       } else {
-        Repo.currFontsize = Repo.regularFont;
+        Repo.currFontsize = 20;
       }
     });
 

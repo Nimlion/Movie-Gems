@@ -52,49 +52,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         SizedBox(height: 30),
         _heading("Font Size"),
-        DropdownButton(
-          value: Repo.currFontsize,
-          dropdownColor: Colours.primaryColor,
-          style: TextStyle(
-            fontSize: Repo.currFontsize - 3,
-            fontFamily: "Raleway",
-            color: Theme.of(context).textTheme.bodyText1.color,
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 6.0,
+            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10.0),
+            thumbColor: Colours.primaryColor,
+            overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
+            activeTickMarkColor: Colours.primaryColor,
+            inactiveTickMarkColor: Colours.primaryColor,
+            valueIndicatorColor: Colours.primaryColor,
+            valueIndicatorTextStyle: TextStyle(
+              color: Colours.white,
+            ),
           ),
-          items: [
-            DropdownMenuItem(
-              child: Text(
-                "I am an ant",
-              ),
-              value: Repo.smallFont,
-            ),
-            DropdownMenuItem(
-              child: Text(
-                "Regular",
-              ),
-              value: Repo.regularFont,
-            ),
-            DropdownMenuItem(
-              child: Text(
-                "Large",
-              ),
-              value: Repo.largeFont,
-            ),
-            DropdownMenuItem(
-              child: Text(
-                "Grandma",
-              ),
-              value: Repo.giantFont,
-            ),
-          ],
-          onChanged: (value) {
-            if (mounted) {
-              setState(() {
-                Repo.currFontsize = value;
-              });
-              _updateFontSizePrefs(Repo.fontKey, value);
-            }
-          },
-        ),
+          child: Slider(
+            value: Repo.currFontsize,
+            min: Repo.smallFont,
+            max: Repo.giantFont,
+            divisions: 6,
+            label: Repo.currFontsize.toStringAsFixed(1),
+            onChanged: (value) {
+              if (mounted) {
+                setState(() {
+                  Repo.currFontsize = value;
+                });
+                _updateFontSizePrefs(Repo.fontKey, value);
+              }
+            },
+          ),
+        )
       ],
     );
   }

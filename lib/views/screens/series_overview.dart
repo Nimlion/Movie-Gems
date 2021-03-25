@@ -144,6 +144,7 @@ class _SeriesOverview extends State<SeriesPage> {
       ),
       onTap: () => {_pushSerieDetailPage(seriesList[index])},
       onLongPress: () => showDeleteDialog(context, seriesList[index]),
+      dense: Repo.currFontsize < 20,
     );
   }
 

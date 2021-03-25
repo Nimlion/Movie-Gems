@@ -247,6 +247,7 @@ class _MovieOverview extends State<MoviesPage> {
       onTap: () => _pushDetailScreen(Repo.movieListenable.value[index]),
       onLongPress: () =>
           showDeleteDialog(context, Repo.movieListenable.value[index]),
+      dense: Repo.currFontsize < 20,
     );
   }
 
