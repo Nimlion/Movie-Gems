@@ -29,6 +29,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       prefs.setString(repo, value);
     }
   }
+
+  Future<void> _updateEpiOrderPrefs(String repo, bool value) async {
+    if (mounted) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setBool(repo, value);
     }
   }
 
@@ -158,6 +164,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ],
     );
   }
+
+  Widget _epiOrderSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 30),
+        _heading("Episode order"),
+        DropdownButton(
+          value: Repo.latestEpisodesFirst,
+          dropdownColor: Colours.primaryColor,
+          style: TextStyle(
+            fontSize: Repo.currFontsize - 3,
+            fontFamily: "Raleway",
+            color: Theme.of(context).textTheme.bodyText1.color,
+          ),
+          items: [
+            DropdownMenuItem(
+              child: Text(
+                "Latest first",
+              ),
+              value: true,
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Oldest first",
+              ),
+              value: false,
+            )
+          ],
+          onChanged: (bool value) {
+            if (mounted) {
+              setState(() {
+                Repo.latestEpisodesFirst = value;
+              });
+              _updateEpiOrderPrefs(Repo.latEpiFirstKey, value);
             }
           },
         ),
@@ -212,6 +254,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   _fontSizeSelector(),
                   _colorSelector(),
+                  _epiOrderSelector(),
                   _themeSelector(),
                   SizedBox(height: 50),
                 ],

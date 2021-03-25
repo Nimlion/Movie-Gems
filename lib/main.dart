@@ -63,6 +63,13 @@ class _StartScreenState extends State<StartScreen> {
         Colours.updateUserColours(prefs.getString(Colours.colorKey));
       }
     });
+
+    setState(() {
+      // Get the latest episode first value
+      if (prefs.getBool(Repo.latEpiFirstKey) != null) {
+        Repo.latestEpisodesFirst = prefs.getBool(Repo.latEpiFirstKey);
+      }
+    });
   }
 
   @override
