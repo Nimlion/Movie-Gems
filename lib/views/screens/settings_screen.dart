@@ -14,11 +14,21 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  Future<void> _updateDoublePrefs(String repo, value) async {
+  Future<void> _updateFontSizePrefs(String repo, double value) async {
     if (mounted) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      prefs.setDouble(Repo.fontKey, value);
+      prefs.setDouble(repo, value);
+    }
+  }
+
+  Future<void> _updateThemeColourPrefs(String repo, String value) async {
+    if (mounted) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setString(repo, value);
+    }
+  }
     }
   }
 
@@ -75,7 +85,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 Repo.currFontsize = value;
               });
-              _updateDoublePrefs(Repo.fontKey, value);
+              _updateFontSizePrefs(Repo.fontKey, value);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _colorSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 30),
+        _heading("Color theme"),
+        DropdownButton(
+          value: Colours.currentColor,
+          dropdownColor: Colours.primaryColor,
+          style: TextStyle(
+            fontSize: Repo.currFontsize - 3,
+            fontFamily: "Raleway",
+            color: Theme.of(context).textTheme.bodyText1.color,
+          ),
+          items: [
+            DropdownMenuItem(
+              child: Text(
+                "Indiana",
+              ),
+              value: "Indiana",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Miami",
+              ),
+              value: "Miami",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Orange",
+              ),
+              value: "Orange",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Woods",
+              ),
+              value: "Woods",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Summer",
+              ),
+              value: "Summer",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Barbie",
+              ),
+              value: "Barbie",
+            ),
+          ],
+          onChanged: (value) {
+            if (mounted) {
+              setState(() {
+                Colours.updateUserColours(value);
+              });
+              _updateThemeColourPrefs(Colours.colorKey, value);
+            }
+          },
+        ),
+      ],
+    );
+  }
             }
           },
         ),
@@ -129,6 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _fontSizeSelector(),
+                  _colorSelector(),
                   _themeSelector(),
                   SizedBox(height: 50),
                 ],

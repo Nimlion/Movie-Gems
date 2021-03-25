@@ -43,6 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         SizedBox(height: 5),
         TextField(
+            cursorColor: Colours.primaryColor,
             style: TextStyle(
               color: Colours.background,
             ),

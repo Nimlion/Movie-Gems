@@ -50,11 +50,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Widget _emailField() {
     return TextField(
+      cursorColor: Colours.primaryColor,
       keyboardType: TextInputType.emailAddress,
       onChanged: (value) => this._emailValue = value,
       textInputAction: TextInputAction.send,
       onEditingComplete: () => _resetPassword(),
       decoration: InputDecoration(
+          labelStyle: TextStyle(color: Colours.primaryColor),
+          hoverColor: Colours.primaryColor,
           labelText: 'email',
           focusColor: Colours.primaryColor,
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),

@@ -69,13 +69,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _emailField() {
     final node = FocusScope.of(context);
     return TextField(
+      cursorColor: Colours.primaryColor,
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
       onEditingComplete: () => node.nextFocus(),
       decoration: InputDecoration(
           labelText: 'email',
+          labelStyle: TextStyle(color: Colours.primaryColor),
           focusColor: Colours.primaryColor,
+          hoverColor: Colours.primaryColor,
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
           fillColor: Colours.shadow,
@@ -86,12 +89,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _passwordField() {
     final node = FocusScope.of(context);
     return TextField(
+      cursorColor: Colours.primaryColor,
       controller: _passwordController,
       obscureText: true,
       textInputAction: TextInputAction.send,
       onSubmitted: (_) => {node.unfocus(), siginIn()},
       decoration: InputDecoration(
           labelText: 'password',
+          labelStyle: TextStyle(color: Colours.primaryColor),
+          focusColor: Colours.primaryColor,
+          hoverColor: Colours.primaryColor,
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
           fillColor: Colours.shadow,
@@ -110,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
               PageRoutes.sharedAxis(() => ForgotPasswordScreen(),
                   SharedAxisTransitionType.horizontal));
         },
-        child: Text('Forgot Password ?', style: TextStyle(fontSize: 6)),
+        child: Text('Forgot Password ?', style: TextStyle(fontSize: 16)),
       ),
     );
   }
@@ -125,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 () => RegisterScreen(), SharedAxisTransitionType.horizontal));
       },
       child: Text('Don\'t have an account? Register',
-          style: TextStyle(fontSize: 6)),
+          style: TextStyle(fontSize: 16)),
     );
   }
 

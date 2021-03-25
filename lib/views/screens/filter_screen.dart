@@ -230,6 +230,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 activeTickMarkColor: Colours.primaryColor,
                 inactiveTickMarkColor: Colours.primaryColor,
                 valueIndicatorColor: Colours.primaryColor,
+                activeTrackColor: Colours.accentColor,
                 valueIndicatorTextStyle: TextStyle(
                   color: Colours.white,
                 ),
@@ -322,6 +323,7 @@ class _FilterScreenState extends State<FilterScreen> {
           child: Text(
             'Change range',
             style: TextStyle(
+              color: Colours.white,
               fontWeight: FontWeight.bold,
               fontSize: Repo.currFontsize,
             ),
@@ -336,10 +338,28 @@ class _FilterScreenState extends State<FilterScreen> {
     DateTimeRange picked = await showDateRangePicker(
       initialEntryMode: DatePickerEntryMode.input,
       context: context,
-      helpText: 'When was the movie watched',
+      helpText: 'When were the movies watched',
       initialDateRange: this._dateRange,
       firstDate: DateTime(1900),
       lastDate: this._dateRange.end,
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.dark(
+                background: Colours.gold,
+                primary: Colours.primaryColor,
+                onPrimary: Colours.white,
+                surface: Colours.white,
+                onSurface: Colours.primaryColor,
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: false,
+                focusColor: Colours.primaryColor,
+                hoverColor: Colours.primaryColor,
+              )),
+          child: child,
+        );
+      },
     );
     if (picked != null && picked != this._dateRange) {
       setState(() {
@@ -415,7 +435,10 @@ class _FilterScreenState extends State<FilterScreen> {
       color: Colours.primaryColor,
       child: Text(
         "Apply Filters",
-        style: TextStyle(fontSize: Repo.currFontsize),
+        style: TextStyle(
+          fontSize: Repo.currFontsize,
+          color: Colours.white,
+        ),
       ),
       onPressed: () => this.updateList(),
     );

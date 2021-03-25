@@ -292,11 +292,13 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     return Column(children: [
       SizedBox(height: 10),
       RaisedButton(
+        color: Colours.primaryColor,
         onPressed: fun,
         padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
         child: Text(
           "Load more",
           style: TextStyle(
+            color: Colours.white,
             fontWeight: FontWeight.bold,
             fontSize: Repo.currFontsize,
           ),

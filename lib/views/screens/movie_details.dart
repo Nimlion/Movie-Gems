@@ -295,7 +295,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             cast["name"],
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: Repo.currFontsize - 6,
+              fontSize: Repo.currFontsize - 5,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -306,7 +306,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   "as " + cast["character"],
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: Repo.currFontsize - 8,
+                    fontSize: Repo.currFontsize - 5,
                     fontWeight: FontWeight.w100,
                     fontFamily: "Raleway",
                   ),
@@ -320,11 +320,15 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget _increaseBtn(Function fun) {
     return RaisedButton(
       onPressed: fun,
+      color: Colours.primaryColor,
       padding: EdgeInsets.fromLTRB(25, 15, 25, 15),
       child: Text(
         "Load more",
-        style:
-            TextStyle(fontWeight: FontWeight.bold, fontSize: Repo.currFontsize),
+        style: TextStyle(
+          color: Colours.white,
+          fontWeight: FontWeight.bold,
+          fontSize: Repo.currFontsize,
+        ),
       ),
     );
   }

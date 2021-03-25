@@ -63,13 +63,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _emailField() {
     final node = FocusScope.of(context);
     return TextField(
+      cursorColor: Colours.primaryColor,
       keyboardType: TextInputType.emailAddress,
       onChanged: (value) => this._emailValue = value,
       textInputAction: TextInputAction.next,
       onEditingComplete: () => node.nextFocus(),
       decoration: InputDecoration(
-          labelText: 'email',
+          labelStyle: TextStyle(color: Colours.primaryColor),
+          hoverColor: Colours.primaryColor,
           focusColor: Colours.primaryColor,
+          labelText: 'email',
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
           fillColor: Colours.shadow,
@@ -80,11 +83,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _passwordField() {
     final node = FocusScope.of(context);
     return TextField(
+      cursorColor: Colours.primaryColor,
       obscureText: true,
       onChanged: (value) => this._passwordValue = value,
       textInputAction: TextInputAction.next,
       onEditingComplete: () => node.nextFocus(),
       decoration: InputDecoration(
+          labelStyle: TextStyle(color: Colours.primaryColor),
+          hoverColor: Colours.primaryColor,
+          focusColor: Colours.primaryColor,
           labelText: 'password',
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
@@ -96,11 +103,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _confirmPasswordField() {
     final node = FocusScope.of(context);
     return TextField(
+      cursorColor: Colours.primaryColor,
       obscureText: true,
       onChanged: (value) => this._confirmPasswordValue = value,
       textInputAction: TextInputAction.done,
       onSubmitted: (_) => {node.unfocus(), registerUser()},
       decoration: InputDecoration(
+          labelStyle: TextStyle(color: Colours.primaryColor),
+          hoverColor: Colours.primaryColor,
+          focusColor: Colours.primaryColor,
           labelText: 'password',
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,

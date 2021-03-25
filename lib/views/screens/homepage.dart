@@ -405,7 +405,7 @@ class HomeScreen extends State<HomePage> {
                   ),
                 ]);
               }),
-      SizedBox(height: 35),
+      SizedBox(height: 10),
     ]));
   }
 }

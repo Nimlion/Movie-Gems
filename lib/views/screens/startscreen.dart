@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
@@ -119,6 +118,7 @@ class StartScreenState extends State<StartScreen> {
     return CupertinoTabBar(
       currentIndex: _selectedTabIndex,
       onTap: _changeIndex,
+      activeColor: Colours.primaryColor,
       items: [
         BottomNavigationBarItem(label: "Home", icon: Icon(Icons.home)),
         BottomNavigationBarItem(label: "Movies", icon: Icon(Icons.movie)),
@@ -134,6 +134,7 @@ class StartScreenState extends State<StartScreen> {
   Widget _customFAB() {
     return FloatingActionButton(
       onPressed: () => _pushAddPage(),
+      backgroundColor: Colours.primaryColor,
       child: Icon(
         Icons.add,
         size: 30,

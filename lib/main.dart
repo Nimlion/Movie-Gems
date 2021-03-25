@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:movie_gems/controller/themeController.dart';
 import 'package:movie_gems/model/appTheme.dart';
+import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -48,11 +49,18 @@ class _StartScreenState extends State<StartScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      // Get the current fontsize
+      // Get the current font size
       if (prefs.getDouble(Repo.fontKey) != null) {
         Repo.currFontsize = prefs.getDouble(Repo.fontKey);
       } else {
         Repo.currFontsize = Repo.regularFont;
+      }
+    });
+
+    setState(() {
+      // Get the current color theme
+      if (prefs.getString(Colours.colorKey) != null) {
+        Colours.updateUserColours(prefs.getString(Colours.colorKey));
       }
     });
   }
