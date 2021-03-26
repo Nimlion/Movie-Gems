@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,10 @@ class ThemeController {
 
       Provider.of<AppStateNotifier>(context, listen: false)
           .updateTheme(prefs.getBool(Repo.darkKey));
+    } else {
+      SchedulerBinding.instance.window.platformBrightness == Brightness.dark
+          ? updateTheme(true, context)
+          : updateTheme(false, context);
     }
   }
 

@@ -160,20 +160,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
         body: SafeArea(
             child: Stack(children: <Widget>[
-      Positioned(
-        top: 10,
-        right: 10,
-        child: Switch(
-          activeColor: Colours.primaryColor,
-          value:
-              Provider.of<AppStateNotifier>(context, listen: false).darkModeOn,
-          onChanged: (boolValue) {
-            setState(() {
-              ThemeController().updateTheme(boolValue, context);
-            });
-          },
-        ),
-      ),
       Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
