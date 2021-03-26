@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
@@ -27,9 +28,26 @@ class HomeScreen extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    callApis();
+  }
+
+  Future<void> callApis() async {
+    if (!await Internet().checkConnection()) {
+      setState(() {
+        Repo.connected = false;
+      });
+      return null;
+    }
+    setState(() {
+      Repo.connected = true;
+    });
+
     TMDBMovieController tmdb = TMDBMovieController();
-    fututurePopular = tmdb.fetchPopular();
-    futurePlaying = tmdb.fetchPlaying();
+
+    setState(() {
+      fututurePopular = tmdb.fetchPopular();
+      futurePlaying = tmdb.fetchPlaying();
+    });
 
     getFirstMovie();
     getRecommendations();
@@ -239,58 +257,173 @@ class HomeScreen extends State<HomePage> {
     );
   }
 
+  Widget _noConnectionWidget() {
+    return Container(
+        height: 225,
+        child: Center(
+            child: Text(
+          "No internet connection.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: Repo.currFontsize + 10,
+            color: Colours.error,
+          ),
+        )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Column(children: [
       Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
           height: 290.0,
           child: Column(
             children: [
               rowTitle("Top movies"),
-              StreamBuilder(
-                  stream: this.fututurePopular.asStream(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.hasError) {
-                      return Container(
-                          height: 225,
-                          child: Center(
-                              child: Text(
-                            "Something went wrong.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: Repo.currFontsize + 15),
-                          )));
-                    }
+              !Repo.connected
+                  ? _noConnectionWidget()
+                  : this.fututurePopular == null
+                      ? _loadingPoster()
+                      : StreamBuilder(
+                          stream: this.fututurePopular.asStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Container(
+                                  height: 225,
+                                  child: Center(
+                                      child: Text(
+                                    "Something went wrong.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: Repo.currFontsize + 15),
+                                  )));
+                            }
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _loadingPoster();
-                    }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _loadingPoster();
+                            }
 
-                    List<TMDBCondensedMovie> list = snapshot.data;
-                    return Expanded(
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: list.length,
-                          itemBuilder: (context, index) {
-                            return moviePoster(index, list[index]);
+                            List<TMDBCondensedMovie> list = snapshot.data;
+                            return Expanded(
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    return moviePoster(index, list[index]);
+                                  }),
+                            );
                           }),
-                    );
-                  }),
             ],
           )),
       Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
           height: 320.0,
           child: Column(
             children: [
               SizedBox(height: 30),
               rowTitle("Now playing"),
-              StreamBuilder(
-                  stream: this.futurePlaying.asStream(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              !Repo.connected
+                  ? _noConnectionWidget()
+                  : this.futurePlaying == null
+                      ? _loadingPoster()
+                      : StreamBuilder(
+                          stream: this.futurePlaying.asStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Container(
+                                  height: 225,
+                                  child: Center(
+                                      child: Text(
+                                    "Something went wrong.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: Repo.currFontsize + 15),
+                                  )));
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _loadingPoster();
+                            }
+
+                            List<TMDBCondensedMovie> list = snapshot.data;
+                            return Expanded(
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    return moviePoster(index, list[index]);
+                                  }),
+                            );
+                          }),
+            ],
+          )),
+      Container(
+          height: 320.0,
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              rowTitle("Recent movies"),
+              !Repo.connected
+                  ? _noConnectionWidget()
+                  : StreamBuilder<DocumentSnapshot>(
+                      stream: movies.snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Container(
+                              height: 225,
+                              child: Center(
+                                  child: Text(
+                                "Something went wrong.",
+                                textAlign: TextAlign.center,
+                                style:
+                                    TextStyle(fontSize: Repo.currFontsize + 15),
+                              )));
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return _loadingPoster();
+                        }
+
+                        DocumentSnapshot querydoc = snapshot.data;
+                        if (querydoc == null ||
+                            querydoc.data() == null ||
+                            querydoc.data().entries.isEmpty) {
+                          return Container(
+                              height: 225,
+                              child: Center(
+                                  child: Text(
+                                "No movies added yet.",
+                                textAlign: TextAlign.center,
+                                style:
+                                    TextStyle(fontSize: Repo.currFontsize + 15),
+                              )));
+                        } else {
+                          return Expanded(
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: movieList.take(10).length,
+                                itemBuilder: (context, index) {
+                                  return collectionPoster(
+                                      index, movieList[index]);
+                                }),
+                          );
+                        }
+                      }),
+            ],
+          )),
+      !Repo.connected
+          ? Container()
+          : this.futureSimilair == null
+              ? Container()
+              : StreamBuilder<List<TMDBCondensedMovie>>(
+                  stream: this.futureSimilair.asStream(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
                     if (snapshot.hasError) {
                       return Container(
                           height: 225,
@@ -307,104 +440,20 @@ class HomeScreen extends State<HomePage> {
                     }
 
                     List<TMDBCondensedMovie> list = snapshot.data;
-                    return Expanded(
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: list.length,
-                          itemBuilder: (context, index) {
-                            return moviePoster(index, list[index]);
-                          }),
-                    );
+
+                    if (list.isEmpty) {
+                      return Container();
+                    }
+                    return Column(mainAxisSize: MainAxisSize.min, children: [
+                      SizedBox(height: 30),
+                      rowTitle("Recommendations"),
+                      Column(
+                        children: list.take(10).map<Widget>((item) {
+                          return _recommendation(item);
+                        }).toList(),
+                      ),
+                    ]);
                   }),
-            ],
-          )),
-      Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          height: 320.0,
-          child: Column(
-            children: [
-              SizedBox(height: 30),
-              rowTitle("Recent movies"),
-              StreamBuilder<DocumentSnapshot>(
-                  stream: movies.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Container(
-                          height: 225,
-                          child: Center(
-                              child: Text(
-                            "Something went wrong.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: Repo.currFontsize + 15),
-                          )));
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _loadingPoster();
-                    }
-
-                    DocumentSnapshot querydoc = snapshot.data;
-                    if (querydoc == null ||
-                        querydoc.data() == null ||
-                        querydoc.data().entries.isEmpty) {
-                      return Container(
-                          height: 225,
-                          child: Center(
-                              child: Text(
-                            "No movies added yet.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: Repo.currFontsize + 15),
-                          )));
-                    } else {
-                      return Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: movieList.take(10).length,
-                            itemBuilder: (context, index) {
-                              return collectionPoster(index, movieList[index]);
-                            }),
-                      );
-                    }
-                  }),
-            ],
-          )),
-      this.futureSimilair == null
-          ? Container()
-          : StreamBuilder<List<TMDBCondensedMovie>>(
-              stream: this.futureSimilair.asStream(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
-                if (snapshot.hasError) {
-                  return Container(
-                      height: 225,
-                      child: Center(
-                          child: Text(
-                        "Something went wrong.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: Repo.currFontsize + 15),
-                      )));
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _loadingPoster();
-                }
-
-                List<TMDBCondensedMovie> list = snapshot.data;
-
-                if (list.isEmpty) {
-                  return Container();
-                }
-                return Column(mainAxisSize: MainAxisSize.min, children: [
-                  SizedBox(height: 30),
-                  rowTitle("Recommendations"),
-                  Column(
-                    children: list.take(10).map<Widget>((item) {
-                      return _recommendation(item);
-                    }).toList(),
-                  ),
-                ]);
-              }),
       SizedBox(height: 10),
     ]));
   }

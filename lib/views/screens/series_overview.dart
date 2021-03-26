@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -28,12 +29,14 @@ class _SeriesOverview extends State<SeriesPage> {
     getSeries();
   }
 
-  void _pushSerieDetailPage(Serie serie) {
+  Future<void> _pushSerieDetailPage(Serie serie) async {
+    if (!await Internet().checkConnection()) return;
     Navigator.push(
         context, PageRoutes.sharedAxis(() => SerieDetailScreen(serie: serie)));
   }
 
-  void _pushEpisodesPage(Serie serie) {
+  Future<void> _pushEpisodesPage(Serie serie) async {
+    if (!await Internet().checkConnection()) return;
     Navigator.push(
         context, PageRoutes.sharedAxis(() => EpisodesScreen(serie: serie)));
   }
@@ -76,7 +79,8 @@ class _SeriesOverview extends State<SeriesPage> {
         .catchError((error) => print("Failed to delete serie: $error"));
   }
 
-  showDeleteDialog(BuildContext context, Serie serie) {
+  showDeleteDialog(BuildContext context, Serie serie) async {
+    if (!await Internet().checkConnection()) return;
     Widget cancelBtn = FlatButton(
       child: Text(
         "Cancel",

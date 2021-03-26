@@ -2,16 +2,14 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
-import 'package:movie_gems/controller/themeController.dart';
-import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/startscreen.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -29,6 +27,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> registerUser() async {
+    if (this._emailValue == "" ||
+        this._passwordValue == "" ||
+        this._confirmPasswordValue == "") {
+      showSimpleNotification(Text("Please fill in all inputs."),
+          background: Colours.error);
+      return;
+    }
+    if (!await Internet().checkConnection()) return;
     FirebaseAuthentication().signOut();
     if (_passwordValue == _confirmPasswordValue) {
       await FirebaseAuthentication()
@@ -138,20 +144,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       width: 500.0,
       child: RawMaterialButton(
-          elevation: 5,
-          padding: EdgeInsets.all(12.0),
-          fillColor: Colours.primaryColor,
-          textStyle: TextStyle(
-              color: Colours.white,
-              fontSize: Repo.currFontsize,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Sansita'),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Text('Register'),
-          onPressed: () => {
-                registerUser(),
-              }),
+        elevation: 5,
+        padding: EdgeInsets.all(12.0),
+        fillColor: Colours.primaryColor,
+        textStyle: TextStyle(
+            color: Colours.white,
+            fontSize: Repo.currFontsize,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Sansita'),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: Text('Register'),
+        onPressed: () => registerUser(),
+      ),
     );
   }
 
@@ -186,10 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           SizedBox(height: 40),
           _registerButton(),
           SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
-            child: _loginLabel(),
-          ),
+          _loginLabel(),
         ])),
       )
     ])));

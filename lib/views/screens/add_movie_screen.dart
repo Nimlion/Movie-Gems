@@ -40,10 +40,14 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
         addMovie();
       }
     });
-    // super.dispose();
   }
 
   Future<void> addMovie() async {
+    if (this._titleValue == '') {
+      showSimpleNotification(Text("Invalid movie title."),
+          background: Colours.error);
+      return;
+    }
     OMDBResponse omdbObject;
     TMDBMovie tmdbObject;
     await OMDBController()
@@ -234,6 +238,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
               thumbColor: Colours.primaryColor,
               overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
               activeTickMarkColor: Colours.primaryColor,
+              activeTrackColor: Colours.accentColor,
               inactiveTickMarkColor: Colours.primaryColor,
               valueIndicatorColor: Colours.primaryColor,
               valueIndicatorTextStyle: TextStyle(

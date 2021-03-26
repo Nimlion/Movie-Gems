@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -71,7 +72,8 @@ class _MovieOverview extends State<MoviesPage> {
     }
   }
 
-  showDeleteDialog(BuildContext context, Movie movie) {
+  showDeleteDialog(BuildContext context, Movie movie) async {
+    if (!await Internet().checkConnection()) return;
     Widget cancelBtn = FlatButton(
       child: Text(
         "Cancel",
@@ -113,7 +115,8 @@ class _MovieOverview extends State<MoviesPage> {
     );
   }
 
-  Future<void> _toggleCategory(Movie movie) {
+  Future<void> _toggleCategory(Movie movie) async {
+    if (!await Internet().checkConnection()) return;
     if (movie.category == 2) {
       movie.category = 0;
     } else {
@@ -137,7 +140,8 @@ class _MovieOverview extends State<MoviesPage> {
         .catchError((error) => print("Failed to delete movie: $error"));
   }
 
-  void _pushDetailScreen(Movie clickedMovie) {
+  Future<void> _pushDetailScreen(Movie clickedMovie) async {
+    if (!await Internet().checkConnection()) return;
     Navigator.push(context,
         PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
   }

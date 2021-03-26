@@ -59,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             thumbColor: Colours.primaryColor,
             overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
             activeTickMarkColor: Colours.primaryColor,
+            activeTrackColor: Colours.accentColor,
             inactiveTickMarkColor: Colours.primaryColor,
             valueIndicatorColor: Colours.primaryColor,
             valueIndicatorTextStyle: TextStyle(

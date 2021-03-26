@@ -1,17 +1,17 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
-import 'package:movie_gems/controller/themeController.dart';
-import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/views/screens/startscreen.dart';
 import 'package:movie_gems/views/screens/register_screen.dart';
 import 'package:movie_gems/views/screens/forgot_password_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -35,6 +35,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> siginIn() async {
+    if (this._emailController.value.text == "" ||
+        this._passwordController.value.text == "") {
+      showSimpleNotification(Text("Please fill in all inputs."),
+          background: Colours.error);
+      return;
+    }
+    if (!await Internet().checkConnection()) return;
     if (await FirebaseAuthentication().emailSignIn(
             this._emailController.value.text,
             this._passwordController.value.text) ==
@@ -46,6 +53,12 @@ class _LoginScreenState extends State<LoginScreen> {
       showSimpleNotification(Text("Invalid credentials."),
           background: Colours.error);
     }
+  }
+
+  Future<void> signInAnonymous() async {
+    if (await Internet().checkConnection()) return;
+    await FirebaseAuthentication().anonymouslySignIn();
+    _pushHomepage();
   }
 
   void _pushHomepage() {
@@ -143,10 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
         style: TextStyle(fontSize: 14),
       ),
       icon: Icon(Icons.fingerprint),
-      onPressed: () async => {
-        await FirebaseAuthentication().anonymouslySignIn(),
-        _pushHomepage(),
-      },
+      onPressed: () => signInAnonymous(),
     );
   }
 
@@ -154,20 +164,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       width: 500.0,
       child: RawMaterialButton(
-          elevation: 5,
-          padding: EdgeInsets.all(12.0),
-          fillColor: Colours.primaryColor,
-          textStyle: TextStyle(
-              color: Colours.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Sansita'),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Text('LOGIN'),
-          onPressed: () => {
-                siginIn(),
-              }),
+        elevation: 5,
+        padding: EdgeInsets.all(12.0),
+        fillColor: Colours.primaryColor,
+        textStyle: TextStyle(
+            color: Colours.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Sansita'),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: Text('LOGIN'),
+        onPressed: () => siginIn(),
+      ),
     );
   }
 

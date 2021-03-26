@@ -2,15 +2,13 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
-import 'package:movie_gems/controller/themeController.dart';
-import 'package:movie_gems/model/appStateNotifier.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:provider/provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -21,6 +19,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String _emailValue = '';
 
   Future<void> _resetPassword() async {
+    if (this._emailValue == "") {
+      showSimpleNotification(Text("Please fill in all inputs."),
+          background: Colours.error);
+      return;
+    }
+    if (!await Internet().checkConnection()) return;
     if (await FirebaseAuthentication().resetPassword(this._emailValue) ==
         true) {
       showSimpleNotification(Text("Reset email send."),
@@ -85,18 +89,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Container(
       width: 500.0,
       child: RawMaterialButton(
-          elevation: 5,
-          padding: EdgeInsets.all(12.0),
-          fillColor: Colours.primaryColor,
-          textStyle: TextStyle(
-              color: Colours.white,
-              fontSize: Repo.currFontsize,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Sansita'),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          child: Text('SEND EMAIL'),
-          onPressed: () async => _resetPassword()),
+        elevation: 5,
+        padding: EdgeInsets.all(12.0),
+        fillColor: Colours.primaryColor,
+        textStyle: TextStyle(
+            color: Colours.white,
+            fontSize: Repo.currFontsize,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Sansita'),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: Text('SEND EMAIL'),
+        onPressed: () => _resetPassword(),
+      ),
     );
   }
 
@@ -123,10 +128,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           SizedBox(height: 50),
           _resetButton(),
           SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
-            child: _loginLabel(),
-          ),
+          _loginLabel()
         ])),
       )
     ])));

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -18,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String _email = "";
+  String userEmail = FirebaseAuth.instance.currentUser.email;
 
   void _pushLoginOverlay() {
     Navigator.of(context).push(LoginOverlay());
@@ -30,7 +32,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         (Route<dynamic> route) => false);
   }
 
+  Future<void> _resetPassword() async {
+    if (!await Internet().checkConnection()) return;
+    await FirebaseAuthentication()
+            .resetPassword(FirebaseAuth.instance.currentUser.email)
+        ? showSimpleNotification(Text("Reset email send."),
+            background: Colours.primaryColor)
+        : showSimpleNotification(
+            Text("Sorry, something went wrong. Please try again later."),
+            background: Colours.error);
+  }
+
   void _deleteAnonymousAccount() async {
+    if (!await Internet().checkConnection()) return;
     await FirebaseFirestore.instance
         .collection("movies")
         .doc(FirebaseAuth.instance.currentUser.uid)
@@ -47,8 +61,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _pushLoginScreen();
   }
 
+  Future<void> _changeEmail() async {
+    final node = FocusScope.of(context);
+    node.unfocus();
+    if (!await Internet().checkConnection()) return;
+    FirebaseAuthentication().updateEmail(_email);
+  }
+
+  Future<void> _deleteAccount() async {
+    if (!await Internet().checkConnection()) return;
+    userEmail != null ? _pushLoginOverlay() : _deleteAnonymousAccount();
+  }
+
+  Future<void> _verifyEmail() async {
+    if (!await Internet().checkConnection()) return;
+    await FirebaseAuthentication().emailVerifiedCheck()
+        ? showSimpleNotification(Text("Verfication email send."),
+            background: Colours.primaryColor)
+        : showSimpleNotification(
+            Text("Sorry, something went wrong. Please try again later."),
+            background: Colours.error);
+  }
+
   Widget _updateEmail() {
     final node = FocusScope.of(context);
+    this._email = FirebaseAuth.instance.currentUser.email;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,8 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: TextStyle(
                 fontSize: Repo.currFontsize - 2, color: Colours.white),
           ),
-          onPressed: () =>
-              {FirebaseAuthentication().updateEmail(_email), node.unfocus()},
+          onPressed: () => _changeEmail(),
         ),
       ],
     );
@@ -128,7 +164,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var userEmail = FirebaseAuth.instance.currentUser.email;
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -150,17 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         "Don’t like your password? Change your password by getting a link in your mail to change it.",
                         "Reset password",
                         Colours.primaryColor,
-                        () async => {
-                          await FirebaseAuthentication().resetPassword(
-                                  FirebaseAuth.instance.currentUser.email)
-                              ? showSimpleNotification(
-                                  Text("Reset email send."),
-                                  background: Colours.primaryColor)
-                              : showSimpleNotification(
-                                  Text(
-                                      "Sorry, something went wrong. Please try again later."),
-                                  background: Colours.error),
-                        },
+                        () => _resetPassword(),
                       )
                     : Container(),
                 userEmail != null
@@ -171,17 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             "Verifying your email can help you get your account back. In case you forget your password.",
                             "Verify email",
                             Colours.primaryColor,
-                            () async => {
-                                  await FirebaseAuthentication()
-                                          .emailVerifiedCheck()
-                                      ? showSimpleNotification(
-                                          Text("Verfication email send."),
-                                          background: Colours.primaryColor)
-                                      : showSimpleNotification(
-                                          Text(
-                                              "Sorry, something went wrong. Please try again later."),
-                                          background: Colours.error),
-                                })
+                            () => _verifyEmail())
                     : Container(),
                 userEmail != null
                     ? _actionBlock(
@@ -195,15 +210,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             })
                     : Container(),
                 _actionBlock(
-                    "Delete account",
-                    "Deleting your account will remove all of your content and data associated with it.",
-                    "Delete my account",
-                    Colours.error,
-                    () async => {
-                          userEmail != null
-                              ? _pushLoginOverlay()
-                              : _deleteAnonymousAccount()
-                        }),
+                  "Delete account",
+                  "Deleting your account will remove all of your content and data associated with it.",
+                  "Delete my account",
+                  Colours.error,
+                  () => _deleteAccount(),
+                ),
                 SizedBox(height: 50),
               ],
             )));

@@ -417,9 +417,6 @@ class _FilterScreenState extends State<FilterScreen> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         _underTitle("Genres:"),
-        SizedBox(
-          height: 10.0,
-        ),
         Column(
           children: genres.map<Widget>((item) {
             return _checkboxTile(item);

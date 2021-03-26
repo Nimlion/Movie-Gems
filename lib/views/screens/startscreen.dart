@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
@@ -29,7 +30,10 @@ class StartScreenState extends State<StartScreen> {
     ),
   ];
 
-  void _pushAddPage() {
+  Future<void> _pushAddPage() async {
+    if (!await Internet().checkConnection()) {
+      return;
+    }
     switch (_selectedTabIndex) {
       case 0:
         Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));

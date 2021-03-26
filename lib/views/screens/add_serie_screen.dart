@@ -44,6 +44,11 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
   }
 
   Future<void> addSerie() async {
+    if (this._titleValue == '') {
+      showSimpleNotification(Text("Invalid movie title."),
+          background: Colours.error);
+      return;
+    }
     TVMazeResponse tvMazeObject;
     TMDBCondensedSerie tmdbObject;
     await TVMazeController()

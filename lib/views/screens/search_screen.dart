@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/movie.dart';
@@ -18,6 +19,24 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<Movie> _searchedList = List();
   String _searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    checkConn();
+  }
+
+  Future<void> checkConn() async {
+    if (!await Internet().checkConnection()) {
+      setState(() {
+        Repo.connected = false;
+      });
+      return null;
+    }
+    setState(() {
+      Repo.connected = true;
+    });
+  }
 
   void updateList(String input) {
     setState(() {
@@ -129,16 +148,19 @@ class _SearchScreenState extends State<SearchScreen> {
                 style: TextStyle(fontSize: Repo.currFontsize + 2),
               ),
               SizedBox(height: 20),
-              RaisedButton(
-                color: Colours.primaryColor,
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                child: Text(
-                  "Find movie",
-                  style: TextStyle(
-                      fontSize: Repo.currFontsize + 2, color: Colours.white),
-                ),
-                onPressed: () => _pushFindScreen(_searchQuery),
-              )
+              Repo.connected
+                  ? RaisedButton(
+                      color: Colours.primaryColor,
+                      padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      child: Text(
+                        "Find movie",
+                        style: TextStyle(
+                            fontSize: Repo.currFontsize + 2,
+                            color: Colours.white),
+                      ),
+                      onPressed: () => _pushFindScreen(_searchQuery),
+                    )
+                  : Container(),
             ])),
       );
     } else {

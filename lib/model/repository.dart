@@ -12,6 +12,9 @@ class Repo {
   static final String darkKey = 'darktheme';
   static bool darkModeOn = true;
 
+  // Internet connection
+  static bool connected = true;
+
   // Font size
   static final String fontKey = 'fontsize';
   static double currFontsize;
