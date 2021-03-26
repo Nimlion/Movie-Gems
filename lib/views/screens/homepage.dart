@@ -116,7 +116,7 @@ class HomeScreen extends State<HomePage> {
             title,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: Repo.currFontsize + 15,
+              fontSize: Repo.currFontsize + 10,
               letterSpacing: 1,
               fontWeight: FontWeight.bold,
             ),
@@ -250,7 +250,7 @@ class HomeScreen extends State<HomePage> {
 
   Widget _loadingPoster() {
     return Container(
-      height: 225,
+      height: 220,
       child: Center(
         child: CircularProgressIndicator(),
       ),

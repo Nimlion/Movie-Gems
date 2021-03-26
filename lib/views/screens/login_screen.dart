@@ -210,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _signinButton(),
           SizedBox(height: 5),
           _anonymousLabel(),
-          SizedBox(height: 30),
+          SizedBox(height: 20),
           _registerLabel(),
         ])),
       )

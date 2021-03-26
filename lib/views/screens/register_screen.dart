@@ -180,11 +180,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Center(
             child: _emailField(),
           ),
-          SizedBox(height: 50),
+          SizedBox(height: 30),
           Center(
             child: _passwordField(),
           ),
-          SizedBox(height: 50),
+          SizedBox(height: 30),
           Center(
             child: _confirmPasswordField(),
           ),
