@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
@@ -9,6 +10,7 @@ import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:movie_gems/views/widgets/login_overlay.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key key}) : super(key: key);
@@ -162,6 +164,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      showSimpleNotification(Text("Could not open URL"),
+          background: Colors.red);
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget _aboutSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: 30),
+        Text(
+          "About",
+          style: TextStyle(fontSize: Repo.currFontsize + 15),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "This product uses the TMDb API but is not endorsed or certified by TMDb.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: Repo.currFontsize - 3,
+            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.7),
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          margin: EdgeInsets.only(top: 15),
+          child: SvgPicture.asset(
+            'assets/img/tmdbLogo.svg',
+          ),
+        ),
+        SizedBox(height: 20),
+        RaisedButton(
+          color: Colours.accentColor,
+          padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+          child: Text(
+            "website",
+            style: TextStyle(
+                fontSize: Repo.currFontsize - 4, color: Colours.white),
+          ),
+          onPressed: () => _launchURL("https://www.themoviedb.org/"),
+        ),
+        SizedBox(height: 50),
+        Text(
+          "This product uses the TVMaze API but is not endorsed or certified by TVMaze.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: Repo.currFontsize - 3,
+            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.7),
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          margin: EdgeInsets.only(top: 15),
+          child:
+              Image.network("https://static.tvmaze.com/images/api/tvm_api.png"),
+        ),
+        SizedBox(height: 20),
+        RaisedButton(
+          color: Colours.accentColor,
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Text(
+            "website",
+            style: TextStyle(
+                fontSize: Repo.currFontsize - 4, color: Colours.white),
+          ),
+          onPressed: () => _launchURL("https://www.tvmaze.com/"),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,6 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Colours.error,
                   () => _deleteAccount(),
                 ),
+                _aboutSection(),
                 SizedBox(height: 50),
               ],
             )));

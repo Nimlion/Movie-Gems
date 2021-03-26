@@ -50,6 +50,7 @@ flutter:
     - assets/img/login.svg
     - assets/img/register.svg
     - assets/img/password.svg
+    - assets/img/tmdbLogo.svg
     - assets/img/empty-horizontal.jpg
     - assets/img/empty-landscape.jpg
   fonts:
