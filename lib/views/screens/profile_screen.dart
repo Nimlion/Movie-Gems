@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/routes.dart';
@@ -27,6 +28,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         PageRoutes.sharedAxis(() => LoginScreen()),
         (Route<dynamic> route) => false);
+  }
+
+  void _deleteAnonymousAccount() async {
+    await FirebaseFirestore.instance
+        .collection("movies")
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .set({"status": "account deleted"})
+        .then((value) => print("movies deleted"))
+        .catchError((e) => print(e));
+    await FirebaseFirestore.instance
+        .collection("series")
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .set({"status": "account deleted"})
+        .then((value) => print("series deleted"))
+        .catchError((e) => print(e));
+    await FirebaseAuth.instance.currentUser.delete();
+    _pushLoginScreen();
   }
 
   Widget _updateEmail() {
@@ -110,6 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var userEmail = FirebaseAuth.instance.currentUser.email;
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -124,57 +143,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _updateEmail(),
-                _actionBlock(
-                  "Reset password",
-                  "Don’t like your password? Change your password by getting a link in your mail to change it.",
-                  "Reset password",
-                  Colours.primaryColor,
-                  () async => {
-                    await FirebaseAuthentication().resetPassword(
-                            FirebaseAuth.instance.currentUser.email)
-                        ? showSimpleNotification(Text("Reset email send."),
-                            background: Colours.primaryColor)
-                        : showSimpleNotification(
-                            Text(
-                                "Sorry, something went wrong. Please try again later."),
-                            background: Colours.error),
-                  },
-                ),
-                FirebaseAuth.instance.currentUser.emailVerified
-                    ? Container()
-                    : _actionBlock(
-                        "Verify your email",
-                        "Verifying your email can help you get your account back. In case you forget your password.",
-                        "Verify email",
+                userEmail != null ? _updateEmail() : Container(),
+                userEmail != null
+                    ? _actionBlock(
+                        "Reset password",
+                        "Don’t like your password? Change your password by getting a link in your mail to change it.",
+                        "Reset password",
                         Colours.primaryColor,
                         () async => {
-                              await FirebaseAuthentication()
-                                      .emailVerifiedCheck()
-                                  ? showSimpleNotification(
-                                      Text("Verfication email send."),
-                                      background: Colours.primaryColor)
-                                  : showSimpleNotification(
-                                      Text(
-                                          "Sorry, something went wrong. Please try again later."),
-                                      background: Colours.error),
-                            }),
-                _actionBlock(
-                    "Signout",
-                    "Want to switch accounts? Or just wanna signout completely?",
-                    "Signout",
-                    Colours.specialColor,
-                    () => {
-                          FirebaseAuthentication().signOut(),
-                          _pushLoginScreen(),
-                        }),
+                          await FirebaseAuthentication().resetPassword(
+                                  FirebaseAuth.instance.currentUser.email)
+                              ? showSimpleNotification(
+                                  Text("Reset email send."),
+                                  background: Colours.primaryColor)
+                              : showSimpleNotification(
+                                  Text(
+                                      "Sorry, something went wrong. Please try again later."),
+                                  background: Colours.error),
+                        },
+                      )
+                    : Container(),
+                userEmail != null
+                    ? FirebaseAuth.instance.currentUser.emailVerified
+                        ? Container()
+                        : _actionBlock(
+                            "Verify your email",
+                            "Verifying your email can help you get your account back. In case you forget your password.",
+                            "Verify email",
+                            Colours.primaryColor,
+                            () async => {
+                                  await FirebaseAuthentication()
+                                          .emailVerifiedCheck()
+                                      ? showSimpleNotification(
+                                          Text("Verfication email send."),
+                                          background: Colours.primaryColor)
+                                      : showSimpleNotification(
+                                          Text(
+                                              "Sorry, something went wrong. Please try again later."),
+                                          background: Colours.error),
+                                })
+                    : Container(),
+                userEmail != null
+                    ? _actionBlock(
+                        "Signout",
+                        "Want to switch accounts? Or just wanna signout completely?",
+                        "Signout",
+                        Colours.specialColor,
+                        () => {
+                              FirebaseAuthentication().signOut(),
+                              _pushLoginScreen(),
+                            })
+                    : Container(),
                 _actionBlock(
                     "Delete account",
                     "Deleting your account will remove all of your content and data associated with it.",
                     "Delete my account",
                     Colours.error,
                     () async => {
-                          _pushLoginOverlay(),
+                          userEmail != null
+                              ? _pushLoginOverlay()
+                              : _deleteAnonymousAccount()
                         }),
                 SizedBox(height: 50),
               ],

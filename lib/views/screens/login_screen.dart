@@ -123,16 +123,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _registerLabel() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pop();
+    return FlatButton(
+      child: Text('Don\'t have an account? Register',
+          style: TextStyle(fontSize: 16)),
+      onPressed: () => {
+        Navigator.of(context).pop(),
         Navigator.push(
             context,
             PageRoutes.sharedAxis(
-                () => RegisterScreen(), SharedAxisTransitionType.horizontal));
+                () => RegisterScreen(), SharedAxisTransitionType.horizontal)),
       },
-      child: Text('Don\'t have an account? Register',
-          style: TextStyle(fontSize: 16)),
+    );
+  }
+
+  Widget _anonymousLabel() {
+    return FlatButton.icon(
+      label: Text(
+        'Sign in anonymously',
+        style: TextStyle(fontSize: 14),
+      ),
+      icon: Icon(Icons.fingerprint),
+      onPressed: () async => {
+        await FirebaseAuthentication().anonymouslySignIn(),
+        _pushHomepage(),
+      },
     );
   }
 
@@ -182,28 +196,27 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(children: <Widget>[
           SizedBox(height: 50),
           Container(
-            height: 250,
+            height: MediaQuery.of(context).size.height / 3.8,
             child: SvgPicture.asset('assets/img/login.svg'),
           ),
           SizedBox(height: 30),
           _title(),
-          SizedBox(height: 50),
+          SizedBox(height: 30),
           Center(
             child: _emailField(),
           ),
-          SizedBox(height: 50),
+          SizedBox(height: 30),
           Center(
             child: _passwordField(),
           ),
           SizedBox(height: 20),
           _forgotPasswordLabel(),
-          SizedBox(height: 40),
-          _signinButton(),
           SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
-            child: _registerLabel(),
-          ),
+          _signinButton(),
+          SizedBox(height: 5),
+          _anonymousLabel(),
+          SizedBox(height: 30),
+          _registerLabel(),
         ])),
       )
     ])));
