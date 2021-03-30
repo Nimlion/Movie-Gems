@@ -10,7 +10,6 @@ import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/login_screen.dart';
 import 'package:movie_gems/views/widgets/login_overlay.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key key}) : super(key: key);
@@ -164,16 +163,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      showSimpleNotification(Text("Could not open URL"),
-          background: Colors.red);
-      throw 'Could not launch $url';
-    }
-  }
-
   Widget _aboutSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: TextStyle(
                 fontSize: Repo.currFontsize - 4, color: Colours.white),
           ),
-          onPressed: () => _launchURL("https://www.themoviedb.org/"),
+          onPressed: () => Internet().launchURL("https://www.themoviedb.org/"),
         ),
         SizedBox(height: 50),
         Text(
@@ -235,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: TextStyle(
                 fontSize: Repo.currFontsize - 4, color: Colours.white),
           ),
-          onPressed: () => _launchURL("https://www.tvmaze.com/"),
+          onPressed: () => Internet().launchURL("https://www.tvmaze.com/"),
         ),
       ],
     );

@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_gems/model/colours.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Internet {
   Future<bool> checkConnection() async {
@@ -21,6 +22,16 @@ class Internet {
       showSimpleNotification(Text("No internet connection available."),
           background: Colours.error);
       return false;
+    }
+  }
+
+  void launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      showSimpleNotification(Text("Could not open URL"),
+          background: Colors.red);
+      throw 'Could not launch $url';
     }
   }
 }

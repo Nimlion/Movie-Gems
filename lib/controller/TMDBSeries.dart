@@ -45,6 +45,33 @@ class TMDBSeriesController {
       throw Exception('Failed to load movie');
     }
   }
+
+  List<TMDBCondensedSerie> retrieveListOfCondensedSeries(
+      Map<String, dynamic> map) {
+    List<TMDBCondensedSerie> list = List();
+    map.forEach((String key, entry) {
+      if (key == "results") {
+        entry.forEach((entry) {
+          if (entry != null) {
+            var serie = TMDBCondensedSerie.fromJson(entry);
+            list.add(serie);
+          }
+        });
+      }
+    });
+    return list;
+  }
+
+  Future<List<TMDBCondensedSerie>> fetchPopularSeries() async {
+    final endpoint = await http.get(
+        'http://api.themoviedb.org/3/tv/popular?api_key=$apiKey&language=en-US');
+
+    if (endpoint.statusCode == 200) {
+      return retrieveListOfCondensedSeries(json.decode(endpoint.body));
+    } else {
+      throw Exception('Failed to load popular series');
+    }
+  }
 }
 
 class TMDBCast {

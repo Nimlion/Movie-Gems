@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FindMovieScreen extends StatefulWidget {
   final String query;
@@ -123,16 +122,6 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
     );
   }
 
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      showSimpleNotification(Text("Could not open URL"),
-          background: Colors.red);
-      throw 'Could not launch $url';
-    }
-  }
-
   Widget _showIMDBBtn(OMDBResponse film) {
     return RaisedButton(
         color: Colours.accentColor,
@@ -144,8 +133,9 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
             color: Colours.white,
           ),
         ),
-        onPressed: () =>
-            {_launchURL("https://www.imdb.com/title/" + film.imdbID)});
+        onPressed: () => {
+              Internet().launchURL("https://www.imdb.com/title/" + film.imdbID)
+            });
   }
 
   Widget _watchLaterBtn() {

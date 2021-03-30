@@ -9,8 +9,6 @@ import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'movie_overview.dart';
 
@@ -38,16 +36,6 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     futureDetails =
         TMDBSeriesController().tmdbFetchSerieDetails(serie.tmdbID.toString());
     futureCast = TMDBSeriesController().fetchSerieCast(serie.tmdbID.toString());
-  }
-
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      showSimpleNotification(Text("Could not open URL"),
-          background: Colors.red);
-      throw 'Could not launch $url';
-    }
   }
 
   Future<void> _updateSerieStatus() async {
@@ -109,7 +97,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
           ),
           color: label == "IMDB" ? Colours.gold : Colours.primaryColor,
           padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
-          onPressed: () => {_launchURL(url)},
+          onPressed: () => {Internet().launchURL(url)},
         )
       ],
     );

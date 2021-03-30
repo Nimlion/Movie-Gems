@@ -116,7 +116,7 @@ Widget movieOverlay(BuildContext context, String title, String overview,
                       fontSize: Repo.currFontsize),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: 30),
                 RaisedButton(
                   color: Colours.accentColor,
                   child: Text(
@@ -129,7 +129,7 @@ Widget movieOverlay(BuildContext context, String title, String overview,
                   onPressed: () =>
                       {addWatchLaterFilm(context, title, true, releaseDate)},
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 15),
                 RaisedButton(
                   color: Colours.primaryColor,
                   onPressed: () => Navigator.pop(context),
@@ -165,7 +165,7 @@ class MovieOverlay extends ModalRoute<void> {
   bool get barrierDismissible => true;
 
   @override
-  Color get barrierColor => Colors.black.withOpacity(0.5);
+  Color get barrierColor => Colors.black.withOpacity(0.8);
 
   @override
   String get barrierLabel => null;
@@ -224,7 +224,7 @@ class FilmOverlay extends ModalRoute<void> {
   bool get barrierDismissible => true;
 
   @override
-  Color get barrierColor => Colors.black.withOpacity(0.5);
+  Color get barrierColor => Colors.black.withOpacity(0.8);
 
   @override
   String get barrierLabel => null;

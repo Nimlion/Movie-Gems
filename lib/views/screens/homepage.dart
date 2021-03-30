@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
+import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
@@ -10,6 +11,7 @@ import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/widgets/movie_overlay.dart';
+import 'package:movie_gems/views/widgets/serie_overlay.dart';
 
 class HomePage extends StatefulWidget {
   HomeScreen createState() => HomeScreen();
@@ -19,9 +21,10 @@ class HomeScreen extends State<HomePage> {
   DocumentReference movies = FirebaseFirestore.instance
       .collection('movies')
       .doc(FirebaseAuthentication().auth.currentUser.uid);
-  Future<List<TMDBCondensedMovie>> fututurePopular;
-  Future<List<TMDBCondensedMovie>> futurePlaying;
-  Future<List<TMDBCondensedMovie>> futureSimilair;
+  Future<List<TMDBCondensedMovie>> popularMovies;
+  Future<List<TMDBCondensedSerie>> popularSeries;
+  Future<List<TMDBCondensedMovie>> playingMovies;
+  Future<List<TMDBCondensedMovie>> similairMovies;
   List<Movie> movieList = List();
   String latestMovie;
 
@@ -45,8 +48,9 @@ class HomeScreen extends State<HomePage> {
     TMDBMovieController tmdb = TMDBMovieController();
 
     setState(() {
-      fututurePopular = tmdb.fetchPopular();
-      futurePlaying = tmdb.fetchPlaying();
+      popularMovies = tmdb.fetchPopular();
+      playingMovies = tmdb.fetchPlaying();
+      popularSeries = TMDBSeriesController().fetchPopularSeries();
     });
 
     getFirstMovie();
@@ -57,7 +61,7 @@ class HomeScreen extends State<HomePage> {
     await Future.delayed(Duration(milliseconds: 150));
     if (mounted && this.latestMovie != null) {
       setState(() {
-        this.futureSimilair =
+        this.similairMovies =
             TMDBMovieController().fetchSimilarMovies(this.latestMovie);
       });
     }
@@ -99,12 +103,21 @@ class HomeScreen extends State<HomePage> {
     });
   }
 
-  void _showOverlay(BuildContext context, dynamic movie) {
+  void _showMovieOverlay(BuildContext context, dynamic movie) {
     if (movie is TMDBMovie) {
       Navigator.of(context).push(MovieOverlay(movie));
     } else if (movie is TMDBCondensedMovie) {
       Navigator.of(context).push(FilmOverlay(movie));
     }
+  }
+
+  void _showSerieOverlay(BuildContext context, TMDBCondensedSerie serie) {
+    Navigator.of(context).push(SerieOverlay(serie));
+  }
+
+  void _pushDetailScreen(Movie clickedMovie) {
+    Navigator.push(context,
+        PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
   }
 
   Widget rowTitle(String title) {
@@ -141,7 +154,7 @@ class HomeScreen extends State<HomePage> {
                   ),
                 )),
             onTap: () => {
-              _showOverlay(context, movie),
+              _showMovieOverlay(context, movie),
             },
           ),
           Positioned(
@@ -165,9 +178,41 @@ class HomeScreen extends State<HomePage> {
         ]));
   }
 
-  void _pushDetailScreen(Movie clickedMovie) {
-    Navigator.push(context,
-        PageRoutes.sharedAxis(() => MovieDetailScreen(movie: clickedMovie)));
+  Widget seriePoster(int index, TMDBCondensedSerie serie) {
+    return Container(
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        child: Stack(children: <Widget>[
+          GestureDetector(
+            child: Container(
+                padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Image.network(
+                    "https://image.tmdb.org/t/p/w342${serie.posterPath}",
+                    fit: BoxFit.cover,
+                  ),
+                )),
+            onTap: () => _showSerieOverlay(context, serie),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: Text(
+              (index + 1).toString() + ".",
+              style: TextStyle(
+                color: Colours.white,
+                fontSize: 60,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(0.0, 0.0),
+                    blurRadius: 15,
+                    color: Colours.background,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ]));
   }
 
   Widget collectionPoster(int index, Movie movie) {
@@ -239,7 +284,7 @@ class HomeScreen extends State<HomePage> {
             ],
           ),
           onTap: () => {
-            _showOverlay(context, movie),
+            _showMovieOverlay(context, movie),
           },
         ),
       );
@@ -273,62 +318,35 @@ class HomeScreen extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (this.playingMovies == null ||
+        this.popularMovies == null ||
+        this.popularSeries == null ||
+        this.similairMovies == null ||
+        this.movies == null) {
+      return Center(
+        child: Transform.scale(
+          scale: 1.8,
+          child: CircularProgressIndicator(
+            semanticsLabel: "Loading",
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
-        child: Column(children: [
-      Container(
-          height: 290.0,
+      child: Column(children: [
+        SizedBox(height: 10),
+        Container(
+          height: 290,
           child: Column(
             children: [
-              rowTitle("Top movies"),
-              !Repo.connected
-                  ? _noConnectionWidget()
-                  : this.fututurePopular == null
-                      ? _loadingPoster()
-                      : StreamBuilder(
-                          stream: this.fututurePopular.asStream(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<dynamic> snapshot) {
-                            if (snapshot.hasError) {
-                              return Container(
-                                  height: 225,
-                                  child: Center(
-                                      child: Text(
-                                    "Something went wrong.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: Repo.currFontsize + 15),
-                                  )));
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return _loadingPoster();
-                            }
-
-                            List<TMDBCondensedMovie> list = snapshot.data;
-                            return Expanded(
-                              child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: list.length,
-                                  itemBuilder: (context, index) {
-                                    return moviePoster(index, list[index]);
-                                  }),
-                            );
-                          }),
-            ],
-          )),
-      Container(
-          height: 320.0,
-          child: Column(
-            children: [
-              SizedBox(height: 30),
               rowTitle("Now playing"),
               !Repo.connected
                   ? _noConnectionWidget()
-                  : this.futurePlaying == null
+                  : this.playingMovies == null
                       ? _loadingPoster()
                       : StreamBuilder(
-                          stream: this.futurePlaying.asStream(),
+                          stream: this.playingMovies.asStream(),
                           builder: (BuildContext context,
                               AsyncSnapshot<dynamic> snapshot) {
                             if (snapshot.hasError) {
@@ -359,9 +377,98 @@ class HomeScreen extends State<HomePage> {
                             );
                           }),
             ],
-          )),
-      Container(
-          height: 320.0,
+          ),
+        ),
+        Container(
+          height: 320,
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              rowTitle("Top movies"),
+              !Repo.connected
+                  ? _noConnectionWidget()
+                  : this.popularMovies == null
+                      ? _loadingPoster()
+                      : StreamBuilder(
+                          stream: this.popularMovies.asStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Container(
+                                  height: 225,
+                                  child: Center(
+                                      child: Text(
+                                    "Something went wrong.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: Repo.currFontsize + 15),
+                                  )));
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _loadingPoster();
+                            }
+
+                            List<TMDBCondensedMovie> list = snapshot.data;
+                            return Expanded(
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    return moviePoster(index, list[index]);
+                                  }),
+                            );
+                          }),
+            ],
+          ),
+        ),
+        Container(
+          height: 320,
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              rowTitle("Top Series"),
+              !Repo.connected
+                  ? _noConnectionWidget()
+                  : this.popularSeries == null
+                      ? _loadingPoster()
+                      : StreamBuilder(
+                          stream: this.popularSeries.asStream(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<dynamic> snapshot) {
+                            if (snapshot.hasError) {
+                              return Container(
+                                  height: 225,
+                                  child: Center(
+                                      child: Text(
+                                    "Something went wrong.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: Repo.currFontsize + 15),
+                                  )));
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _loadingPoster();
+                            }
+
+                            List<TMDBCondensedSerie> list = snapshot.data;
+                            return Expanded(
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: list.length,
+                                  itemBuilder: (context, index) {
+                                    return seriePoster(index, list[index]);
+                                  }),
+                            );
+                          }),
+            ],
+          ),
+        ),
+        Container(
+          height: 320,
           child: Column(
             children: [
               SizedBox(height: 30),
@@ -415,46 +522,50 @@ class HomeScreen extends State<HomePage> {
                         }
                       }),
             ],
-          )),
-      !Repo.connected
-          ? Container()
-          : this.futureSimilair == null
-              ? Container()
-              : StreamBuilder<List<TMDBCondensedMovie>>(
-                  stream: this.futureSimilair.asStream(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
-                    if (snapshot.hasError) {
-                      return Container(
-                          height: 225,
-                          child: Center(
-                              child: Text(
-                            "Something went wrong.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: Repo.currFontsize + 15),
-                          )));
-                    }
+          ),
+        ),
+        !Repo.connected
+            ? Container()
+            : this.similairMovies == null
+                ? Container()
+                : StreamBuilder<List<TMDBCondensedMovie>>(
+                    stream: this.similairMovies.asStream(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
+                      if (snapshot.hasError) {
+                        return Container(
+                            height: 225,
+                            child: Center(
+                                child: Text(
+                              "Something went wrong.",
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(fontSize: Repo.currFontsize + 15),
+                            )));
+                      }
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _loadingPoster();
-                    }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return _loadingPoster();
+                      }
 
-                    List<TMDBCondensedMovie> list = snapshot.data;
+                      List<TMDBCondensedMovie> list = snapshot.data;
 
-                    if (list.isEmpty) {
-                      return Container();
-                    }
-                    return Column(mainAxisSize: MainAxisSize.min, children: [
-                      SizedBox(height: 30),
-                      rowTitle("Recommendations"),
-                      Column(
-                        children: list.take(10).map<Widget>((item) {
-                          return _recommendation(item);
-                        }).toList(),
-                      ),
-                    ]);
-                  }),
-      SizedBox(height: 10),
-    ]));
+                      if (list.isEmpty) {
+                        return Container();
+                      }
+                      return Column(mainAxisSize: MainAxisSize.min, children: [
+                        SizedBox(height: 30),
+                        rowTitle("Recommendations"),
+                        Column(
+                          children: list.take(10).map<Widget>((item) {
+                            return _recommendation(item);
+                          }).toList(),
+                        ),
+                      ]);
+                    },
+                  ),
+        SizedBox(height: 10),
+      ]),
+    );
   }
 }
