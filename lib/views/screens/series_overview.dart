@@ -62,7 +62,7 @@ class _SeriesOverview extends State<SeriesPage> {
       }
       if (mounted) {
         setState(() {
-          seriesList.sort((a, b) => a.title.compareTo(b.title));
+          seriesList.sort((a, b) => a.compareTo(b));
         });
       }
     });
@@ -123,9 +123,23 @@ class _SeriesOverview extends State<SeriesPage> {
   }
 
   Widget _serieTile(int index) {
+    String status;
+    switch (seriesList[index].status) {
+      case 0:
+        status = "Watching";
+        break;
+      case 1:
+        status = "Queued";
+        break;
+      case 2:
+        status = "Finished";
+        break;
+      default:
+        status = "Watching";
+    }
     return ListTile(
-      leading: Padding(
-        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+      leading: Container(
+        height: double.infinity,
         child: Icon(Icons.live_tv_outlined),
       ),
       title: Text(
@@ -134,11 +148,7 @@ class _SeriesOverview extends State<SeriesPage> {
             color: Colours.primaryColor, fontSize: Repo.currFontsize - 3),
       ),
       subtitle: Text(
-        DateFormat("dd MMM. yyyy")
-                .format(seriesList[index].startdate)
-                .toString() +
-            " - " +
-            seriesList[index].type,
+        status + " - " + seriesList[index].type,
         style:
             TextStyle(fontFamily: "Raleway", fontSize: Repo.currFontsize - 6),
       ),

@@ -1,8 +1,8 @@
-class Serie {
+class Serie implements Comparable {
   String title;
   DateTime startdate;
   int category;
-  String status;
+  int status;
   String tvMazeURL;
   String premiered;
   String type;
@@ -29,7 +29,7 @@ class Serie {
     String title,
     DateTime startdate,
     int category,
-    String status,
+    int status,
     String tvMazeURL,
     String premiered,
     String type,
@@ -61,6 +61,9 @@ class Serie {
         ", " +
         "category: " +
         category.toString() +
+        ", " +
+        "status: " +
+        status.toString() +
         ", " +
         "tvMazeURL: " +
         tvMazeURL.toString() +
@@ -115,4 +118,17 @@ class Serie {
         "tmdbID": this.tmdbID,
         "imdbID": this.imdbID,
       };
+
+  @override
+  int compareTo(other) {
+    if (this == null || other == null) {
+      return null;
+    }
+
+    if (this.status == other.status) {
+      return this.title.compareTo(other.title);
+    }
+
+    return this.status.compareTo(other.status);
+  }
 }

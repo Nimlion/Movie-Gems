@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/model/colours.dart';
+import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'movie_overview.dart';
 
 class SerieDetailScreen extends StatefulWidget {
   final Serie serie;
@@ -45,6 +50,16 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     }
   }
 
+  Future<void> _updateSerieStatus() async {
+    if (!await Internet().checkConnection()) return;
+    return FirebaseFirestore.instance
+        .collection('series')
+        .doc(FirebaseAuthentication().auth.currentUser.uid)
+        .update({firebaseProof(serie.title): serie.toMap()})
+        .then((value) => {})
+        .catchError((error) => print("Failed to update serie status: $error"));
+  }
+
   Widget _hero(String image) {
     return SliverAppBar(
       pinned: true,
@@ -57,7 +72,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
       ),
       flexibleSpace: image != "" && image != null
           ? Image.network(
-              "https://image.tmdb.org/t/p/w500$image",
+              "https://image.tmdb.org/t/p/w780$image",
               fit: BoxFit.cover,
             )
           : Image.asset(
@@ -274,7 +289,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                             .withOpacity(0.7),
                         fontSize: (Repo.currFontsize - 4)),
                   )),
-              SizedBox(height: 15),
+              SizedBox(height: 10),
               Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -286,6 +301,66 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
             ],
           ))
     ]);
+  }
+
+  Widget _status() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Column(children: [
+        Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "My status",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .color
+                      .withOpacity(0.7),
+                  fontSize: (Repo.currFontsize - 4)),
+            )),
+        SizedBox(height: 10),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: DropdownButton(
+            value: serie.status,
+            dropdownColor: Colours.primaryColor,
+            style: TextStyle(
+              fontSize: Repo.currFontsize,
+              fontFamily: "Raleway",
+              color: Theme.of(context).textTheme.bodyText1.color,
+            ),
+            items: [
+              DropdownMenuItem(
+                child: Text(
+                  "Watching",
+                ),
+                value: 0,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Queued",
+                ),
+                value: 1,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Finished",
+                ),
+                value: 2,
+              ),
+            ],
+            onChanged: (int value) {
+              setState(() {
+                serie.status = value;
+              });
+              _updateSerieStatus();
+            },
+          ),
+        ),
+      ]),
+    );
   }
 
   Widget _increaseBtn(Function fun) {
@@ -328,6 +403,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                       SizedBox(height: 15),
                       _overview(response.overview),
                       SizedBox(height: 20),
+                      serie.status != null ? _status() : SizedBox(),
                       response.createdBy != null &&
                               response.createdBy.isNotEmpty
                           ? Column(children: [

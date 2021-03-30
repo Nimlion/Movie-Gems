@@ -19,6 +19,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
   String _titleValue = '';
   DateTime _dateValue = DateTime.now();
   int _category = 0;
+  int _status = 0;
   bool _firstDocumentAdded = false;
 
   DocumentReference seriesDoc = FirebaseFirestore.instance
@@ -32,8 +33,6 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
 
   Future<void> _addDocument() async {
     if (!mounted || _firstDocumentAdded) return;
-    print(ModalRoute.of(context).toString());
-    print(ModalRoute.of(context));
     await seriesDoc.snapshots().forEach((DocumentSnapshot element) {
       if (element.exists == false) {
         seriesDoc.set({});
@@ -70,6 +69,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
               "title": tvMazeObject.show["name"],
               "startdate": this._dateValue,
               "category": this._category,
+              "status": this._status,
               "tvMazeURL": tvMazeObject.show["url"],
               "premiered": tvMazeObject.show["premiered"],
               "type": tvMazeObject.show["type"],
@@ -216,6 +216,53 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
         ]);
   }
 
+  Widget _selectStatus() {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            "Status:",
+            style: TextStyle(
+                fontSize: Repo.currFontsize, fontWeight: FontWeight.bold),
+          ),
+          DropdownButton(
+            value: _status,
+            dropdownColor: Colours.primaryColor,
+            style: TextStyle(
+              fontSize: Repo.currFontsize,
+              fontFamily: "Raleway",
+              color: Theme.of(context).textTheme.bodyText1.color,
+            ),
+            items: [
+              DropdownMenuItem(
+                child: Text(
+                  "Watching",
+                ),
+                value: 0,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Queued",
+                ),
+                value: 1,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Finished",
+                ),
+                value: 2,
+              ),
+            ],
+            onChanged: (int value) {
+              setState(() {
+                _status = value;
+              });
+            },
+          ),
+        ]);
+  }
+
   Widget _addButton() {
     return Container(
       width: 150.0,
@@ -259,7 +306,9 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
                     _dateColumn(),
                     SizedBox(height: 30),
                     _selectCategory(),
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
+                    _selectStatus(),
+                    SizedBox(height: 20),
                     _addButton(),
                     SizedBox(height: 30),
                   ])),
