@@ -11,18 +11,27 @@ import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class AddMovieScreen extends StatefulWidget {
+  final String title;
+
+  AddMovieScreen({Key key, this.title}) : super(key: key);
+
   @override
-  _AddMovieScreenState createState() => _AddMovieScreenState();
+  _AddMovieScreenState createState() => _AddMovieScreenState(title);
 }
 
 class _AddMovieScreenState extends State<AddMovieScreen> {
-  String _titleValue = '';
+  String _titleValue;
   DateTime _dateValue = DateTime.now();
   double _rating = 5;
   int _category = 0;
+
   DocumentReference moviesdoc = FirebaseFirestore.instance
       .collection("movies")
       .doc(FirebaseAuthentication().auth.currentUser.uid);
+
+  _AddMovieScreenState(String title) {
+    this._titleValue = title != null ? title : "";
+  }
 
   @override
   void dispose() {
@@ -116,11 +125,12 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
             height: 10.0,
           ),
           TextField(
-              autofocus: true,
+              autofocus: this._titleValue == "",
               keyboardType: TextInputType.name,
               textCapitalization: TextCapitalization.words,
               onChanged: (value) => this._titleValue = value,
               textInputAction: TextInputAction.done,
+              controller: TextEditingController()..text = this._titleValue,
               onEditingComplete: () => node.nextFocus(),
               decoration: InputDecoration(
                 hintText: 'title',

@@ -94,7 +94,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return Container(
       alignment: Alignment.centerLeft,
       child: Text(
-        overview,
+        overview != null && overview != ""
+            ? overview
+            : "No description available",
         textAlign: TextAlign.left,
         style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -431,7 +433,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       _title(response.title),
                       SizedBox(height: 15),
                       _overview(response.overview),
-                      movie.director != null
+                      movie.director != null && movie.director != ""
                           ? _textBar("Director", movie.director.toString())
                           : SizedBox(),
                       response.prodCompanies != null &&
@@ -456,14 +458,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   .map((con) => con["name"])
                                   .join(', '))
                           : SizedBox(),
-                      movie.genre != null
+                      movie.genre != null && movie.genre != ""
                           ? _textBar("Genre", movie.genre.toString())
                           : SizedBox(),
                       movie.category != null
                           ? _textBar(
                               "Category", _categoryLabeler(movie.category))
                           : SizedBox(),
-                      movie.awards != null && movie.awards != "N/A"
+                      movie.awards != null &&
+                              movie.awards != "N/A" &&
+                              movie.awards != ""
                           ? _textBar("Awards", movie.awards.toString())
                           : SizedBox(),
                       response.tagline != null && response.tagline != ""
@@ -480,15 +484,22 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       _pillBar("rated", movie.rated, "runtime",
                           response.runtime.toString() + " MIN"),
                       _pillBar(
-                          "released",
+                          "released on",
                           DateFormat("dd-MM-yyyy")
                               .format(DateTime.parse(response.releaseDate))
                               .toString(),
                           "status",
                           response.status),
-                      _subtitle("Ratings"),
-                      _ratingPillBar("yours", movie.rating.toString(), "imdb",
-                          movie.imdbRating),
+                      movie.rating != null &&
+                              movie.rating == 0.0 &&
+                              movie.imdbRating == null &&
+                              movie.imdbRating == ""
+                          ? Column(children: [
+                              _subtitle("Ratings"),
+                              _ratingPillBar("yours", movie.rating.toString(),
+                                  "imdb", movie.imdbRating),
+                            ])
+                          : Container(),
                       response.budget != null &&
                               response.revenue != null &&
                               response.budget != 0 &&

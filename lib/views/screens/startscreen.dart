@@ -5,11 +5,13 @@ import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
+import 'package:movie_gems/views/screens/add_watchlater_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:movie_gems/views/screens/profile_screen.dart';
 import 'package:movie_gems/views/screens/series_overview.dart';
 import 'package:movie_gems/views/screens/settings_screen.dart';
+import 'package:movie_gems/views/screens/watchlist_overview.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -23,11 +25,7 @@ class StartScreenState extends State<StartScreen> {
     MoviesPage(),
     Text(""),
     SeriesPage(),
-    Text(
-      "Watch later . . .",
-      style: TextStyle(fontSize: 34),
-      textAlign: TextAlign.center,
-    ),
+    WatchLaterPage(),
   ];
 
   Future<void> _pushAddPage() async {
@@ -35,14 +33,15 @@ class StartScreenState extends State<StartScreen> {
       return;
     }
     switch (_selectedTabIndex) {
-      case 0:
-        Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
-        break;
       case 1:
         Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
         break;
       case 3:
         Navigator.push(context, PageRoutes.fadeScale(() => AddSerieScreen()));
+        break;
+      case 4:
+        Navigator.push(
+            context, PageRoutes.fadeScale(() => AddWatchLaterScreen()));
         break;
       default:
         // TODO: make this a popup and choose which they want
@@ -130,7 +129,7 @@ class StartScreenState extends State<StartScreen> {
         BottomNavigationBarItem(
             label: "Series", icon: Icon(Icons.live_tv_outlined)),
         BottomNavigationBarItem(
-            label: "Watch later", icon: Icon(Icons.watch_later)),
+            label: "Watchlist", icon: Icon(Icons.watch_later)),
       ],
     );
   }

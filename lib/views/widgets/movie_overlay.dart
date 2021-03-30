@@ -2,9 +2,84 @@ import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:movie_gems/controller/OMDBController.dart';
+import 'package:movie_gems/views/screens/movie_overview.dart';
 
-Widget movieOverlay(
-    BuildContext context, String title, String overview, String url) {
+Future<void> _addDocument(BuildContext context, String title, bool released,
+    DateTime releaseDate) async {
+  DocumentSnapshot element = await FirebaseFirestore.instance
+      .collection('watchlist')
+      .doc(FirebaseAuthentication().auth.currentUser.uid)
+      .snapshots()
+      .first;
+  if (element.exists == false) {
+    FirebaseFirestore.instance
+        .collection('watchlist')
+        .doc(FirebaseAuthentication().auth.currentUser.uid)
+        .set({});
+    addWatchLaterFilm(context, title, released, releaseDate);
+  }
+}
+
+Future<void> addWatchLaterFilm(BuildContext context, String title,
+    bool released, DateTime releaseDate) async {
+  if (title == '') {
+    showSimpleNotification(Text("Invalid movie title."),
+        background: Colours.error);
+    return;
+  }
+  OMDBResponse omdbObject;
+  TMDBMovie tmdbObject;
+  await OMDBController()
+      .fetchSpecificOMDBData(title, releaseDate.year)
+      .then((omdbResponse) async => {
+            omdbObject = omdbResponse,
+            await TMDBMovieController()
+                .fetchTMDBData(omdbResponse.imdbID)
+                .then((tmdbResponse) => tmdbObject = tmdbResponse)
+          });
+
+  if (omdbObject == null || tmdbObject == null) {
+    showSimpleNotification(Text("Movie could not be found"),
+        background: Colors.red);
+  } else {
+    FirebaseFirestore.instance
+        .collection('watchlist')
+        .doc(FirebaseAuthentication().auth.currentUser.uid)
+        .update({
+          firebaseProof(omdbObject.title): {
+            "addedOn": DateTime.now(),
+            "releaseDate": releaseDate,
+            "released": released,
+            "title": omdbObject.title,
+            "tmdbID": tmdbObject.id,
+            "imdbID": omdbObject.imdbID,
+          }
+        })
+        .then((value) => {
+              showSimpleNotification(Text("movie succesfully added"),
+                  background: Colours.primaryColor),
+              Navigator.pop(context),
+            })
+        .catchError((error) => {
+              if (error.message == "Some requested document was not found.")
+                {
+                  _addDocument(context, title, true, releaseDate),
+                }
+              else
+                {
+                  showSimpleNotification(Text("failed to add movie"),
+                      background: Colors.red)
+                }
+            });
+  }
+}
+
+Widget movieOverlay(BuildContext context, String title, String overview,
+    String url, DateTime releaseDate) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
@@ -51,7 +126,8 @@ Widget movieOverlay(
                       color: Colours.white,
                     ),
                   ),
-                  onPressed: () => {},
+                  onPressed: () =>
+                      {addWatchLaterFilm(context, title, true, releaseDate)},
                 ),
                 SizedBox(height: 30),
                 RaisedButton(
@@ -86,7 +162,7 @@ class MovieOverlay extends ModalRoute<void> {
   bool get opaque => false;
 
   @override
-  bool get barrierDismissible => false;
+  bool get barrierDismissible => true;
 
   @override
   Color get barrierColor => Colors.black.withOpacity(0.5);
@@ -115,7 +191,7 @@ class MovieOverlay extends ModalRoute<void> {
     return Center(
         child: SingleChildScrollView(
             child: movieOverlay(context, this.movie.title, this.movie.overview,
-                this.movie.backdrop)));
+                this.movie.backdrop, DateTime.parse(this.movie.releaseDate))));
   }
 
   @override
@@ -145,7 +221,7 @@ class FilmOverlay extends ModalRoute<void> {
   bool get opaque => false;
 
   @override
-  bool get barrierDismissible => false;
+  bool get barrierDismissible => true;
 
   @override
   Color get barrierColor => Colors.black.withOpacity(0.5);
@@ -173,8 +249,8 @@ class FilmOverlay extends ModalRoute<void> {
   Widget _buildOverlayContent(BuildContext context) {
     return Center(
         child: SingleChildScrollView(
-      child: movieOverlay(
-          context, this.film.title, this.film.overview, this.film.backdrop),
+      child: movieOverlay(context, this.film.title, this.film.overview,
+          this.film.backdrop, DateTime.parse(this.film.releaseDate)),
     ));
   }
 

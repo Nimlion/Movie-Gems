@@ -23,6 +23,23 @@ class OMDBController {
       throw Exception('Failed to load movie');
     }
   }
+
+  Future<OMDBResponse> fetchSpecificOMDBData(
+      String movieTitle, int year) async {
+    final response = await http.get(
+        'https://www.omdbapi.com/?apikey=$apiKey&t=$movieTitle&type=movie&y=$year');
+
+    if (response.statusCode == 200) {
+      OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));
+      if (movie.type == "movie") {
+        return movie;
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception('Failed to load movie');
+    }
+  }
 }
 
 class OMDBResponse {
