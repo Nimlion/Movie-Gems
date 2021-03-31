@@ -85,7 +85,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _movieTile(int index) {
     return ListTile(
-      leading: _movieIcon(this._searchedList[index].category),
+      leading: Container(
+        height: double.infinity,
+        child: _movieIcon(this._searchedList[index].category),
+      ),
       title: Text(
         this._searchedList[index].title,
         style: TextStyle(

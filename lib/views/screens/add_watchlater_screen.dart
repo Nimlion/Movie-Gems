@@ -125,7 +125,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
                 hintText: 'title',
                 contentPadding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 border: InputBorder.none,
-                fillColor: Colours.shadow,
+                fillColor: Colors.transparent,
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colours.primaryColor)),
                 focusedBorder: UnderlineInputBorder(

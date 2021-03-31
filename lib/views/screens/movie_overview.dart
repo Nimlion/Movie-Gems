@@ -126,7 +126,8 @@ class _MovieOverview extends State<MoviesPage> {
     return movies
         .update({firebaseProof(movie.title): movie.toMap()})
         .then((value) => {})
-        .catchError((error) => print("Failed to delete movie: $error"));
+        .catchError(
+            (error) => print("Failed to update movie category: $error"));
   }
 
   Future<void> _deleteMovie(Movie movie) {
@@ -227,8 +228,8 @@ class _MovieOverview extends State<MoviesPage> {
 
   Widget _movieTile(int index) {
     return ListTile(
-      leading: Padding(
-        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+      leading: Container(
+        height: double.infinity,
         child: Icon(Icons.movie),
       ),
       title: Text(
@@ -280,8 +281,10 @@ class _MovieOverview extends State<MoviesPage> {
           Expanded(
               child: ListView.builder(
                   scrollDirection: Axis.vertical,
-                  itemCount: Repo.movieListenable.value.length,
+                  itemCount: Repo.movieListenable.value.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == Repo.movieListenable.value.length)
+                      return SizedBox(height: 20);
                     return _movieTile(index);
                   }))
         ]);

@@ -102,34 +102,41 @@ class _EpisodesOverview extends State<EpisodesScreen> {
               ? List.from(snapshot.data.episodes.reversed)
               : List.from(snapshot.data.episodes);
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                "Episodes of " + serie.title,
-                style: TextStyle(fontSize: Repo.currFontsize),
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  "Episodes of " + serie.title,
+                  style: TextStyle(fontSize: Repo.currFontsize),
+                ),
               ),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                children: episodes.map<Widget>((episode) {
-                  return episode["airdate"] != ""
-                      ? episodes.last != episode
-                          ? Column(children: [
-                              _episodeDetails(episode),
-                              Divider(
-                                thickness: 1.5,
-                                color:
-                                    Theme.of(context).textTheme.bodyText1.color,
-                              ),
-                            ])
-                          : _episodeDetails(episode)
-                      : Container();
-                }).toList(),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: episodes.map<Widget>((episode) {
+                    return episode["airdate"] != ""
+                        ? episodes.last != episode
+                            ? Column(children: [
+                                _episodeDetails(episode),
+                                Divider(
+                                  thickness: 1.5,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .color,
+                                ),
+                              ])
+                            : _episodeDetails(episode)
+                        : Container();
+                  }).toList(),
+                ),
               ),
-            ),
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
           );
         }
-        return PageFiller("Loading . . .");
+        return PageFiller("No episodes found");
       },
     );
   }

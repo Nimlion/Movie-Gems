@@ -54,7 +54,6 @@ class _FilterScreenState extends State<FilterScreen> {
         List<Movie> list = List();
         _genres.forEach((genre) {
           Repo.movieListenable.value.forEach((movie) {
-            print(genre + " - " + movie.genre);
             if (movie.genre.toLowerCase().contains(genre)) {
               list.add(movie);
             }

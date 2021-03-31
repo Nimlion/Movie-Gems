@@ -44,7 +44,6 @@ class StartScreenState extends State<StartScreen> {
             context, PageRoutes.fadeScale(() => AddWatchLaterScreen()));
         break;
       default:
-        // TODO: make this a popup and choose which they want
         Navigator.push(context, PageRoutes.fadeScale(() => AddMovieScreen()));
     }
   }

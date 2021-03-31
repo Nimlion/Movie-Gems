@@ -136,7 +136,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
                 hintText: 'title',
                 contentPadding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 border: InputBorder.none,
-                fillColor: Colours.shadow,
+                fillColor: Colors.transparent,
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colours.primaryColor)),
                 focusedBorder: UnderlineInputBorder(
@@ -164,7 +164,10 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
           child: Text(
             'Change date',
             style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: Repo.currFontsize),
+              color: Colours.white,
+              fontWeight: FontWeight.bold,
+              fontSize: Repo.currFontsize,
+            ),
           ),
           color: Colours.primaryColor,
         ),

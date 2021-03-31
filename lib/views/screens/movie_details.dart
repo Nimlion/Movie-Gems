@@ -419,6 +419,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       builder: (context, snapshot) {
         if (snapshot.data != null) {
           var response = snapshot.data;
+          String difference = "";
+
+          if (response.releaseDate != null &&
+              DateTime.now().isBefore(DateTime.parse(response.releaseDate))) {
+            final release = DateTime.parse(response.releaseDate);
+            final now = DateTime.now();
+            difference = release.difference(now).inDays > 120
+                ? (release.difference(now).inDays ~/ 60).toString() + " months"
+                : release.difference(now).inDays.toString() + " days";
+          }
 
           return Scaffold(
               body: CustomScrollView(slivers: <Widget>[
@@ -435,6 +445,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       _overview(response.overview),
                       movie.director != null && movie.director != ""
                           ? _textBar("Director", movie.director.toString())
+                          : SizedBox(),
+                      difference != ""
+                          ? _textBar("Countdown till release", difference)
                           : SizedBox(),
                       response.prodCompanies != null &&
                               response.prodCompanies

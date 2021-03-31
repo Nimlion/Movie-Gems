@@ -46,9 +46,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       "PASSWORD FORGOTTEN",
       textAlign: TextAlign.center,
       style: TextStyle(
-          fontSize: Repo.currFontsize + 20,
-          fontWeight: FontWeight.bold,
-          color: Colours.primaryColor),
+        fontSize: Repo.currFontsize + 20,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).textTheme.bodyText1.color,
+      ),
     );
   }
 
@@ -72,8 +73,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _loginLabel() {
-    return GestureDetector(
-      onTap: () {
+    return FlatButton(
+      onPressed: () {
         Navigator.of(context).pop();
         Navigator.push(
             context,
@@ -127,8 +128,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           SizedBox(height: 50),
           _resetButton(),
+          SizedBox(height: 15),
+          _loginLabel(),
           SizedBox(height: 30),
-          _loginLabel()
         ])),
       )
     ])));

@@ -60,9 +60,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Text(
       "REGISTER",
       style: TextStyle(
-          fontSize: Repo.currFontsize + 20,
-          fontWeight: FontWeight.bold,
-          color: Colours.primaryColor),
+        fontSize: Repo.currFontsize + 20,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).textTheme.bodyText1.color,
+      ),
     );
   }
 
@@ -127,8 +128,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _loginLabel() {
-    return GestureDetector(
-      onTap: () {
+    return FlatButton(
+      onPressed: () {
         Navigator.of(context).pop();
         Navigator.push(
             context,
@@ -190,8 +191,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           SizedBox(height: 40),
           _registerButton(),
-          SizedBox(height: 30),
+          SizedBox(height: 15),
           _loginLabel(),
+          SizedBox(height: 30),
         ])),
       )
     ])));

@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> signInAnonymous() async {
-    if (await Internet().checkConnection()) return;
+    if (!await Internet().checkConnection()) return;
     await FirebaseAuthentication().anonymouslySignIn();
     _pushHomepage();
   }
@@ -73,9 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Text(
       "SIGN IN",
       style: TextStyle(
-          fontSize: 40,
-          fontWeight: FontWeight.bold,
-          color: Colours.primaryColor),
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).textTheme.bodyText1.color,
+      ),
     );
   }
 
@@ -86,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
+      autocorrect: true,
       onEditingComplete: () => node.nextFocus(),
       decoration: InputDecoration(
           labelText: 'email',
@@ -122,15 +124,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _forgotPasswordLabel() {
     return Container(
       alignment: Alignment.centerRight,
-      child: GestureDetector(
-        onTap: () {
+      child: FlatButton(
+        child: Text('Forgot Password ?', style: TextStyle(fontSize: 16)),
+        onPressed: () {
           Navigator.of(context).pop();
           Navigator.push(
               context,
               PageRoutes.sharedAxis(() => ForgotPasswordScreen(),
                   SharedAxisTransitionType.horizontal));
         },
-        child: Text('Forgot Password ?', style: TextStyle(fontSize: 16)),
       ),
     );
   }
@@ -204,14 +206,15 @@ class _LoginScreenState extends State<LoginScreen> {
           Center(
             child: _passwordField(),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 5),
           _forgotPasswordLabel(),
-          SizedBox(height: 30),
+          SizedBox(height: 20),
           _signinButton(),
           SizedBox(height: 5),
           _anonymousLabel(),
           SizedBox(height: 20),
           _registerLabel(),
+          SizedBox(height: 30),
         ])),
       )
     ])));

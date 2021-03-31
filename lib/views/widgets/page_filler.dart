@@ -15,7 +15,8 @@ class PageFiller extends StatelessWidget {
           child: Text(
             this.text,
             style: TextStyle(
-                fontSize: Repo.currFontsize != null ? Repo.currFontsize : 35),
+                fontSize:
+                    Repo.currFontsize != null ? Repo.currFontsize + 10 : 35),
             textAlign: TextAlign.center,
           ),
         ),

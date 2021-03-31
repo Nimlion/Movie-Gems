@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
@@ -178,8 +177,9 @@ class _SeriesOverview extends State<SeriesPage> {
 
     return ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: seriesList.length,
+        itemCount: seriesList.length + 1,
         itemBuilder: (context, index) {
+          if (index == seriesList.length) return SizedBox(height: 20);
           return _serieTile(index);
         });
   }
