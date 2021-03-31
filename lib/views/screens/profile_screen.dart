@@ -58,6 +58,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .set({"status": "account deleted"})
         .then((value) => print("series deleted"))
         .catchError((e) => print(e));
+    await FirebaseFirestore.instance
+        .collection("watchlist")
+        .doc(FirebaseAuth.instance.currentUser.uid)
+        .set({"status": "account deleted"})
+        .then((value) => print("watchlist deleted"))
+        .catchError((e) => print(e));
     await FirebaseAuth.instance.currentUser.delete();
     _pushLoginScreen();
   }

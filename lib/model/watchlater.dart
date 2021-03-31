@@ -16,7 +16,11 @@ class WatchLater implements Comparable {
     }
 
     if (this.released == other.released) {
-      return this.title.compareTo(other.title);
+      if (this.released) {
+        return this.title.compareTo(other.title);
+      } else {
+        return this.releaseDate.compareTo(other.releaseDate);
+      }
     }
 
     if (this.released) {

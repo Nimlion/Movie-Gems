@@ -76,7 +76,7 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
   }
 
   Widget _toWatchTile(int index) {
-    Movie movie = new Movie(
+    Movie movie = Movie(
         title: toWatchList[index].title,
         rating: 0.0,
         date: toWatchList[index].addedOn,
@@ -92,39 +92,48 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
         tmdbID: toWatchList[index].tmdbID,
         production: "");
 
+    IconData tileIcon = Icons.movie;
+    String tileText = "Queued since: " +
+        DateFormat("dd MMM. yyyy")
+            .format(this.toWatchList[index].addedOn)
+            .toString() +
+        " - Released";
+    if (!toWatchList[index].released &&
+        toWatchList[index].releaseDate.isBefore(DateTime.now())) {
+      tileIcon = Icons.local_movies_outlined;
+      tileText = "Released since: " +
+          DateFormat("MMMM yyyy")
+              .format(this.toWatchList[index].releaseDate)
+              .toString();
+    } else if (!this.toWatchList[index].released) {
+      tileIcon = Icons.access_time_outlined;
+      tileText = "Released in: " +
+          DateFormat("MMMM yyyy")
+              .format(this.toWatchList[index].releaseDate)
+              .toString();
+    }
+
     return ListTile(
       leading: Container(
         height: double.infinity,
-        child: Icon(
-            this.toWatchList[index].released ? Icons.movie : Icons.access_time),
+        child: Icon(tileIcon),
       ),
       title: Text(
         this.toWatchList[index].title,
         style: TextStyle(
             color: Colours.primaryColor, fontSize: Repo.currFontsize - 4),
       ),
-      subtitle: this.toWatchList[index].released
-          ? Text(
-              "Queued since: " +
-                  DateFormat("dd MMM. yyyy")
-                      .format(this.toWatchList[index].addedOn)
-                      .toString() +
-                  " - Released",
-              style: TextStyle(fontSize: Repo.currFontsize - 6),
-            )
-          : Text(
-              "Released in: " +
-                  DateFormat("MMMM yyyy")
-                      .format(this.toWatchList[index].releaseDate)
-                      .toString(),
-              style: TextStyle(fontSize: Repo.currFontsize - 6),
-            ),
+      subtitle: Text(
+        tileText,
+        style: TextStyle(fontSize: Repo.currFontsize - 6),
+      ),
       trailing: IconButton(
         icon: Icon(Icons.check_circle_outline_outlined),
         onPressed: () => _pushAddScreen(this.toWatchList[index]),
       ),
       onTap: () => {_pushDetailScreen(movie)},
       onLongPress: () => {showDeleteDialog(context, this.toWatchList[index])},
+      dense: Repo.currFontsize < 20,
     );
   }
 
@@ -202,28 +211,10 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
 
     return ListView.builder(
         scrollDirection: Axis.vertical,
-        itemCount: toWatchList.length,
+        itemCount: toWatchList.length + 1,
         itemBuilder: (context, index) {
+          if (index == toWatchList.length) return SizedBox(height: 20);
           return _toWatchTile(index);
         });
   }
 }
-
-/** -- Watchlist --
-
-Soon to come movie
-- title
-- Release date
-- added on
-- released
-- tmdbId
-
-Released
-- title
-- added on
-- released
-- tmdbId
-
-
-Is the movie released?
- */

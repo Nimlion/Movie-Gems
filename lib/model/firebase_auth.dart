@@ -142,6 +142,12 @@ class FirebaseAuthentication {
           .set({"status": "account deleted"})
           .then((value) => print("series deleted"))
           .catchError((e) => print(e));
+      await FirebaseFirestore.instance
+          .collection("watchlist")
+          .doc(user.uid)
+          .set({"status": "account deleted"})
+          .then((value) => print("watchlist deleted"))
+          .catchError((e) => print(e));
       await user.delete();
       return true;
     } catch (e) {
