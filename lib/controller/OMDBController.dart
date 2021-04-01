@@ -51,6 +51,7 @@ class OMDBResponse {
   String genre;
   String director;
   String writer;
+  String actors;
   String plot;
   String language;
   String country;
@@ -77,6 +78,7 @@ class OMDBResponse {
       this.genre,
       this.director,
       this.writer,
+      this.actors,
       this.plot,
       this.language,
       this.country,
@@ -104,6 +106,7 @@ class OMDBResponse {
       genre: json['Genre'],
       director: json['Director'],
       writer: json['Writer'],
+      actors: json['Actors'],
       plot: json['Plot'],
       language: json['Language'],
       country: json['Country'],
