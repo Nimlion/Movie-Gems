@@ -70,6 +70,20 @@ class _StartScreenState extends State<StartScreen> {
         Repo.latestEpisodesFirst = prefs.getBool(Repo.latEpiFirstKey);
       }
     });
+
+    setState(() {
+      // Get the settings value
+      if (prefs.getBool(Repo.settingsKey) != null) {
+        Repo.customized = prefs.getBool(Repo.settingsKey);
+      }
+    });
+
+    setState(() {
+      // Get the easter egg value
+      if (prefs.getBool(Repo.easterEggKey) != null) {
+        Repo.easterEgg = prefs.getBool(Repo.easterEggKey);
+      }
+    });
   }
 
   @override

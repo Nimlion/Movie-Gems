@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/add_movie_screen.dart';
 import 'package:movie_gems/views/screens/add_serie_screen.dart';
 import 'package:movie_gems/views/screens/add_watchlater_screen.dart';
+import 'package:movie_gems/views/screens/awards_screen.dart';
 import 'package:movie_gems/views/screens/homepage.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:movie_gems/views/screens/profile_screen.dart';
 import 'package:movie_gems/views/screens/series_overview.dart';
 import 'package:movie_gems/views/screens/settings_screen.dart';
 import 'package:movie_gems/views/screens/watchlist_overview.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StartScreen extends StatefulWidget {
   @override
@@ -68,6 +72,29 @@ class StartScreenState extends State<StartScreen> {
             });
   }
 
+  void _pushAwardsScreen() {
+    Navigator.push(context, PageRoutes.fadeThrough(() => AwardsScreen()));
+  }
+
+  Future<void> _setEggFound() async {
+    if (mounted) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setBool(Repo.easterEggKey, true);
+      Repo.easterEgg = true;
+      showSimpleNotification(
+          Text(
+            "Congrats, you found the easter egg.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colours.background,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1),
+          ),
+          background: Colours.gold);
+    }
+  }
+
   Widget _appBar() {
     return AppBar(
       leading: IconButton(
@@ -78,13 +105,15 @@ class StartScreenState extends State<StartScreen> {
         onPressed: () => _pushProfileScreen(),
       ),
       toolbarHeight: 60.0,
-      title: Text(
-        'Movie Gems',
-        style: TextStyle(
-          fontFamily: 'MotionPicture',
-          fontSize: 35.0,
-        ),
-      ),
+      title: GestureDetector(
+          child: Text(
+            'Movie Gems',
+            style: TextStyle(
+              fontFamily: 'MotionPicture',
+              fontSize: 35.0,
+            ),
+          ),
+          onTap: () => _setEggFound()),
       actions: [
         IconButton(
           padding: EdgeInsets.only(right: 15, left: 15),
@@ -92,7 +121,7 @@ class StartScreenState extends State<StartScreen> {
             Icons.emoji_events,
             size: 30,
           ),
-          onPressed: () {},
+          onPressed: () => _pushAwardsScreen(),
         ),
         IconButton(
           padding: EdgeInsets.only(right: 15, left: 15),

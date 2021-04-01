@@ -38,6 +38,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _setCustomized() async {
+    if (mounted) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      prefs.setBool(Repo.settingsKey, true);
+      Repo.customized = true;
+    }
+  }
+
   Widget _heading(String title) {
     return Text(
       title,
@@ -76,6 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (mounted) {
                 setState(() {
                   Repo.currFontsize = value;
+                  if (!Repo.customized) _setCustomized();
                 });
                 _updateFontSizePrefs(Repo.fontKey, value);
               }
@@ -143,6 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (mounted) {
               setState(() {
                 Colours.updateUserColours(value);
+                if (!Repo.customized) _setCustomized();
               });
               _updateThemeColourPrefs(Colours.colorKey, value);
             }
@@ -185,6 +196,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (mounted) {
               setState(() {
                 Repo.latestEpisodesFirst = value;
+                if (!Repo.customized) _setCustomized();
               });
               _updateEpiOrderPrefs(Repo.latEpiFirstKey, value);
             }
@@ -214,6 +226,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onChanged: (boolValue) {
                 setState(() {
                   ThemeController().updateTheme(boolValue, context);
+                  if (!Repo.customized) _setCustomized();
                 });
               },
             ))

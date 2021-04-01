@@ -15,6 +15,14 @@ class Repo {
   // Internet connection
   static bool connected = true;
 
+  // Settings adjusted
+  static String settingsKey = "customized";
+  static bool customized = false;
+
+  // Easter egg found
+  static String easterEggKey = "secret";
+  static bool easterEgg = false;
+
   // Font size
   static final String fontKey = 'fontsize';
   static double currFontsize;
