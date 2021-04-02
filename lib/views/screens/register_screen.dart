@@ -164,38 +164,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-            child: Stack(children: <Widget>[
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-            child: Column(children: <Widget>[
-          SizedBox(height: 50),
-          Container(
-            height: 200,
-            child: SvgPicture.asset('assets/img/register.svg'),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 50),
+                Container(
+                  height: 200,
+                  child: SvgPicture.asset('assets/img/register.svg'),
+                ),
+                SizedBox(height: 30),
+                _title(),
+                SizedBox(height: 50),
+                Center(
+                  child: _emailField(),
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: _passwordField(),
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: _confirmPasswordField(),
+                ),
+                SizedBox(height: 40),
+                _registerButton(),
+                SizedBox(height: 15),
+                _loginLabel(),
+                SizedBox(height: 30),
+              ],
+            ),
           ),
-          SizedBox(height: 30),
-          _title(),
-          SizedBox(height: 50),
-          Center(
-            child: _emailField(),
-          ),
-          SizedBox(height: 30),
-          Center(
-            child: _passwordField(),
-          ),
-          SizedBox(height: 30),
-          Center(
-            child: _confirmPasswordField(),
-          ),
-          SizedBox(height: 40),
-          _registerButton(),
-          SizedBox(height: 15),
-          _loginLabel(),
-          SizedBox(height: 30),
-        ])),
-      )
-    ])));
+        ),
+      ),
+    );
   }
 }

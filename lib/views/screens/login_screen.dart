@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,6 +10,7 @@ import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/firebase_auth.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/startscreen.dart';
 import 'package:movie_gems/views/screens/register_screen.dart';
 import 'package:movie_gems/views/screens/forgot_password_screen.dart';
@@ -25,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    if (FirebaseAuth.instance.currentUser != null) updateFirestoreLocations();
     checkForUser();
   }
 
@@ -32,6 +36,18 @@ class _LoginScreenState extends State<LoginScreen> {
     if (await FirebaseAuthentication().checkForUser()) {
       _pushHomepage();
     }
+  }
+
+  void updateFirestoreLocations() async {
+    Repo.watchlistDoc = FirebaseFirestore.instance
+        .collection('watchlist')
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
+    Repo.seriesDoc = FirebaseFirestore.instance
+        .collection("series")
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
+    Repo.moviesDoc = FirebaseFirestore.instance
+        .collection("movies")
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
   }
 
   Future<void> siginIn() async {
@@ -185,38 +201,42 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-            child: Stack(children: <Widget>[
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-            child: Column(children: <Widget>[
-          SizedBox(height: 50),
-          Container(
-            height: MediaQuery.of(context).size.height / 3.8,
-            child: SvgPicture.asset('assets/img/login.svg'),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 50),
+                Container(
+                  height: MediaQuery.of(context).size.height / 3.8,
+                  child: SvgPicture.asset('assets/img/login.svg'),
+                ),
+                SizedBox(height: 30),
+                _title(),
+                SizedBox(height: 30),
+                Center(
+                  child: _emailField(),
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: _passwordField(),
+                ),
+                SizedBox(height: 5),
+                _forgotPasswordLabel(),
+                SizedBox(height: 20),
+                _signinButton(),
+                SizedBox(height: 5),
+                _anonymousLabel(),
+                SizedBox(height: 20),
+                _registerLabel(),
+                SizedBox(height: 30),
+              ],
+            ),
           ),
-          SizedBox(height: 30),
-          _title(),
-          SizedBox(height: 30),
-          Center(
-            child: _emailField(),
-          ),
-          SizedBox(height: 30),
-          Center(
-            child: _passwordField(),
-          ),
-          SizedBox(height: 5),
-          _forgotPasswordLabel(),
-          SizedBox(height: 20),
-          _signinButton(),
-          SizedBox(height: 5),
-          _anonymousLabel(),
-          SizedBox(height: 20),
-          _registerLabel(),
-          SizedBox(height: 30),
-        ])),
-      )
-    ])));
+        ),
+      ),
+    );
   }
 }

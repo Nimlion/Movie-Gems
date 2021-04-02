@@ -109,30 +109,34 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-            child: Stack(children: <Widget>[
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-            child: Column(children: <Widget>[
-          SizedBox(height: 50),
-          Container(
-            height: 250,
-            child: SvgPicture.asset('assets/img/password.svg'),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 50),
+                Container(
+                  height: 250,
+                  child: SvgPicture.asset('assets/img/password.svg'),
+                ),
+                SizedBox(height: 30),
+                _title(),
+                SizedBox(height: 50),
+                Center(
+                  child: _emailField(),
+                ),
+                SizedBox(height: 50),
+                _resetButton(),
+                SizedBox(height: 15),
+                _loginLabel(),
+                SizedBox(height: 30),
+              ],
+            ),
           ),
-          SizedBox(height: 30),
-          _title(),
-          SizedBox(height: 50),
-          Center(
-            child: _emailField(),
-          ),
-          SizedBox(height: 50),
-          _resetButton(),
-          SizedBox(height: 15),
-          _loginLabel(),
-          SizedBox(height: 30),
-        ])),
-      )
-    ])));
+        ),
+      ),
+    );
   }
 }
