@@ -110,24 +110,28 @@ class _EpisodesOverview extends State<EpisodesScreen> {
                   style: TextStyle(fontSize: Repo.currFontsize),
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Column(
-                  children: episodes.map<Widget>((episode) {
-                    return episode["airdate"] != ""
-                        ? episodes.last != episode
-                            ? Column(children: [
-                                _episodeDetails(episode),
-                                Divider(
-                                  thickness: 1.5,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .color,
-                                ),
-                              ])
-                            : _episodeDetails(episode)
-                        : Container();
-                  }).toList(),
+              body: Theme(
+                data: Theme.of(context)
+                    .copyWith(accentColor: Colours.primaryColor),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: episodes.map<Widget>((episode) {
+                      return episode["airdate"] != ""
+                          ? episodes.last != episode
+                              ? Column(children: [
+                                  _episodeDetails(episode),
+                                  Divider(
+                                    thickness: 1.5,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color,
+                                  ),
+                                ])
+                              : _episodeDetails(episode)
+                          : Container();
+                    }).toList(),
+                  ),
                 ),
               ),
             );

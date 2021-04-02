@@ -6,11 +6,11 @@ import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 import 'package:movie_gems/views/widgets/movie_overlay.dart';
+import 'package:movie_gems/views/widgets/page_filler.dart';
 import 'package:movie_gems/views/widgets/serie_overlay.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,9 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class HomeScreen extends State<HomePage> {
-  DocumentReference movies = FirebaseFirestore.instance
-      .collection('movies')
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
   Future<List<TMDBCondensedMovie>> popularMovies;
   Future<List<TMDBCondensedSerie>> popularSeries;
   Future<List<TMDBCondensedMovie>> playingMovies;
@@ -68,7 +65,8 @@ class HomeScreen extends State<HomePage> {
   }
 
   Future<void> getFirstMovie() async {
-    await movies.snapshots().forEach((element) {
+    if (mounted) {
+      DocumentSnapshot element = await Repo.moviesDoc.snapshots().first;
       movieList = List();
       if (element.data() == null) {
         this.latestMovie = null;
@@ -93,14 +91,14 @@ class HomeScreen extends State<HomePage> {
         ));
       }
 
-      movieList.sort((a, b) => b.date.compareTo(a.date));
-      this.latestMovie = movieList.first.imdbID;
-      if (mounted) {
+      if (movieList != null && movieList.length != 0) {
+        movieList.sort((a, b) => b.date.compareTo(a.date));
+        this.latestMovie = movieList.first.imdbID;
         setState(() {
           this.latestMovie = movieList.first.imdbID;
         });
       }
-    });
+    }
   }
 
   void _showMovieOverlay(BuildContext context, dynamic movie) {
@@ -148,10 +146,15 @@ class HomeScreen extends State<HomePage> {
                 padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
                 child: Align(
                   alignment: Alignment.bottomLeft,
-                  child: Image.network(
-                    "https://image.tmdb.org/t/p/w342${movie.poster}",
-                    fit: BoxFit.cover,
-                  ),
+                  child: movie.poster != null && movie.poster != ""
+                      ? Image.network(
+                          "https://image.tmdb.org/t/p/w342${movie.poster}",
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          "assets/img/empty-landscape.jpg",
+                          fit: BoxFit.cover,
+                        ),
                 )),
             onTap: () => {
               _showMovieOverlay(context, movie),
@@ -187,10 +190,15 @@ class HomeScreen extends State<HomePage> {
                 padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
                 child: Align(
                   alignment: Alignment.bottomLeft,
-                  child: Image.network(
-                    "https://image.tmdb.org/t/p/w342${serie.posterPath}",
-                    fit: BoxFit.cover,
-                  ),
+                  child: serie.posterPath != null && serie.posterPath != ""
+                      ? Image.network(
+                          "https://image.tmdb.org/t/p/w342${serie.posterPath}",
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          "assets/img/empty-landscape.jpg",
+                          fit: BoxFit.cover,
+                        ),
                 )),
             onTap: () => _showSerieOverlay(context, serie),
           ),
@@ -224,10 +232,15 @@ class HomeScreen extends State<HomePage> {
                   padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
                   child: Align(
                     alignment: Alignment.bottomLeft,
-                    child: Image.network(
-                      movie.poster,
-                      fit: BoxFit.cover,
-                    ),
+                    child: movie.poster != null && movie.poster != ""
+                        ? Image.network(
+                            movie.poster,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            "assets/img/empty-landscape.jpg",
+                            fit: BoxFit.cover,
+                          ),
                   )),
               onTap: () => _pushDetailScreen(movie)),
           Positioned(
@@ -261,10 +274,15 @@ class HomeScreen extends State<HomePage> {
             children: [
               AspectRatio(
                 aspectRatio: 1.6,
-                child: Image.network(
-                  "https://image.tmdb.org/t/p/w780${movie.backdrop}",
-                  fit: BoxFit.cover,
-                ),
+                child: movie.backdrop != null && movie.backdrop != ""
+                    ? Image.network(
+                        "https://image.tmdb.org/t/p/w780${movie.backdrop}",
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/img/empty-landscape.jpg",
+                        fit: BoxFit.cover,
+                      ),
               ),
               Center(
                 child: Container(
@@ -318,11 +336,11 @@ class HomeScreen extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (this.playingMovies == null ||
+    if (!Repo.connected) {
+      return PageFiller("No internet connection.");
+    } else if (this.playingMovies == null ||
         this.popularMovies == null ||
-        this.popularSeries == null ||
-        this.similairMovies == null ||
-        this.movies == null) {
+        this.popularSeries == null) {
       return Center(
         child: Transform.scale(
           scale: 1.8,
@@ -334,6 +352,7 @@ class HomeScreen extends State<HomePage> {
     }
 
     return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
       child: Column(children: [
         SizedBox(height: 10),
         Container(
@@ -369,6 +388,7 @@ class HomeScreen extends State<HomePage> {
                             List<TMDBCondensedMovie> list = snapshot.data;
                             return Expanded(
                               child: ListView.builder(
+                                  physics: BouncingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
                                   itemCount: list.length,
                                   itemBuilder: (context, index) {
@@ -413,6 +433,7 @@ class HomeScreen extends State<HomePage> {
                             List<TMDBCondensedMovie> list = snapshot.data;
                             return Expanded(
                               child: ListView.builder(
+                                  physics: BouncingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
                                   itemCount: list.length,
                                   itemBuilder: (context, index) {
@@ -457,6 +478,7 @@ class HomeScreen extends State<HomePage> {
                             List<TMDBCondensedSerie> list = snapshot.data;
                             return Expanded(
                               child: ListView.builder(
+                                  physics: BouncingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
                                   itemCount: list.length,
                                   itemBuilder: (context, index) {
@@ -476,7 +498,7 @@ class HomeScreen extends State<HomePage> {
               !Repo.connected
                   ? _noConnectionWidget()
                   : StreamBuilder<DocumentSnapshot>(
-                      stream: movies.snapshots(),
+                      stream: Repo.moviesDoc.snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<DocumentSnapshot> snapshot) {
                         if (snapshot.hasError) {
@@ -497,6 +519,7 @@ class HomeScreen extends State<HomePage> {
                         }
 
                         DocumentSnapshot querydoc = snapshot.data;
+
                         if (querydoc == null ||
                             querydoc.data() == null ||
                             querydoc.data().entries.isEmpty) {
@@ -510,60 +533,87 @@ class HomeScreen extends State<HomePage> {
                                     TextStyle(fontSize: Repo.currFontsize + 15),
                               )));
                         } else {
-                          return Expanded(
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: movieList.take(10).length,
-                                itemBuilder: (context, index) {
-                                  return collectionPoster(
-                                      index, movieList[index]);
-                                }),
-                          );
+                          return ValueListenableBuilder(
+                              valueListenable: Repo.movieListenable,
+                              builder: (BuildContext context, List<Movie> value,
+                                  Widget child) {
+                                Repo.movieListenable.value.clear();
+                                for (var movieMap
+                                    in snapshot.data.data().entries) {
+                                  Repo.movieListenable.value.add(Movie.fromOMDB(
+                                    movieMap.value['title'],
+                                    movieMap.value['rating'],
+                                    movieMap.value['date'].toDate(),
+                                    movieMap.value['category'],
+                                    movieMap.value['rated'],
+                                    movieMap.value['runtime'],
+                                    movieMap.value['genre'],
+                                    movieMap.value['director'],
+                                    movieMap.value['poster'],
+                                    movieMap.value['awards'],
+                                    movieMap.value['imdbRating'],
+                                    movieMap.value['imdbID'],
+                                    movieMap.value['tmdbID'],
+                                    movieMap.value['production'],
+                                  ));
+                                }
+                                Repo.movieListenable.value
+                                    .sort((a, b) => b.date.compareTo(a.date));
+                                movieList = Repo.movieListenable.value;
+                                return Expanded(
+                                  child: ListView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: movieList.take(10).length,
+                                    itemBuilder: (context, index) {
+                                      return collectionPoster(
+                                          index, movieList[index]);
+                                    },
+                                  ),
+                                );
+                              });
                         }
-                      }),
+                      })
             ],
           ),
         ),
-        !Repo.connected
+        !Repo.connected || this.similairMovies == null
             ? Container()
-            : this.similairMovies == null
-                ? Container()
-                : StreamBuilder<List<TMDBCondensedMovie>>(
-                    stream: this.similairMovies.asStream(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
-                      if (snapshot.hasError) {
-                        return Container(
-                            height: 225,
-                            child: Center(
-                                child: Text(
-                              "Something went wrong.",
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: Repo.currFontsize + 15),
-                            )));
-                      }
+            : StreamBuilder<List<TMDBCondensedMovie>>(
+                stream: this.similairMovies.asStream(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<TMDBCondensedMovie>> snapshot) {
+                  if (snapshot.hasError) {
+                    return Container(
+                        height: 225,
+                        child: Center(
+                            child: Text(
+                          "Something went wrong.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: Repo.currFontsize + 15),
+                        )));
+                  }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return _loadingPoster();
-                      }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _loadingPoster();
+                  }
 
-                      List<TMDBCondensedMovie> list = snapshot.data;
+                  List<TMDBCondensedMovie> list = snapshot.data;
 
-                      if (list.isEmpty) {
-                        return Container();
-                      }
-                      return Column(mainAxisSize: MainAxisSize.min, children: [
-                        SizedBox(height: 30),
-                        rowTitle("Recommendations"),
-                        Column(
-                          children: list.take(10).map<Widget>((item) {
-                            return _recommendation(item);
-                          }).toList(),
-                        ),
-                      ]);
-                    },
-                  ),
+                  if (list.isEmpty) {
+                    return Container();
+                  }
+                  return Column(mainAxisSize: MainAxisSize.min, children: [
+                    SizedBox(height: 30),
+                    rowTitle("Recommendations"),
+                    Column(
+                      children: list.take(10).map<Widget>((item) {
+                        return _recommendation(item);
+                      }).toList(),
+                    ),
+                  ]);
+                },
+              ),
         SizedBox(height: 10),
       ]),
     );

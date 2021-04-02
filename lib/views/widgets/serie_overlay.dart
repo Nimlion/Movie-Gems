@@ -36,10 +36,15 @@ class SerieOverlay extends ModalRoute<void> {
       children: <Widget>[
         AspectRatio(
           aspectRatio: 1.6,
-          child: Image.network(
-            "https://image.tmdb.org/t/p/w1280${serie.backdrop}",
-            fit: BoxFit.cover,
-          ),
+          child: serie.backdrop != null && serie.backdrop != ""
+              ? Image.network(
+                  "https://image.tmdb.org/t/p/w1280${serie.backdrop}",
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  "assets/img/empty-landscape.jpg",
+                  fit: BoxFit.cover,
+                ),
         ),
         Container(
           padding: EdgeInsets.fromLTRB(25, 50, 25, 25),
@@ -121,7 +126,14 @@ class SerieOverlay extends ModalRoute<void> {
   }
 
   Widget _buildOverlayContent(BuildContext context) {
-    return Center(child: SingleChildScrollView(child: serieOverlay(context)));
+    return Center(
+      child: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SingleChildScrollView(
+          child: serieOverlay(context),
+        ),
+      ),
+    );
   }
 
   @override

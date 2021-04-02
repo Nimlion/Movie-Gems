@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/filter_screen.dart';
@@ -29,48 +28,43 @@ class MoviesPage extends StatefulWidget {
 }
 
 class _MovieOverview extends State<MoviesPage> {
-  DocumentReference movies = FirebaseFirestore.instance
-      .collection('movies')
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getMovies();
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    getMovies();
-  }
-
-  Future<void> getMovies() async {
-    if (mounted) {
-      await movies.snapshots().forEach((element) {
-        if (element.data() == null) return;
-        Repo.movieListenable.value = List();
-        for (var movieMap in element.data().entries) {
-          Repo.movieListenable.value.add(Movie.fromOMDB(
-            movieMap.value['title'],
-            movieMap.value['rating'],
-            movieMap.value['date'].toDate(),
-            movieMap.value['category'],
-            movieMap.value['rated'],
-            movieMap.value['runtime'],
-            movieMap.value['genre'],
-            movieMap.value['director'],
-            movieMap.value['poster'],
-            movieMap.value['awards'],
-            movieMap.value['imdbRating'],
-            movieMap.value['imdbID'],
-            movieMap.value['tmdbID'],
-            movieMap.value['production'],
-          ));
-        }
-        if (mounted) {
-          setState(() {
-            Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
-            Repo.movieList = List.of(Repo.movieListenable.value);
-          });
-        }
-      });
-    }
-  }
+  // Future<void> getMovies() async {
+  //   if (mounted) {
+  //     DocumentSnapshot element = await Repo.moviesDoc.snapshots().first;
+  //     if (element.data() == null) return;
+  //     Repo.movieListenable.value.clear();
+  //     for (var movieMap in element.data().entries) {
+  //       Repo.movieListenable.value.add(Movie.fromOMDB(
+  //         movieMap.value['title'],
+  //         movieMap.value['rating'],
+  //         movieMap.value['date'].toDate(),
+  //         movieMap.value['category'],
+  //         movieMap.value['rated'],
+  //         movieMap.value['runtime'],
+  //         movieMap.value['genre'],
+  //         movieMap.value['director'],
+  //         movieMap.value['poster'],
+  //         movieMap.value['awards'],
+  //         movieMap.value['imdbRating'],
+  //         movieMap.value['imdbID'],
+  //         movieMap.value['tmdbID'],
+  //         movieMap.value['production'],
+  //       ));
+  //     }
+  //     if (mounted) {
+  //       setState(() {
+  //         Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
+  //         Repo.movieList = List.of(Repo.movieListenable.value);
+  //       });
+  //     }
+  //   }
+  // }
 
   showDeleteDialog(BuildContext context, Movie movie) async {
     if (!await Internet().checkConnection()) return;
@@ -123,7 +117,7 @@ class _MovieOverview extends State<MoviesPage> {
       movie.category++;
     }
 
-    return movies
+    return Repo.moviesDoc
         .update({firebaseProof(movie.title): movie.toMap()})
         .then((value) => {})
         .catchError(
@@ -131,10 +125,10 @@ class _MovieOverview extends State<MoviesPage> {
   }
 
   Future<void> _deleteMovie(Movie movie) {
-    return movies
+    return Repo.moviesDoc
         .update({firebaseProof(movie.title): FieldValue.delete()})
         .then((value) => {
-              showSimpleNotification(Text("movie succesfully deleted"),
+              showSimpleNotification(Text("Movie succesfully deleted."),
                   background: Colours.primaryColor),
               Navigator.of(context).pop()
             })
@@ -258,37 +252,161 @@ class _MovieOverview extends State<MoviesPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (Repo.movieListenable.value.length == 0) {
-      return SafeArea(
-        child: Center(
-          child: Text(
-            "Please add a movie below",
-            style: TextStyle(fontSize: Repo.currFontsize + 5),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
+    return StreamBuilder<DocumentSnapshot>(
+        stream: Repo.moviesDoc.snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Something went wrong',
+                style: TextStyle(fontSize: Repo.currFontsize + 5),
+              ),
+            );
+          }
 
-    return ValueListenableBuilder(
-      valueListenable: Repo.movieListenable,
-      builder: (BuildContext context, List<Movie> value, Widget child) {
-        return Column(children: [
-          Container(
-            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.1),
-            child: _filterInfoBar(Repo.movieListenable.value.length),
-          ),
-          Expanded(
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: Repo.movieListenable.value.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == Repo.movieListenable.value.length)
-                      return SizedBox(height: 20);
-                    return _movieTile(index);
-                  }))
-        ]);
-      },
-    );
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (mounted) {
+            if (snapshot.data.data() == null)
+              return SafeArea(
+                child: Center(
+                  child: Text(
+                    "Please add a movie below",
+                    style: TextStyle(fontSize: Repo.currFontsize + 5),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            Repo.movieListenable.value.clear();
+            for (var movieMap in snapshot.data.data().entries) {
+              Repo.movieListenable.value.add(Movie.fromOMDB(
+                movieMap.value['title'],
+                movieMap.value['rating'],
+                movieMap.value['date'].toDate(),
+                movieMap.value['category'],
+                movieMap.value['rated'],
+                movieMap.value['runtime'],
+                movieMap.value['genre'],
+                movieMap.value['director'],
+                movieMap.value['poster'],
+                movieMap.value['awards'],
+                movieMap.value['imdbRating'],
+                movieMap.value['imdbID'],
+                movieMap.value['tmdbID'],
+                movieMap.value['production'],
+              ));
+            }
+            Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
+            Repo.movieList = List.of(Repo.movieListenable.value);
+          }
+          if (Repo.movieListenable.value.length == 0) {
+            return SafeArea(
+              child: Center(
+                child: Text(
+                  "Please add a movie below",
+                  style: TextStyle(fontSize: Repo.currFontsize + 5),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }
+
+          return Theme(
+              data:
+                  Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+              child: ValueListenableBuilder(
+                  valueListenable: Repo.movieListenable,
+                  builder:
+                      (BuildContext context, List<Movie> value, Widget child) {
+                    return Column(children: [
+                      Container(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .color
+                            .withOpacity(0.1),
+                        child:
+                            _filterInfoBar(Repo.movieListenable.value.length),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: Repo.movieListenable.value.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == Repo.movieListenable.value.length)
+                              return SizedBox(height: 20);
+                            return _movieTile(index);
+                          },
+                        ),
+                      ),
+                    ]);
+                  }));
+        });
+    // return StreamBuilder<DocumentSnapshot>(
+    //   stream: Repo.moviesDoc.snapshots(),
+    //   builder: (context, snapshot) {
+    //     if (snapshot.hasError) {
+    //       return Container(
+    //           height: 225,
+    //           child: Center(
+    //               child: Text(
+    //             "Something went wrong.",
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(fontSize: Repo.currFontsize + 15),
+    //           )));
+    //     }
+
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       return Center(child: CircularProgressIndicator());
+    //     }
+
+    //     // DocumentSnapshot querydoc = snapshot.data;
+    //     if (Repo.movieListenable.value.length == 0) {
+    //       return SafeArea(
+    //         child: Center(
+    //           child: Text(
+    //             "Please add a movie below",
+    //             style: TextStyle(fontSize: Repo.currFontsize + 5),
+    //             textAlign: TextAlign.center,
+    //           ),
+    //         ),
+    //       );
+    //     } else {
+    //       return ValueListenableBuilder(
+    //         valueListenable: Repo.movieListenable,
+    //         builder: (BuildContext context, List<Movie> value, Widget child) {
+    //           return Column(children: [
+    //             Container(
+    //               color: Theme.of(context)
+    //                   .textTheme
+    //                   .bodyText1
+    //                   .color
+    //                   .withOpacity(0.1),
+    //               child: _filterInfoBar(Repo.movieListenable.value.length),
+    //             ),
+    //             Expanded(
+    //               child: Theme(
+    //                 data: Theme.of(context)
+    //                     .copyWith(accentColor: Colours.primaryColor),
+    //                 child: ListView.builder(
+    //                   scrollDirection: Axis.vertical,
+    //                   itemCount: Repo.movieListenable.value.length + 1,
+    //                   itemBuilder: (context, index) {
+    //                     if (index == Repo.movieListenable.value.length)
+    //                       return SizedBox(height: 20);
+    //                     return _movieTile(index);
+    //                   },
+    //                 ),
+    //               ),
+    //             )
+    //           ]);
+    //         },
+    //       );
+    //     }
+    //   },
+    // );
   }
 }

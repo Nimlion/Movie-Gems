@@ -3,23 +3,15 @@ import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colours.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 
 Future<void> _addDocument(BuildContext context, String title, bool released,
     DateTime releaseDate) async {
-  DocumentSnapshot element = await FirebaseFirestore.instance
-      .collection('watchlist')
-      .doc(FirebaseAuthentication().auth.currentUser.uid)
-      .snapshots()
-      .first;
+  DocumentSnapshot element = await Repo.watchlistDoc.snapshots().first;
   if (element.exists == false) {
-    FirebaseFirestore.instance
-        .collection('watchlist')
-        .doc(FirebaseAuthentication().auth.currentUser.uid)
-        .set({});
+    Repo.watchlistDoc.set({});
     addWatchLaterFilm(context, title, released, releaseDate);
   }
 }
@@ -46,9 +38,7 @@ Future<void> addWatchLaterFilm(BuildContext context, String title,
     showSimpleNotification(Text("Movie could not be found"),
         background: Colors.red);
   } else {
-    FirebaseFirestore.instance
-        .collection('watchlist')
-        .doc(FirebaseAuthentication().auth.currentUser.uid)
+    Repo.watchlistDoc
         .update({
           firebaseProof(omdbObject.title): {
             "addedOn": DateTime.now(),
@@ -60,7 +50,8 @@ Future<void> addWatchLaterFilm(BuildContext context, String title,
           }
         })
         .then((value) => {
-              showSimpleNotification(Text("movie succesfully added"),
+              showSimpleNotification(
+                  Text("Movie succesfully added to watchlist."),
                   background: Colours.primaryColor),
               Navigator.pop(context),
             })
@@ -85,10 +76,15 @@ Widget movieOverlay(BuildContext context, String title, String overview,
     children: <Widget>[
       AspectRatio(
         aspectRatio: 1.6,
-        child: Image.network(
-          "https://image.tmdb.org/t/p/w1280$url",
-          fit: BoxFit.cover,
-        ),
+        child: url != null && url != ""
+            ? Image.network(
+                "https://image.tmdb.org/t/p/w1280$url",
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                "assets/img/empty-landscape.jpg",
+                fit: BoxFit.cover,
+              ),
       ),
       Center(
         child: Container(
@@ -189,9 +185,19 @@ class MovieOverlay extends ModalRoute<void> {
 
   Widget _buildOverlayContent(BuildContext context) {
     return Center(
+      child: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
         child: SingleChildScrollView(
-            child: movieOverlay(context, this.movie.title, this.movie.overview,
-                this.movie.backdrop, DateTime.parse(this.movie.releaseDate))));
+          child: movieOverlay(
+            context,
+            this.movie.title,
+            this.movie.overview,
+            this.movie.backdrop,
+            DateTime.parse(this.movie.releaseDate),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -248,10 +254,19 @@ class FilmOverlay extends ModalRoute<void> {
 
   Widget _buildOverlayContent(BuildContext context) {
     return Center(
+      child: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
         child: SingleChildScrollView(
-      child: movieOverlay(context, this.film.title, this.film.overview,
-          this.film.backdrop, DateTime.parse(this.film.releaseDate)),
-    ));
+          child: movieOverlay(
+            context,
+            this.film.title,
+            this.film.overview,
+            this.film.backdrop,
+            DateTime.parse(this.film.releaseDate),
+          ),
+        ),
+      ),
+    );
   }
 
   @override

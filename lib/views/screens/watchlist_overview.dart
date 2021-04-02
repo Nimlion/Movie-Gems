@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/movie.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/watchlater.dart';
@@ -19,9 +18,6 @@ class WatchLaterPage extends StatefulWidget {
 }
 
 class _WatchLaterOverview extends State<WatchLaterPage> {
-  DocumentReference laterList = FirebaseFirestore.instance
-      .collection('watchlist')
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
   List<WatchLater> toWatchList = List();
 
   @override
@@ -32,7 +28,7 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
 
   Future<void> getWatchList() async {
     if (mounted) {
-      await laterList.snapshots().forEach((element) {
+      Repo.watchlistDoc.snapshots().listen((element) {
         if (element.data() == null) return;
         toWatchList.clear();
         for (var movieMap in element.data().entries) {
@@ -62,17 +58,25 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
 
   void _pushAddScreen(WatchLater clickedMovie) {
     var amount = Repo.movieListenable.value.length;
+    DocumentSnapshot snapshot;
+    int newAmount = 0;
     Navigator.push(
         context,
         PageRoutes.fadeScale(() => AddMovieScreen(
               title: clickedMovie.title,
-            ))).whenComplete(() => Repo.movieListenable.value.length > amount
-        ? laterList.update({
-            firebaseProof(clickedMovie.title): FieldValue.delete()
-          }).catchError(
-            (error) => print("Failed to delete movie from watchlist: $error"))
-        : showSimpleNotification(Text("Watched movie has not been deleted."),
-            background: Colours.primaryColor));
+            ))).whenComplete(() async => {
+          snapshot = await Repo.moviesDoc.snapshots().first,
+          newAmount =
+              snapshot.data() != null ? snapshot.data().entries.length : 0,
+          newAmount > amount
+              ? Repo.watchlistDoc.update({
+                  firebaseProof(clickedMovie.title): FieldValue.delete()
+                }).catchError((error) =>
+                  print("Failed to delete movie from watchlist: $error"))
+              : showSimpleNotification(
+                  Text("Watched movie has not been removed."),
+                  background: Colours.primaryColor)
+        });
   }
 
   Widget _toWatchTile(int index) {
@@ -181,7 +185,7 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
   }
 
   Future<void> _deleteMovie(WatchLater film) {
-    return laterList
+    return Repo.watchlistDoc
         .update({firebaseProof(film.title): FieldValue.delete()})
         .then((value) => {
               showSimpleNotification(Text("To watch movie removed."),
@@ -209,12 +213,16 @@ class _WatchLaterOverview extends State<WatchLaterPage> {
       );
     }
 
-    return ListView.builder(
+    return Theme(
+      data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+      child: ListView.builder(
         scrollDirection: Axis.vertical,
         itemCount: toWatchList.length + 1,
         itemBuilder: (context, index) {
           if (index == toWatchList.length) return SizedBox(height: 20);
           return _toWatchTile(index);
-        });
+        },
+      ),
+    );
   }
 }

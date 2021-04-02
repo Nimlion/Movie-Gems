@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/routes.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/screens/episode_overview.dart';
@@ -17,9 +16,6 @@ class SeriesPage extends StatefulWidget {
 }
 
 class _SeriesOverview extends State<SeriesPage> {
-  DocumentReference series = FirebaseFirestore.instance
-      .collection('series')
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
   List<Serie> seriesList = List();
 
   @override
@@ -41,7 +37,7 @@ class _SeriesOverview extends State<SeriesPage> {
   }
 
   Future<void> getSeries() async {
-    await series.snapshots().forEach((element) {
+    Repo.seriesDoc.snapshots().listen((element) {
       if (element.data() == null) return;
       this.seriesList = List();
       for (var seriesMap in element.data().entries) {
@@ -68,7 +64,7 @@ class _SeriesOverview extends State<SeriesPage> {
   }
 
   Future<void> _deleteSerie(Serie serie) {
-    return series
+    return Repo.seriesDoc
         .update({firebaseProof(serie.title): FieldValue.delete()})
         .then((value) => {
               showSimpleNotification(Text("serie succesfully deleted"),
@@ -175,12 +171,16 @@ class _SeriesOverview extends State<SeriesPage> {
       );
     }
 
-    return ListView.builder(
+    return Theme(
+      data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+      child: ListView.builder(
         scrollDirection: Axis.vertical,
         itemCount: seriesList.length + 1,
         itemBuilder: (context, index) {
           if (index == seriesList.length) return SizedBox(height: 20);
           return _serieTile(index);
-        });
+        },
+      ),
+    );
   }
 }
