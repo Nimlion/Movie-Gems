@@ -63,6 +63,15 @@ class FirebaseAuthentication {
 
   Future<void> anonymouslySignIn() async {
     this._userCredential = await FirebaseAuth.instance.signInAnonymously();
+    Repo.watchlistDoc = FirebaseFirestore.instance
+        .collection('watchlist')
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
+    Repo.seriesDoc = FirebaseFirestore.instance
+        .collection("series")
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
+    Repo.moviesDoc = FirebaseFirestore.instance
+        .collection("movies")
+        .doc(FirebaseAuthentication().auth.currentUser.uid);
   }
 
   Future<bool> resetPassword(String email) async {
@@ -174,5 +183,6 @@ class FirebaseAuthentication {
         .then((value) => print("watchlist deleted"))
         .catchError((e) => print(e));
     await FirebaseAuth.instance.currentUser.delete();
+    await FirebaseAuth.instance.signOut();
   }
 }

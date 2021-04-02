@@ -239,8 +239,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              userEmail != null ? _updateEmail() : Container(),
-              userEmail != null
+              userEmail != null && userEmail != ""
+                  ? _updateEmail()
+                  : Container(),
+              userEmail != null && userEmail != ""
                   ? _actionBlock(
                       "Reset password",
                       "Don’t like your password? Change your password by getting a link in your mail to change it.",
@@ -249,7 +251,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       () => _resetPassword(),
                     )
                   : Container(),
-              FirebaseAuth.instance.currentUser != null
+              FirebaseAuth.instance.currentUser != null &&
+                      FirebaseAuth.instance.currentUser.email != "" &&
+                      FirebaseAuth.instance.currentUser.email != null
                   ? FirebaseAuth.instance.currentUser.emailVerified
                       ? Container()
                       : _actionBlock(
@@ -259,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Colours.primaryColor,
                           () => _verifyEmail())
                   : Container(),
-              userEmail != null
+              userEmail != null && userEmail != ""
                   ? _actionBlock(
                       "Signout",
                       "Want to switch accounts? Or just wanna signout completely?",

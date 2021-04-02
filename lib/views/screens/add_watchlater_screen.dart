@@ -62,9 +62,10 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
             .fetchSpecificOMDBData(_titleValue, this._releaseDate.year)
             .then((omdbResponse) async => {
                   omdbObject = omdbResponse,
-                  await TMDBMovieController()
-                      .fetchTMDBData(omdbResponse.imdbID)
-                      .then((tmdbResponse) => tmdbObject = tmdbResponse)
+                  if (omdbObject != null)
+                    await TMDBMovieController()
+                        .fetchTMDBData(omdbResponse.imdbID)
+                        .then((tmdbResponse) => tmdbObject = tmdbResponse)
                 });
 
     if (omdbObject == null || tmdbObject == null) {
