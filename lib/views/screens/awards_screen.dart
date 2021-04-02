@@ -80,7 +80,7 @@ class _AwardsScreenState extends State<AwardsScreen> {
     );
   }
 
-  Widget _statsTile(int amount, String bottomText) {
+  Widget _statsTile(String label, int amount, String bottomText) {
     TextStyle smStyle = TextStyle(
         fontSize: Repo.currFontsize - 8,
         fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _AwardsScreenState extends State<AwardsScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(amount.toString(), style: xlStyle),
+                Text(label.toString(), style: xlStyle),
                 SizedBox(height: 5),
                 Text(bottomText, style: smStyle)
               ],
@@ -142,141 +142,174 @@ class _AwardsScreenState extends State<AwardsScreen> {
       body: Stack(
         children: [
           SafeArea(
-            child: CustomScrollView(physics: BouncingScrollPhysics(), slivers: <
-                Widget>[
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Column(children: <Widget>[
-                    SizedBox(height: 50),
-                    _title("Awards"),
-                    SizedBox(height: 15),
-                    GridView.count(
-                      childAspectRatio: 2,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20,
-                      crossAxisCount: 2,
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 25),
-                      shrinkWrap: true,
-                      children: [
-                        _awardTile(Icons.movie, "50", "movies",
-                            Repo.movieListenable.value.length >= 50),
-                        _awardTile(Icons.movie, "100", "movies",
-                            Repo.movieListenable.value.length >= 100),
-                        _awardTile(
-                            Icons.local_activity,
-                            "10",
-                            "gems",
-                            Repo.movieListenable.value
+            child: CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: <Widget>[
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => Column(children: <Widget>[
+                        SizedBox(height: 50),
+                        _title("Awards"),
+                        SizedBox(height: 15),
+                        GridView.count(
+                          childAspectRatio: 2,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                          crossAxisCount: 2,
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 25),
+                          shrinkWrap: true,
+                          children: [
+                            _awardTile(Icons.movie, "50", "movies",
+                                Repo.movieListenable.value.length >= 50),
+                            _awardTile(Icons.movie, "100", "movies",
+                                Repo.movieListenable.value.length >= 100),
+                            _awardTile(
+                                Icons.local_activity,
+                                "10",
+                                "gems",
+                                Repo.movieListenable.value
+                                        .where((Movie e) => e.category == 2)
+                                        .length >=
+                                    10),
+                            _awardTile(
+                                Icons.favorite,
+                                "20",
+                                "favorites",
+                                Repo.movieListenable.value
+                                        .where((Movie e) => e.category == 1)
+                                        .length >=
+                                    20),
+                            StreamBuilder<DocumentSnapshot>(
+                              stream: Repo.watchlistDoc.snapshots(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+                                this.laterListLen = snapshot.data.data() != null
+                                    ? snapshot.data.data().entries.length
+                                    : 0;
+                                return _awardTile(Icons.access_time, "10",
+                                    "watchlist", this.laterListLen >= 10);
+                              },
+                            ),
+                            _awardTile(Icons.settings, "settings", "adjusted",
+                                Repo.customized),
+                            _awardTile(
+                                Icons.mark_email_read,
+                                "email",
+                                "verified",
+                                FirebaseAuth
+                                    .instance.currentUser.emailVerified),
+                            _awardTile(Icons.vpn_key, "secret", "found",
+                                Repo.easterEgg),
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        _title("Stats"),
+                        SizedBox(height: 15),
+                        GridView.count(
+                          childAspectRatio: 2.5,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                          crossAxisCount: 1,
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 25),
+                          shrinkWrap: true,
+                          children: [
+                            _statsTile(
+                                Repo.movieListenable.value.length.toString(),
+                                Repo.movieListenable.value.length,
+                                "movies"),
+                            StreamBuilder<DocumentSnapshot>(
+                              stream: Repo.watchlistDoc.snapshots(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+                                this.laterListLen = snapshot.data.data() != null
+                                    ? snapshot.data.data().entries.length
+                                    : 0;
+
+                                return _statsTile(this.laterListLen.toString(),
+                                    this.laterListLen, "watchlist");
+                              },
+                            ),
+                            StreamBuilder<DocumentSnapshot>(
+                              stream: Repo.seriesDoc.snapshots(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+                                var seriesLength = snapshot.data.data() != null
+                                    ? snapshot.data.data().entries.length
+                                    : 0;
+
+                                return _statsTile(seriesLength.toString(),
+                                    seriesLength, "series");
+                              },
+                            ),
+                            _statsTile(
+                                Repo.movieListenable.value
                                     .where((Movie e) => e.category == 2)
-                                    .length >=
-                                10),
-                        _awardTile(
-                            Icons.favorite,
-                            "20",
-                            "favorites",
-                            Repo.movieListenable.value
+                                    .length
+                                    .toString(),
+                                Repo.movieListenable.value
+                                    .where((Movie e) => e.category == 2)
+                                    .length,
+                                "gems"),
+                            _statsTile(
+                                Repo.movieListenable.value
                                     .where((Movie e) => e.category == 1)
-                                    .length >=
-                                20),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: Repo.watchlistDoc.snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<DocumentSnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              return CircularProgressIndicator();
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            this.laterListLen = snapshot.data.data() != null
-                                ? snapshot.data.data().entries.length
-                                : 0;
-                            return _awardTile(Icons.access_time, "10",
-                                "watchlist", this.laterListLen >= 10);
-                          },
+                                    .length
+                                    .toString(),
+                                Repo.movieListenable.value
+                                    .where((Movie e) => e.category == 1)
+                                    .length,
+                                "favorites"),
+                            _statsTile(
+                                (Repo.movieListenable.value
+                                            .map((Movie e) => e.rating)
+                                            .reduce((value, element) =>
+                                                value + element) /
+                                        Repo.movieListenable.value.length)
+                                    .toStringAsFixed(1),
+                                ((Repo.movieListenable.value
+                                                .map((Movie e) => e.rating)
+                                                .reduce((value, element) =>
+                                                    value + element) /
+                                            Repo.movieListenable.value.length) *
+                                        10)
+                                    .toInt(),
+                                "avg rating"),
+                          ],
                         ),
-                        _awardTile(Icons.settings, "settings", "adjusted",
-                            Repo.customized),
-                        _awardTile(Icons.mark_email_read, "email", "verified",
-                            FirebaseAuth.instance.currentUser.emailVerified),
-                        _awardTile(
-                            Icons.vpn_key, "secret", "found", Repo.easterEgg),
-                      ],
+                        SizedBox(height: 15),
+                      ]),
+                      childCount: 1,
                     ),
-                    SizedBox(height: 30),
-                    _title("Stats"),
-                    SizedBox(height: 15),
-                    GridView.count(
-                      childAspectRatio: 2.5,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20,
-                      crossAxisCount: 1,
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 25),
-                      shrinkWrap: true,
-                      children: [
-                        _statsTile(Repo.movieListenable.value.length, "movies"),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: Repo.watchlistDoc.snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<DocumentSnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              return CircularProgressIndicator();
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            this.laterListLen = snapshot.data.data() != null
-                                ? snapshot.data.data().entries.length
-                                : 0;
-
-                            return _statsTile(this.laterListLen, "watchlist");
-                          },
-                        ),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: Repo.seriesDoc.snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<DocumentSnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              return CircularProgressIndicator();
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            var seriesLength = snapshot.data.data() != null
-                                ? snapshot.data.data().entries.length
-                                : 0;
-
-                            return _statsTile(seriesLength, "series");
-                          },
-                        ),
-                        _statsTile(
-                            Repo.movieListenable.value
-                                .where((Movie e) => e.category == 2)
-                                .length,
-                            "gems"),
-                        _statsTile(
-                            Repo.movieListenable.value
-                                .where((Movie e) => e.category == 1)
-                                .length,
-                            "favorites"),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                  ]),
-                  childCount: 1,
-                ),
-              ),
-            ]),
+                  ),
+                ]),
           ),
           Positioned(
             right: 25,

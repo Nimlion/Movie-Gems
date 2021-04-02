@@ -28,44 +28,6 @@ class MoviesPage extends StatefulWidget {
 }
 
 class _MovieOverview extends State<MoviesPage> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getMovies();
-  // }
-
-  // Future<void> getMovies() async {
-  //   if (mounted) {
-  //     DocumentSnapshot element = await Repo.moviesDoc.snapshots().first;
-  //     if (element.data() == null) return;
-  //     Repo.movieListenable.value.clear();
-  //     for (var movieMap in element.data().entries) {
-  //       Repo.movieListenable.value.add(Movie.fromOMDB(
-  //         movieMap.value['title'],
-  //         movieMap.value['rating'],
-  //         movieMap.value['date'].toDate(),
-  //         movieMap.value['category'],
-  //         movieMap.value['rated'],
-  //         movieMap.value['runtime'],
-  //         movieMap.value['genre'],
-  //         movieMap.value['director'],
-  //         movieMap.value['poster'],
-  //         movieMap.value['awards'],
-  //         movieMap.value['imdbRating'],
-  //         movieMap.value['imdbID'],
-  //         movieMap.value['tmdbID'],
-  //         movieMap.value['production'],
-  //       ));
-  //     }
-  //     if (mounted) {
-  //       setState(() {
-  //         Repo.movieListenable.value.sort((a, b) => b.date.compareTo(a.date));
-  //         Repo.movieList = List.of(Repo.movieListenable.value);
-  //       });
-  //     }
-  //   }
-  // }
-
   showDeleteDialog(BuildContext context, Movie movie) async {
     if (!await Internet().checkConnection()) return;
     Widget cancelBtn = FlatButton(
@@ -345,68 +307,5 @@ class _MovieOverview extends State<MoviesPage> {
                     ]);
                   }));
         });
-    // return StreamBuilder<DocumentSnapshot>(
-    //   stream: Repo.moviesDoc.snapshots(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasError) {
-    //       return Container(
-    //           height: 225,
-    //           child: Center(
-    //               child: Text(
-    //             "Something went wrong.",
-    //             textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: Repo.currFontsize + 15),
-    //           )));
-    //     }
-
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return Center(child: CircularProgressIndicator());
-    //     }
-
-    //     // DocumentSnapshot querydoc = snapshot.data;
-    //     if (Repo.movieListenable.value.length == 0) {
-    //       return SafeArea(
-    //         child: Center(
-    //           child: Text(
-    //             "Please add a movie below",
-    //             style: TextStyle(fontSize: Repo.currFontsize + 5),
-    //             textAlign: TextAlign.center,
-    //           ),
-    //         ),
-    //       );
-    //     } else {
-    //       return ValueListenableBuilder(
-    //         valueListenable: Repo.movieListenable,
-    //         builder: (BuildContext context, List<Movie> value, Widget child) {
-    //           return Column(children: [
-    //             Container(
-    //               color: Theme.of(context)
-    //                   .textTheme
-    //                   .bodyText1
-    //                   .color
-    //                   .withOpacity(0.1),
-    //               child: _filterInfoBar(Repo.movieListenable.value.length),
-    //             ),
-    //             Expanded(
-    //               child: Theme(
-    //                 data: Theme.of(context)
-    //                     .copyWith(accentColor: Colours.primaryColor),
-    //                 child: ListView.builder(
-    //                   scrollDirection: Axis.vertical,
-    //                   itemCount: Repo.movieListenable.value.length + 1,
-    //                   itemBuilder: (context, index) {
-    //                     if (index == Repo.movieListenable.value.length)
-    //                       return SizedBox(height: 20);
-    //                     return _movieTile(index);
-    //                   },
-    //                 ),
-    //               ),
-    //             )
-    //           ]);
-    //         },
-    //       );
-    //     }
-    //   },
-    // );
   }
 }
