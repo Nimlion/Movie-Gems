@@ -208,12 +208,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                     fontSize: Repo.currFontsize + 2,
                     color: Colours.primaryColor),
               ),
-              IconButton(
-                  icon: Icon(
-                    Icons.star,
-                    color: Colours.gold,
-                  ),
-                  onPressed: null)
+              SizedBox(width: 5),
+              Icon(
+                Icons.star,
+                size: Repo.currFontsize + 2,
+                color: Colours.gold,
+              ),
             ],
           ),
           SizedBox(height: 20),
@@ -493,20 +493,35 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   .format(movie.date)
                                   .toString())
                           : SizedBox(),
-                      _subtitle("Statistics"),
-                      _pillBar("rated", movie.rated, "runtime",
-                          response.runtime.toString() + " MIN"),
-                      _pillBar(
-                          "released on",
-                          DateFormat("dd-MM-yyyy")
-                              .format(DateTime.parse(response.releaseDate))
-                              .toString(),
-                          "status",
-                          response.status),
+                      movie.rated == null &&
+                              response.runtime == null &&
+                              response.releaseDate == null &&
+                              response.status == null
+                          ? Container()
+                          : _subtitle("Statistics"),
+                      movie.rated != null &&
+                              movie.rated != "" &&
+                              response.runtime != null &&
+                              response.runtime != 0
+                          ? _pillBar("rated", movie.rated, "runtime",
+                              response.runtime.toString() + " MIN")
+                          : Container(),
+                      response.releaseDate != null &&
+                              response.releaseDate != "" &&
+                              response.status != null &&
+                              response.status != ""
+                          ? _pillBar(
+                              "released on",
+                              DateFormat("dd-MM-yyyy")
+                                  .format(DateTime.parse(response.releaseDate))
+                                  .toString(),
+                              "status",
+                              response.status)
+                          : Container(),
                       movie.rating != null &&
-                              movie.rating == 0.0 &&
-                              movie.imdbRating == null &&
-                              movie.imdbRating == ""
+                              movie.rating != 0.0 &&
+                              movie.imdbRating != null &&
+                              movie.imdbRating != ""
                           ? Column(children: [
                               _subtitle("Ratings"),
                               _ratingPillBar("yours", movie.rating.toString(),
@@ -543,7 +558,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                               builder: (BuildContext context,
                                   AsyncSnapshot<TMDBCast> snapshot) {
                                 if (snapshot.hasError) {
-                                  return PageFiller("Error");
+                                  return Center(child: Text("Error"));
                                 }
 
                                 if (snapshot.connectionState ==

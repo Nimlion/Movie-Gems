@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -16,10 +15,6 @@ class AddWatchLaterScreen extends StatefulWidget {
 }
 
 class _AddWatchLaterState extends State<AddWatchLaterScreen> {
-  DocumentReference laterList = FirebaseFirestore.instance
-      .collection('watchlist')
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
-
   String _titleValue = '';
   DateTime _releaseDate = DateTime.now();
   bool _released = true;
@@ -31,9 +26,9 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
 
   Future<void> _addDocument() async {
     if (!mounted) return;
-    DocumentSnapshot element = await laterList.snapshots().first;
+    DocumentSnapshot element = await Repo.watchlistDoc.snapshots().first;
     if (element.exists == false) {
-      laterList.set({});
+      Repo.watchlistDoc.set({});
       addWatchLaterFilm();
     }
   }
@@ -41,6 +36,11 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
   Future<void> addWatchLaterFilm() async {
     if (this._titleValue == '') {
       showSimpleNotification(Text("Invalid movie title."),
+          background: Colours.error);
+      return;
+    }
+    if (!this._released && this._releaseDate.isBefore(DateTime.now())) {
+      showSimpleNotification(Text("Movie is already released."),
           background: Colours.error);
       return;
     }
@@ -71,8 +71,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
       showSimpleNotification(Text("Movie could not be found"),
           background: Colors.red);
     } else {
-      this
-          .laterList
+      Repo.watchlistDoc
           .update({
             firebaseProof(omdbObject.title): {
               "addedOn": DateTime.now(),
@@ -84,7 +83,8 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
             }
           })
           .then((value) => {
-                showSimpleNotification(Text("movie succesfully added"),
+                showSimpleNotification(
+                    Text("Movie succesfully added to watchlist."),
                     background: Colours.primaryColor),
                 Navigator.pop(context),
               })
@@ -139,7 +139,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SizedBox(height: 30),
+          SizedBox(height: 20),
           Text(
             "Released:",
             style: TextStyle(
@@ -191,7 +191,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        SizedBox(height: 30),
+        SizedBox(height: 20),
         Text(
           "Release date: " +
               DateFormat("dd MMM. yyyy").format(this._releaseDate).toString(),
@@ -202,6 +202,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
           height: 10.0,
         ),
         RaisedButton(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           onPressed: () => _selectDate(context),
           child: Text(
             'Change date',
@@ -215,8 +216,8 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
   }
 
   Future _selectDate(BuildContext context) async {
-    var now = new DateTime(2018, 1, 13);
-    var endDate = new DateTime(now.year + 5, now.month, now.day);
+    var now = DateTime(2018, 1, 13);
+    var endDate = DateTime(now.year + 5, now.month, now.day);
 
     final DateTime picked = await showDatePicker(
       context: context,
@@ -255,29 +256,29 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-            title: Text(
-          'Add a movie to watch later',
-          style: TextStyle(fontSize: Repo.currFontsize),
-        )),
-        body: SafeArea(
-          child: Stack(children: <Widget>[
-            Container(
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+        'Add a movie to watch later',
+        style: TextStyle(fontSize: Repo.currFontsize),
+      )),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 25),
-              child: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     SizedBox(height: 20),
                     _titleField(),
                     _releasedField(),
                     !this._released ? _releaseDateColumn() : Container(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _addButton(),
                   ])),
-            )
-          ]),
-        )));
+        ),
+      ),
+    );
   }
 }

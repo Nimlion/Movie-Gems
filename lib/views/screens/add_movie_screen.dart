@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/OMDBController.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -20,14 +19,10 @@ class AddMovieScreen extends StatefulWidget {
 }
 
 class _AddMovieScreenState extends State<AddMovieScreen> {
-  String _titleValue;
+  String _titleValue = "";
   DateTime _dateValue = DateTime.now();
   double _rating = 5;
   int _category = 0;
-
-  DocumentReference moviesdoc = FirebaseFirestore.instance
-      .collection("movies")
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
 
   _AddMovieScreenState(String title) {
     this._titleValue = title != null ? title : "";
@@ -40,15 +35,11 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
 
   Future<void> _addDocument() async {
     if (!mounted) return;
-    await moviesdoc.snapshots().forEach((DocumentSnapshot element) {
-      if (element.exists == false) {
-        FirebaseFirestore.instance
-            .collection("movies")
-            .doc(FirebaseAuthentication().auth.currentUser.uid)
-            .set({});
-        addMovie();
-      }
-    });
+    DocumentSnapshot element = await Repo.moviesDoc.snapshots().first;
+    if (element.exists == false) {
+      Repo.moviesDoc.set({});
+      addMovie();
+    }
   }
 
   Future<void> addMovie() async {
@@ -63,16 +54,17 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
         .fetchOMDBData(_titleValue)
         .then((omdbResponse) async => {
               omdbObject = omdbResponse,
-              await TMDBMovieController()
-                  .fetchTMDBData(omdbResponse.imdbID)
-                  .then((tmdbResponse) => tmdbObject = tmdbResponse)
+              if (omdbObject != null)
+                await TMDBMovieController()
+                    .fetchTMDBData(omdbResponse.imdbID)
+                    .then((tmdbResponse) => tmdbObject = tmdbResponse)
             });
 
     if (omdbObject == null || tmdbObject == null) {
       showSimpleNotification(Text("Movie could not be found"),
           background: Colors.red);
     } else {
-      moviesdoc
+      Repo.moviesDoc
           .update({
             firebaseProof(omdbObject.title): {
               "title": omdbObject.title,
@@ -92,7 +84,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
             }
           })
           .then((value) => {
-                showSimpleNotification(Text("movie succesfully added"),
+                showSimpleNotification(Text("Movie succesfully added."),
                     background: Colours.primaryColor),
                 Navigator.pop(context),
               })
@@ -111,7 +103,6 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
   }
 
   Widget _titleField() {
-    final node = FocusScope.of(context);
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -125,23 +116,24 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
             height: 10.0,
           ),
           TextField(
-              autofocus: this._titleValue == "",
-              keyboardType: TextInputType.name,
-              textCapitalization: TextCapitalization.words,
-              onChanged: (value) => this._titleValue = value,
-              textInputAction: TextInputAction.done,
-              controller: TextEditingController()..text = this._titleValue,
-              onEditingComplete: () => node.nextFocus(),
-              decoration: InputDecoration(
-                hintText: 'title',
-                contentPadding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                border: InputBorder.none,
-                fillColor: Colors.transparent,
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colours.primaryColor)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colours.primaryColor)),
-              ))
+            style: TextStyle(fontSize: Repo.currFontsize - 2),
+            autofocus: this._titleValue == "",
+            keyboardType: TextInputType.name,
+            textCapitalization: TextCapitalization.none,
+            onChanged: (value) => this._titleValue = value,
+            textInputAction: TextInputAction.done,
+            controller: TextEditingController(text: this._titleValue),
+            decoration: InputDecoration(
+              hintText: 'title',
+              contentPadding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+              border: InputBorder.none,
+              fillColor: Colors.transparent,
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colours.primaryColor)),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colours.primaryColor)),
+            ),
+          )
         ]);
   }
 
@@ -160,6 +152,7 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
           height: 10.0,
         ),
         RaisedButton(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           onPressed: () => _selectDate(context),
           child: Text(
             'Change date',
@@ -301,34 +294,34 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-            title: Text(
-          'Add a movie',
-          style: TextStyle(fontSize: Repo.currFontsize),
-        )),
-        body: SafeArea(
-          child: Stack(children: <Widget>[
-            Container(
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+        'Add a movie',
+        style: TextStyle(fontSize: Repo.currFontsize),
+      )),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 25),
-              child: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     SizedBox(height: 20),
                     _titleField(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _dateColumn(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _selectCategory(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _ratingSlider(),
-                    SizedBox(height: 50),
-                    _addButton(),
                     SizedBox(height: 30),
+                    _addButton(),
+                    SizedBox(height: 20),
                   ])),
-            )
-          ]),
-        )));
+        ),
+      ),
+    );
   }
 }

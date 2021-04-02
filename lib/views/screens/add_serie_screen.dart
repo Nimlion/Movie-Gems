@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/controller/TVMazeController.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_overview.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -22,10 +21,6 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
   int _status = 0;
   bool _firstDocumentAdded = false;
 
-  DocumentReference seriesDoc = FirebaseFirestore.instance
-      .collection("series")
-      .doc(FirebaseAuthentication().auth.currentUser.uid);
-
   @override
   void dispose() {
     super.dispose();
@@ -33,9 +28,9 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
 
   Future<void> _addDocument() async {
     if (!mounted || _firstDocumentAdded) return;
-    await seriesDoc.snapshots().forEach((DocumentSnapshot element) {
+    Repo.seriesDoc.snapshots().listen((DocumentSnapshot element) {
       if (element.exists == false) {
-        seriesDoc.set({});
+        Repo.seriesDoc.set({});
         addSerie();
       }
     });
@@ -63,7 +58,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
       showSimpleNotification(Text("serie could not be found"),
           background: Colors.red);
     } else {
-      seriesDoc
+      Repo.seriesDoc
           .update({
             firebaseProof(tvMazeObject.show["name"]): {
               "title": tvMazeObject.show["name"],
@@ -150,6 +145,7 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
           height: 10.0,
         ),
         RaisedButton(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           onPressed: () => _selectDate(context),
           child: Text(
             'Change date',
@@ -289,25 +285,25 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (Scaffold(
-        appBar: AppBar(
-            title: Text(
-          'Add a serie',
-          style: TextStyle(fontSize: Repo.currFontsize),
-        )),
-        body: SafeArea(
-          child: Stack(children: <Widget>[
-            Container(
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+        'Add a serie',
+        style: TextStyle(fontSize: Repo.currFontsize),
+      )),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 25),
-              child: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     SizedBox(height: 20),
                     _titleField(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _dateColumn(),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
                     _selectCategory(),
                     SizedBox(height: 20),
                     _selectStatus(),
@@ -315,8 +311,8 @@ class _AddSerieScreenState extends State<AddSerieScreen> {
                     _addButton(),
                     SizedBox(height: 30),
                   ])),
-            )
-          ]),
-        )));
+        ),
+      ),
+    );
   }
 }
