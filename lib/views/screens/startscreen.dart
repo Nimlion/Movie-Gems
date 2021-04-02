@@ -116,7 +116,7 @@ class StartScreenState extends State<StartScreen> {
           onTap: () => _setEggFound()),
       actions: [
         IconButton(
-          padding: EdgeInsets.only(right: 15, left: 15),
+          padding: EdgeInsets.only(right: 8, left: 8),
           icon: Icon(
             Icons.emoji_events,
             size: 30,
@@ -124,7 +124,7 @@ class StartScreenState extends State<StartScreen> {
           onPressed: () => _pushAwardsScreen(),
         ),
         IconButton(
-          padding: EdgeInsets.only(right: 15, left: 15),
+          padding: EdgeInsets.only(right: 8, left: 8),
           icon: Icon(
             Icons.settings,
             size: 30,

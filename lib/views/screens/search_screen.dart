@@ -131,12 +131,16 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_searchQuery != "" && _searchedList.isNotEmpty) {
       return Scaffold(
         appBar: _appbar(),
-        body: ListView.builder(
+        body: Theme(
+          data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+          child: ListView.builder(
             scrollDirection: Axis.vertical,
             itemCount: this._searchedList.length,
             itemBuilder: (context, index) {
               return _movieTile(index);
-            }),
+            },
+          ),
+        ),
       );
     } else if (_searchQuery != "" && _searchedList.isEmpty) {
       return Scaffold(

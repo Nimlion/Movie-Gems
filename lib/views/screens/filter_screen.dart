@@ -318,6 +318,7 @@ class _FilterScreenState extends State<FilterScreen> {
           height: 10.0,
         ),
         RaisedButton(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           onPressed: () => _showDateRange(context),
           child: Text(
             'Change range',
@@ -455,12 +456,14 @@ class _FilterScreenState extends State<FilterScreen> {
               icon: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 25),
-          child: Stack(
-            children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 SizedBox(height: 25),
                 _selectOrder(),
                 SizedBox(height: 20),
@@ -473,8 +476,8 @@ class _FilterScreenState extends State<FilterScreen> {
                 _selectDateRange(context),
                 SizedBox(height: 20),
                 _selectGenres(),
-              ]),
-            ],
+              ],
+            ),
           ),
         ),
       ),

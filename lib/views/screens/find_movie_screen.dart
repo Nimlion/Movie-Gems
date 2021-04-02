@@ -67,7 +67,8 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
             }
           })
           .then((value) => {
-                showSimpleNotification(Text("movie succesfully added"),
+                showSimpleNotification(
+                    Text("Movie succesfully added to watchlist."),
                     background: Colours.primaryColor),
                 Navigator.pop(context),
               })
@@ -193,7 +194,10 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
                 style: TextStyle(fontSize: Repo.currFontsize + 10),
               )));
             }
-            return SingleChildScrollView(
+            return Theme(
+              data:
+                  Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+              child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 25),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -270,7 +274,9 @@ class _FindMovieScreenState extends State<FindMovieScreen> {
                           ),
                     SizedBox(height: 30),
                   ],
-                ));
+                ),
+              ),
+            );
           }),
     );
   }

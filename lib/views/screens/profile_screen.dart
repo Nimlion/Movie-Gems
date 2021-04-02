@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,35 +43,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             background: Colours.error);
   }
 
-  void _deleteAnonymousAccount() async {
-    if (!await Internet().checkConnection()) return;
-    await FirebaseFirestore.instance
-        .collection("movies")
-        .doc(FirebaseAuth.instance.currentUser.uid)
-        .set({"status": "account deleted"})
-        .then((value) => print("movies deleted"))
-        .catchError((e) => print(e));
-    await FirebaseFirestore.instance
-        .collection("series")
-        .doc(FirebaseAuth.instance.currentUser.uid)
-        .set({"status": "account deleted"})
-        .then((value) => print("series deleted"))
-        .catchError((e) => print(e));
-    await FirebaseFirestore.instance
-        .collection("watchlist")
-        .doc(FirebaseAuth.instance.currentUser.uid)
-        .set({"status": "account deleted"})
-        .then((value) => print("watchlist deleted"))
-        .catchError((e) => print(e));
-    await FirebaseAuth.instance.currentUser.delete();
-    _pushLoginScreen();
-  }
-
   Future<void> _changeEmail() async {
     final node = FocusScope.of(context);
     node.unfocus();
     if (!await Internet().checkConnection()) return;
     FirebaseAuthentication().updateEmail(_email);
+  }
+
+  void _deleteAnonymousAccount() async {
+    if (!await Internet().checkConnection()) return;
+    await FirebaseAuthentication().deleteAnonymousAccount();
+    _pushLoginScreen();
   }
 
   Future<void> _deleteAccount() async {
@@ -92,7 +73,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _updateEmail() {
     final node = FocusScope.of(context);
-    this._email = FirebaseAuth.instance.currentUser.email;
+    this._email = FirebaseAuth.instance.currentUser == null
+        ? ""
+        : FirebaseAuth.instance.currentUser.email;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +93,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colours.background,
             ),
             controller: TextEditingController()
-              ..text = FirebaseAuth.instance.currentUser.email,
+              ..text = FirebaseAuth.instance.currentUser != null
+                  ? FirebaseAuth.instance.currentUser.email
+                  : "",
             keyboardType: TextInputType.emailAddress,
             onChanged: (value) => this._email = value,
             onSubmitted: (value) =>
@@ -174,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 30),
+        SizedBox(height: 40),
         Text(
           "About",
           style: TextStyle(fontSize: Repo.currFontsize + 15),
@@ -202,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             "website",
             style: TextStyle(
-                fontSize: Repo.currFontsize - 4, color: Colours.white),
+                fontSize: Repo.currFontsize - 2, color: Colours.white),
           ),
           onPressed: () => Internet().launchURL("https://www.themoviedb.org/"),
         ),
@@ -228,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             "website",
             style: TextStyle(
-                fontSize: Repo.currFontsize - 4, color: Colours.white),
+                fontSize: Repo.currFontsize - 2, color: Colours.white),
           ),
           onPressed: () => Internet().launchURL("https://www.tvmaze.com/"),
         ),
@@ -239,60 +224,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Profile",
-            style: TextStyle(fontSize: Repo.currFontsize),
-          ),
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+          "Profile",
+          style: TextStyle(fontSize: Repo.currFontsize),
         ),
-        body: SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 40, right: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                userEmail != null ? _updateEmail() : Container(),
-                userEmail != null
-                    ? _actionBlock(
-                        "Reset password",
-                        "Don’t like your password? Change your password by getting a link in your mail to change it.",
-                        "Reset password",
-                        Colours.primaryColor,
-                        () => _resetPassword(),
-                      )
-                    : Container(),
-                userEmail != null
-                    ? FirebaseAuth.instance.currentUser.emailVerified
-                        ? Container()
-                        : _actionBlock(
-                            "Verify your email",
-                            "Verifying your email can help you get your account back. In case you forget your password.",
-                            "Verify email",
-                            Colours.primaryColor,
-                            () => _verifyEmail())
-                    : Container(),
-                userEmail != null
-                    ? _actionBlock(
-                        "Signout",
-                        "Want to switch accounts? Or just wanna signout completely?",
-                        "Signout",
-                        Colours.specialColor,
-                        () => {
-                              FirebaseAuthentication().signOut(),
-                              _pushLoginScreen(),
-                            })
-                    : Container(),
-                _actionBlock(
-                  "Delete account",
-                  "Deleting your account will remove all of your content and data associated with it.",
-                  "Delete my account",
-                  Colours.error,
-                  () => _deleteAccount(),
-                ),
-                _aboutSection(),
-                SizedBox(height: 50),
-              ],
-            )));
+        centerTitle: true,
+      ),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 40, right: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              userEmail != null ? _updateEmail() : Container(),
+              userEmail != null
+                  ? _actionBlock(
+                      "Reset password",
+                      "Don’t like your password? Change your password by getting a link in your mail to change it.",
+                      "Reset password",
+                      Colours.primaryColor,
+                      () => _resetPassword(),
+                    )
+                  : Container(),
+              FirebaseAuth.instance.currentUser != null
+                  ? FirebaseAuth.instance.currentUser.emailVerified
+                      ? Container()
+                      : _actionBlock(
+                          "Verify your email",
+                          "Verifying your email can help you get your account back. In case you forget your password.",
+                          "Verify email",
+                          Colours.primaryColor,
+                          () => _verifyEmail())
+                  : Container(),
+              userEmail != null
+                  ? _actionBlock(
+                      "Signout",
+                      "Want to switch accounts? Or just wanna signout completely?",
+                      "Signout",
+                      Colours.specialColor,
+                      () => {
+                            FirebaseAuthentication().signOut(),
+                            _pushLoginScreen(),
+                          })
+                  : Container(),
+              _actionBlock(
+                "Delete account",
+                "Deleting your account will remove all of your content and data associated with it.",
+                "Delete my account",
+                Colours.error,
+                () => _deleteAccount(),
+              ),
+              _aboutSection(),
+              SizedBox(height: 50),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

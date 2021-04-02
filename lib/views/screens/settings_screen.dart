@@ -236,29 +236,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => true,
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Settings",
-              style: TextStyle(fontSize: Repo.currFontsize),
-            ),
-            centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Settings",
+          style: TextStyle(fontSize: Repo.currFontsize),
+        ),
+        centerTitle: true,
+      ),
+      body: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 40, right: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _fontSizeSelector(),
+              _colorSelector(),
+              _epiOrderSelector(),
+              _themeSelector(),
+              SizedBox(height: 50),
+            ],
           ),
-          body: SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 40, right: 40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _fontSizeSelector(),
-                  _colorSelector(),
-                  _epiOrderSelector(),
-                  _themeSelector(),
-                  SizedBox(height: 50),
-                ],
-              ))),
+        ),
+      ),
     );
   }
 }

@@ -65,31 +65,34 @@ class LoginOverlay extends ModalRoute<void> {
     }
   }
 
-  Widget _title() {
+  Widget _title(BuildContext context) {
     return Text(
       "SIGN IN",
       style: TextStyle(
           fontSize: Repo.currFontsize + 15,
           fontWeight: FontWeight.bold,
-          color: Colours.white),
+          color: Theme.of(context).textTheme.bodyText1.color),
     );
   }
 
-  Widget _emailField() {
+  Widget _emailField(BuildContext context) {
     return TextField(
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
+      autofocus: true,
+      style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
       onChanged: (value) => {
         setState(() {
           _email = value;
         }),
       },
       decoration: InputDecoration(
+          labelStyle: TextStyle(color: Colours.primaryColor),
           labelText: 'email',
+          hoverColor: Colours.primaryColor,
           focusColor: Colours.primaryColor,
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
-          fillColor: Colours.lightShadow,
           filled: true),
     );
   }
@@ -98,6 +101,7 @@ class LoginOverlay extends ModalRoute<void> {
     return TextField(
       obscureText: true,
       textInputAction: TextInputAction.send,
+      style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor),
       onChanged: (value) => {
         setState(() {
           _password = value;
@@ -105,10 +109,10 @@ class LoginOverlay extends ModalRoute<void> {
       },
       onSubmitted: (_) => siginIn(context),
       decoration: InputDecoration(
+          labelStyle: TextStyle(color: Colours.primaryColor),
           labelText: 'password',
           contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
           border: InputBorder.none,
-          fillColor: Colours.lightShadow,
           filled: true),
     );
   }
@@ -136,25 +140,28 @@ class LoginOverlay extends ModalRoute<void> {
 
   Widget _buildOverlayContent(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        child: Container(
-          color: Colours.background,
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-          margin: EdgeInsets.all(25),
-          child: Column(
-            children: [
-              _title(),
-              SizedBox(height: 20),
-              Center(
-                child: _emailField(),
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: _passwordField(context),
-              ),
-              SizedBox(height: 20),
-              _signinButton(context),
-            ],
+      child: Theme(
+        data: Theme.of(context).copyWith(accentColor: Colours.primaryColor),
+        child: SingleChildScrollView(
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            margin: EdgeInsets.all(25),
+            child: Column(
+              children: [
+                _title(context),
+                SizedBox(height: 20),
+                Center(
+                  child: _emailField(context),
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: _passwordField(context),
+                ),
+                SizedBox(height: 20),
+                _signinButton(context),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/model/colours.dart';
-import 'package:movie_gems/model/firebase_auth.dart';
 import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/model/serie.dart';
 import 'package:movie_gems/views/widgets/page_filler.dart';
@@ -40,9 +38,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
 
   Future<void> _updateSerieStatus() async {
     if (!await Internet().checkConnection()) return;
-    return FirebaseFirestore.instance
-        .collection('series')
-        .doc(FirebaseAuthentication().auth.currentUser.uid)
+    return Repo.seriesDoc
         .update({firebaseProof(serie.title): serie.toMap()})
         .then((value) => {})
         .catchError((error) => print("Failed to update serie status: $error"));
