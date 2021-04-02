@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_gems/model/repository.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import 'colours.dart';
@@ -19,7 +20,15 @@ class FirebaseAuthentication {
     try {
       this._userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      print("succesful");
+      Repo.watchlistDoc = FirebaseFirestore.instance
+          .collection('watchlist')
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
+      Repo.seriesDoc = FirebaseFirestore.instance
+          .collection("series")
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
+      Repo.moviesDoc = FirebaseFirestore.instance
+          .collection("movies")
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -39,15 +48,10 @@ class FirebaseAuthentication {
             background: Colours.error);
         return null;
       }
-      var state;
       User firebaseUser = FirebaseAuth.instance.currentUser;
       await firebaseUser
           .updateEmail(newEmail)
-          .then(
-            (value) => state = true,
-          )
-          .catchError((onError) => state = false);
-      print("state: " + state.toString());
+          .catchError((onError) => print(onError));
       showSimpleNotification(Text("Email has been updated."),
           background: Colours.primaryColor);
     } catch (e) {
@@ -59,9 +63,6 @@ class FirebaseAuthentication {
 
   Future<void> anonymouslySignIn() async {
     this._userCredential = await FirebaseAuth.instance.signInAnonymously();
-
-    User user = FirebaseAuth.instance.currentUser;
-    print(user);
   }
 
   Future<bool> resetPassword(String email) async {
@@ -77,8 +78,15 @@ class FirebaseAuthentication {
     try {
       this._userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      User user = FirebaseAuth.instance.currentUser;
-      print(user);
+      Repo.watchlistDoc = FirebaseFirestore.instance
+          .collection('watchlist')
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
+      Repo.seriesDoc = FirebaseFirestore.instance
+          .collection("series")
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
+      Repo.moviesDoc = FirebaseFirestore.instance
+          .collection("movies")
+          .doc(FirebaseAuthentication().auth.currentUser.uid);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showSimpleNotification(Text("The password provided is too weak."),
@@ -123,6 +131,8 @@ class FirebaseAuthentication {
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+    Repo.movieList.clear();
+    Repo.movieListenable.value.clear();
   }
 
   Future<void> deleteAccount() async {
@@ -130,21 +140,15 @@ class FirebaseAuthentication {
       // ignore: await_only_futures
       User user = await FirebaseAuth.instance.currentUser;
       // Delete all data from the user
-      await FirebaseFirestore.instance
-          .collection("movies")
-          .doc(user.uid)
+      await Repo.moviesDoc
           .set({"status": "account deleted"})
           .then((value) => print("movies deleted"))
           .catchError((e) => print(e));
-      await FirebaseFirestore.instance
-          .collection("series")
-          .doc(user.uid)
+      await Repo.seriesDoc
           .set({"status": "account deleted"})
           .then((value) => print("series deleted"))
           .catchError((e) => print(e));
-      await FirebaseFirestore.instance
-          .collection("watchlist")
-          .doc(user.uid)
+      await Repo.watchlistDoc
           .set({"status": "account deleted"})
           .then((value) => print("watchlist deleted"))
           .catchError((e) => print(e));
@@ -154,5 +158,21 @@ class FirebaseAuthentication {
       print(e.toString());
       return null;
     }
+  }
+
+  Future<void> deleteAnonymousAccount() async {
+    await Repo.moviesDoc
+        .set({"status": "account deleted"})
+        .then((value) => print("movies deleted"))
+        .catchError((e) => print(e));
+    await Repo.seriesDoc
+        .set({"status": "account deleted"})
+        .then((value) => print("series deleted"))
+        .catchError((e) => print(e));
+    await Repo.watchlistDoc
+        .set({"status": "account deleted"})
+        .then((value) => print("watchlist deleted"))
+        .catchError((e) => print(e));
+    await FirebaseAuth.instance.currentUser.delete();
   }
 }

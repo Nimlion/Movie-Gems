@@ -15,9 +15,8 @@ class TMDBMovieController {
 
     if (endpoint.statusCode == 200) {
       return TMDBCast.fromJson(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load cast of movie');
     }
+    return null;
   }
 
   Future<TMDBMovie> fetchTMDBData(String imdbId) async {
@@ -26,9 +25,8 @@ class TMDBMovieController {
 
     if (endpoint.statusCode == 200) {
       return TMDBMovie.fromJson(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load movie');
     }
+    return null;
   }
 
   Future<List<TMDBCondensedMovie>> fetchSimilarMovies(String imdbId) async {
@@ -37,9 +35,8 @@ class TMDBMovieController {
 
     if (endpoint.statusCode == 200) {
       return retrieveListOfCondensedMovies(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to similar movies');
     }
+    return null;
   }
 
   List<TMDBCondensedMovie> retrieveListOfCondensedMovies(
@@ -75,9 +72,8 @@ class TMDBMovieController {
 
     if (endpoint.statusCode == 200) {
       return retrieveListOfCondensedMovies(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load playing movies');
     }
+    return null;
   }
 }
 

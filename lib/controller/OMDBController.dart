@@ -16,12 +16,9 @@ class OMDBController {
       OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));
       if (movie.type == "movie") {
         return movie;
-      } else {
-        return null;
       }
-    } else {
-      throw Exception('Failed to load movie');
     }
+    return null;
   }
 
   Future<OMDBResponse> fetchSpecificOMDBData(
@@ -33,12 +30,9 @@ class OMDBController {
       OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));
       if (movie.type == "movie") {
         return movie;
-      } else {
-        return null;
       }
-    } else {
-      throw Exception('Failed to load movie');
     }
+    return null;
   }
 }
 

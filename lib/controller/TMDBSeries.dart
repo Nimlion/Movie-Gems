@@ -14,9 +14,8 @@ class TMDBSeriesController {
 
     if (endpoint.statusCode == 200) {
       return TMDBCast.fromJson(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load cast of serie');
     }
+    return null;
   }
 
   Future<TMDBCondensedSerie> fetchSerieTMDBData(String query) async {
@@ -27,12 +26,9 @@ class TMDBSeriesController {
       if ((json.decode(endpoint.body)["results"] as List).toList().isNotEmpty) {
         return TMDBCondensedSerie.fromJson(
             json.decode(json.encode(json.decode(endpoint.body)["results"][0])));
-      } else {
-        return null;
       }
-    } else {
-      throw Exception('Failed to load serie');
     }
+    return null;
   }
 
   Future<TMDBSerie> tmdbFetchSerieDetails(String id) async {
@@ -41,9 +37,8 @@ class TMDBSeriesController {
 
     if (endpoint.statusCode == 200) {
       return TMDBSerie.fromJson(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load movie');
     }
+    return null;
   }
 
   List<TMDBCondensedSerie> retrieveListOfCondensedSeries(
@@ -68,9 +63,8 @@ class TMDBSeriesController {
 
     if (endpoint.statusCode == 200) {
       return retrieveListOfCondensedSeries(json.decode(endpoint.body));
-    } else {
-      throw Exception('Failed to load popular series');
     }
+    return null;
   }
 }
 

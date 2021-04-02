@@ -13,12 +13,9 @@ class TVMazeController {
       if (endpoint.body != "[]") {
         return TVMazeResponse.fromJson(
             json.decode(json.encode(json.decode(endpoint.body)[0])));
-      } else {
-        return null;
       }
-    } else {
-      throw Exception('Failed to load serie');
     }
+    return null;
   }
 
   Future<TVMazeEpisodes> fetchSerieEpisodes(String id) async {
@@ -29,12 +26,9 @@ class TVMazeController {
           json.decode(endpoint.body).isNotEmpty) {
         var body = TVMazeEpisodes.fromJson(json.decode(endpoint.body));
         return body;
-      } else {
-        return null;
       }
-    } else {
-      throw Exception('Failed to load episodes');
     }
+    return null;
   }
 }
 

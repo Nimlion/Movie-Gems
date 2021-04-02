@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'movie.dart';
@@ -33,7 +34,11 @@ class Repo {
   static final String latEpiFirstKey = 'latestEpisFirst';
   static bool latestEpisodesFirst = true;
 
-  // Passing of variables
+  // FireStore locations
+  static DocumentReference watchlistDoc;
+  static DocumentReference seriesDoc;
+  static DocumentReference moviesDoc;
+
   static List<Movie> movieList = List();
   static ValueNotifier<List<Movie>> movieListenable =
       ValueNotifier<List<Movie>>(List());
