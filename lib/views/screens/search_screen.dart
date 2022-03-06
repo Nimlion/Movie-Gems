@@ -8,10 +8,9 @@ import 'package:movie_gems/model/repository.dart';
 import 'package:movie_gems/views/screens/movie_details.dart';
 
 import 'find_movie_screen.dart';
+import 'movie_overview.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key key}) : super(key: key);
-
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -83,12 +82,30 @@ class _SearchScreenState extends State<SearchScreen> {
     return _icon;
   }
 
+  Future<void> _toggleCategory(Movie movie) async {
+    if (!await Internet().checkConnection()) return;
+    if (movie.category != 2) {
+      movie.category++;
+    } else {
+      movie.category = 0;
+    }
+
+    return Repo.moviesDoc
+        .update({firebaseProof(movie.title): movie.toMap()})
+        .then((value) => {this.updateList(this._searchQuery)})
+        .catchError(
+            (error) => print("Failed to update movie category: $error"));
+  }
+
   Widget _movieTile(int index) {
     return ListTile(
-      leading: Container(
-        height: double.infinity,
-        child: _movieIcon(this._searchedList[index].category),
-      ),
+      leading: IconButton(
+          icon: _movieIcon(this._searchedList[index].category),
+          onPressed: () => {
+                setState(() {
+                  _toggleCategory(this._searchedList[index]);
+                }),
+              }),
       title: Text(
         this._searchedList[index].title,
         style: TextStyle(

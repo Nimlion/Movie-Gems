@@ -227,7 +227,7 @@ class _AwardsScreenState extends State<AwardsScreen> {
                           children: [
                             _statsTile(
                                 Repo.movieListenable.value.length.toString(),
-                                Repo.movieListenable.value.length,
+                                Repo.movieListenable.value.length ~/ 10,
                                 "movies"),
                             StreamBuilder<DocumentSnapshot>(
                               stream: Repo.watchlistDoc.snapshots(),
@@ -346,13 +346,13 @@ class _AwardsScreenState extends State<AwardsScreen> {
 }
 
 class MyPainter extends CustomPainter {
-  int amount = 0;
+  int _amount = 0;
 
-  MyPainter(this.amount);
+  MyPainter(this._amount);
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (amount > 100) amount = 100;
+    if (_amount > 100) _amount = 100;
 
     final paint = Paint()
       ..color = Colours.primaryColor
@@ -360,7 +360,7 @@ class MyPainter extends CustomPainter {
       ..strokeWidth = 4
       ..shader = ui.Gradient.linear(
         Offset(0, size.height - 20),
-        Offset(size.width, size.height - amount),
+        Offset(size.width, size.height - _amount),
         [
           Colours.accentColor,
           Colours.primaryColor,
@@ -371,9 +371,9 @@ class MyPainter extends CustomPainter {
 
     path.addPolygon([
       Offset(0, size.height - 20),
-      Offset(50, size.height - (20 + (0.4 * amount))),
+      Offset(50, size.height - (20 + (0.4 * _amount))),
       Offset(100, size.height),
-      Offset(size.width, size.height - amount)
+      Offset(size.width, size.height - _amount)
     ], false);
 
     canvas.drawPath(path, paint);

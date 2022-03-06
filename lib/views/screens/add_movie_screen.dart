@@ -50,20 +50,35 @@ class _AddMovieScreenState extends State<AddMovieScreen> {
     }
     OMDBResponse omdbObject;
     TMDBMovie tmdbObject;
+    OMDBResponse omdbIDObject;
     await OMDBController()
         .fetchOMDBData(_titleValue)
         .then((omdbResponse) async => {
               omdbObject = omdbResponse,
               if (omdbObject != null)
-                await TMDBMovieController()
+                (await TMDBMovieController()
                     .fetchTMDBData(omdbResponse.imdbID)
-                    .then((tmdbResponse) => tmdbObject = tmdbResponse)
+                    .then((tmdbResponse) => tmdbObject = tmdbResponse))
+              else if (omdbObject == null)
+                (await OMDBController()
+                    .fetchOMDBDataByID(_titleValue)
+                    .then((omdbIDResponse) async => {
+                          omdbIDObject = omdbIDResponse,
+                          if (omdbIDObject != null)
+                            await TMDBMovieController()
+                                .fetchTMDBData(omdbIDResponse.imdbID)
+                                .then(
+                                    (tmdbResponse) => tmdbObject = tmdbResponse)
+                        })),
             });
 
-    if (omdbObject == null || tmdbObject == null) {
+    if ((omdbObject == null && omdbIDObject == null) || tmdbObject == null) {
       showSimpleNotification(Text("Movie could not be found"),
           background: Colors.red);
     } else {
+      if (omdbObject == null && omdbIDObject != null) {
+        omdbObject = omdbIDObject;
+      }
       Repo.moviesDoc
           .update({
             firebaseProof(omdbObject.title): {

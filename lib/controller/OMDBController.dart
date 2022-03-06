@@ -21,6 +21,19 @@ class OMDBController {
     return null;
   }
 
+  Future<OMDBResponse> fetchOMDBDataByID(String imdbID) async {
+    final response = await http
+        .get('https://www.omdbapi.com/?apikey=$apiKey&i=$imdbID&type=movie');
+
+    if (response.statusCode == 200) {
+      OMDBResponse movie = OMDBResponse.fromJson(json.decode(response.body));
+      if (movie.type == "movie") {
+        return movie;
+      }
+    }
+    return null;
+  }
+
   Future<OMDBResponse> fetchSpecificOMDBData(
       String movieTitle, int year) async {
     final response = await http.get(

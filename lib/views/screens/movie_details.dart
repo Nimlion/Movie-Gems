@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_gems/controller/Internet.dart';
 import 'package:movie_gems/controller/TMDBMovies.dart';
 import 'package:movie_gems/controller/TMDBSeries.dart';
 import 'package:movie_gems/model/colours.dart';
@@ -275,6 +276,26 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     );
   }
 
+  Widget _webBtn(String url, String label) {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        RaisedButton(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: Repo.currFontsize,
+              color: label == "IMDB" ? Colours.background : Colours.white,
+            ),
+          ),
+          color: label == "IMDB" ? Colours.gold : Colours.primaryColor,
+          padding: EdgeInsets.fromLTRB(30, 15, 30, 15),
+          onPressed: () => {Internet().launchURL(url)},
+        )
+      ],
+    );
+  }
+
   Widget _castBox(Map<dynamic, dynamic> cast) {
     return Center(
       child: Column(
@@ -543,6 +564,23 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                               ],
                             )
                           : Container(),
+                      SizedBox(height: 25),
+                      Wrap(
+                        spacing: 25,
+                        runAlignment: WrapAlignment.center,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          response.homepage != null && response.homepage != ""
+                              ? _webBtn(response.homepage, "Official site")
+                              : Container(),
+                          response.imdbId != null && response.imdbId != ""
+                              ? _webBtn(
+                                  "https://www.imdb.com/title/" +
+                                      response.imdbId,
+                                  "IMDB")
+                              : Container(),
+                        ],
+                      ),
                       SizedBox(height: 50),
                       this.futureCast == null
                           ? Container(
