@@ -148,6 +148,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               value: "Barbie",
             ),
+            DropdownMenuItem(
+              child: Text(
+                "Blood Bath",
+              ),
+              value: "BloodBath",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Sunny",
+              ),
+              value: "Sunny",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Lime",
+              ),
+              value: "Lime",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Sky",
+              ),
+              value: "Sky",
+            ),
+            DropdownMenuItem(
+              child: Text(
+                "Old School",
+              ),
+              value: "OldSchool",
+            ),
           ],
           onChanged: (value) {
             if (mounted) {

@@ -45,6 +45,26 @@ class Colours {
         Colours.primaryColor = Color(0xFFf875aa);
         Colours.accentColor = Color(0xFFf25287);
         break;
+      case "BloodBath":
+        Colours.primaryColor = Color(0xFFB71C1C);
+        Colours.accentColor = Color(0xFFF44336);
+        break;
+      case "Sunny":
+        Colours.primaryColor = Color(0xFFFFCA28);
+        Colours.accentColor = Color(0xFFFFAB00);
+        break;
+      case "Lime":
+        Colours.primaryColor = Color(0xFFAEEA00);
+        Colours.accentColor = Color(0xFFAFB42B);
+        break;
+      case "Sky":
+        Colours.primaryColor = Color(0xFF26C6DA);
+        Colours.accentColor = Color(0xFF0097A7);
+        break;
+      case "OldSchool":
+        Colours.primaryColor = Color(0xFF424242);
+        Colours.accentColor = Color(0xFFBDBDBD);
+        break;
       default:
         Colours.primaryColor = Color(0xFF536DFE);
         Colours.accentColor = Color(0xFF8C9EFF);
