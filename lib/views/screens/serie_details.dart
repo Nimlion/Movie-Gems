@@ -36,12 +36,12 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     futureCast = TMDBSeriesController().fetchSerieCast(serie.tmdbID.toString());
   }
 
-  Future<void> _updateSerieStatus() async {
+  Future<void> _syncSerieObject() async {
     if (!await Internet().checkConnection()) return;
     return Repo.seriesDoc
         .update({firebaseProof(serie.title): serie.toMap()})
         .then((value) => {})
-        .catchError((error) => print("Failed to update serie status: $error"));
+        .catchError((error) => print("Failed to update serie object: $error"));
   }
 
   Widget _hero(String image) {
@@ -287,6 +287,66 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
     ]);
   }
 
+  Widget _category() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: Column(children: [
+        Container(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Category",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .color
+                      .withOpacity(0.7),
+                  fontSize: (Repo.currFontsize - 4)),
+            )),
+        SizedBox(height: 10),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: DropdownButton(
+            value: serie.category,
+            dropdownColor: Colours.primaryColor,
+            style: TextStyle(
+              fontSize: Repo.currFontsize,
+              fontFamily: "Raleway",
+              color: Theme.of(context).textTheme.bodyText1.color,
+            ),
+            items: [
+              DropdownMenuItem(
+                child: Text(
+                  "Normal",
+                ),
+                value: 0,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Great",
+                ),
+                value: 1,
+              ),
+              DropdownMenuItem(
+                child: Text(
+                  "Fantastic",
+                ),
+                value: 2,
+              ),
+            ],
+            onChanged: (int value) {
+              setState(() {
+                serie.category = value;
+              });
+              _syncSerieObject();
+            },
+          ),
+        ),
+      ]),
+    );
+  }
+
   Widget _status() {
     return Container(
       alignment: Alignment.centerLeft,
@@ -339,7 +399,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
               setState(() {
                 serie.status = value;
               });
-              _updateSerieStatus();
+              _syncSerieObject();
             },
           ),
         ),
@@ -412,6 +472,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
                               SizedBox(height: 20)
                             ])
                           : SizedBox(),
+                      _category(),
                       response.nextEpisodeToAir != null &&
                               response.nextEpisodeToAir.isNotEmpty
                           ? Column(children: [
