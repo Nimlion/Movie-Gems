@@ -217,7 +217,7 @@ class _AddWatchLaterState extends State<AddWatchLaterScreen> {
   }
 
   Future _selectDate(BuildContext context) async {
-    var now = DateTime(2018, 1, 13);
+    var now = new DateTime.now();
     var endDate = DateTime(now.year + 5, now.month, now.day);
 
     final DateTime picked = await showDatePicker(
