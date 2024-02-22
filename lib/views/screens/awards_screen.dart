@@ -31,7 +31,7 @@ class _AwardsScreenState extends State<AwardsScreen> {
   Widget _awardTile(
       IconData icon, String topText, String bottomText, bool active) {
     TextStyle style = TextStyle(
-        fontSize: 8 + (0.5 * Repo.currFontsize),
+        fontSize: 8 + (0.3 * Repo.currFontsize),
         fontWeight: FontWeight.bold,
         color: active
             ? Theme.of(context).textTheme.bodyText1.color
@@ -82,11 +82,11 @@ class _AwardsScreenState extends State<AwardsScreen> {
 
   Widget _statsTile(String label, int amount, String bottomText) {
     TextStyle smStyle = TextStyle(
-        fontSize: Repo.currFontsize - 8,
+        fontSize: (0.2 * Repo.currFontsize) + 8,
         fontWeight: FontWeight.bold,
         color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.6));
     TextStyle xlStyle = TextStyle(
-        fontSize: 42 + (0.1 * Repo.currFontsize),
+        fontSize: 30 + (0.2 * Repo.currFontsize),
         fontWeight: FontWeight.bold,
         color: Theme.of(context).textTheme.bodyText1.color);
 
