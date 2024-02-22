@@ -57,7 +57,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               "assets/img/empty-landscape.jpg",
               fit: BoxFit.cover,
             ),
-      expandedHeight: MediaQuery.of(context).size.width * 0.9,
+      expandedHeight: MediaQuery.of(context).size.width * 0.85,
     );
   }
 

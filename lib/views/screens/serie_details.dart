@@ -63,7 +63,7 @@ class _SerieDetailScreenState extends State<SerieDetailScreen> {
               "assets/img/empty-landscape.jpg",
               fit: BoxFit.cover,
             ),
-      expandedHeight: MediaQuery.of(context).size.width * 1.4,
+      expandedHeight: MediaQuery.of(context).size.width * 1.38,
     );
   }
 
